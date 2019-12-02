@@ -18,6 +18,7 @@ interface S {
 export class UserForm extends EntityForm<UserFormProps, S> {
   roleIds: string[] = [];
   async componentDidMount() {
+    console.log('UserForm.componentDidMount')
     const {
       inputItem,
       services: { userRoleService, roleService, deptService },
@@ -95,7 +96,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
             })(<Checkbox />)}
           </Form.Item>
           <Form.Item label="角色">
-            <Checkbox.Group options={allRoles} defaultValue={userRoleIds} onChange={this.onChangeRoles.bind(this)} />,
+            <Checkbox.Group options={allRoles} defaultValue={userRoleIds} onChange={this.onChangeRoles.bind(this)} />
           </Form.Item>
         </Form>
       </Modal>
@@ -110,8 +111,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     //但同时，密码也不能改回初始密码
     if (inputItem && inputItem.id && saveItem.password === initPassword) saveItem.password = inputItem.password;
     else if (inputItem && saveItem.password !== inputItem.password) saveItem.password = sha256(saveItem.password);
-    const { userRoleService } = this.props.services;
-    return userRoleService.saveUserRoles({ ...inputItem, ...saveItem }, this.roleIds);
+    const { userService } = this.props.services;
+    return userService.saveUserRoles({ ...inputItem, ...saveItem }, this.roleIds);
   }
 
   onChangeRoles(roleIds: CheckboxValueType[]) {

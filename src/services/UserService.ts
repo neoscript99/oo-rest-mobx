@@ -48,7 +48,7 @@ export class UserService extends DomainService<UserStore> {
   }
 
   loginHash(username: string, passwordHash: string, remember = false): Promise<LoginInfo> {
-    return this.restClient.post(`${this.apiPrefix()}/login`, { username, passwordHash }).then(data => {
+    return this.restClient.post(this.getApiUri('login'), { username, passwordHash }).then(data => {
       const loginInfo = data;
       this.store.loginInfo = loginInfo;
       if (loginInfo.success) {
@@ -87,7 +87,7 @@ export class UserService extends DomainService<UserStore> {
   }
 
   trySessionLogin(): Promise<LoginInfo> {
-    return this.restClient.post(`${this.apiPrefix()}/sessionLogin`).then(data => {
+    return this.restClient.post(this.getApiUri('sessionLogin')).then(data => {
       const loginInfo = data;
       this.store.loginInfo = loginInfo;
       if (loginInfo.success) {
@@ -101,12 +101,12 @@ export class UserService extends DomainService<UserStore> {
     });
   }
 
-  sessionLogout() {
-    return this.restClient.post(`${this.apiPrefix()}/sessionLogout`);
+  logout() {
+    return this.restClient.post(this.getApiUri('logout'));
   }
 
   getCasConfig(): Promise<CasConfig> {
-    return this.restClient.post(`${this.apiPrefix()}/getCasConfig`).then(data => {
+    return this.restClient.post(this.getApiUri('getCasConfig')).then(data => {
       this.store.casConfig = data;
       return data;
     });
@@ -119,5 +119,9 @@ export class UserService extends DomainService<UserStore> {
 
   doAfterLogin(loginInfo: LoginInfo) {
     this.afterLogins && this.afterLogins.forEach(afterLogin => afterLogin(loginInfo));
+  }
+
+  saveUserRoles(user: Entity, roleIds: string[]) {
+    return this.restClient.post(this.getApiUri('saveWithRoles'), { user, roleIds });
   }
 }

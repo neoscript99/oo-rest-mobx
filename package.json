@@ -19,7 +19,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/neoscript99/oo-graphql-service.git"
+    "url": "git+https://github.com/neoscript99/oo-rest-mobx.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

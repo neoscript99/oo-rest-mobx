@@ -243,8 +243,8 @@ export abstract class EntityList<
   }
 
   handleFormSuccess(item: Entity) {
-    this.pageChange(1);
     this.setState({ formProps: undefined });
+    this.pageChange(1);
     this.query();
   }
 

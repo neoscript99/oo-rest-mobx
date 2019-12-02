@@ -38,8 +38,8 @@ export class DomainService<D extends MobxDomainStore> {
     this.restClient = options.restClient;
   }
 
-  apiPrefix() {
-    return `/api/${this.domain}`;
+  getApiUri(operator: string) {
+    return `/api/${this.domain}/${operator}`;
   }
 
   findFirst(criteria?: Criteria) {
@@ -74,9 +74,9 @@ export class DomainService<D extends MobxDomainStore> {
     const { maxResults, firstResult, order, ...countCriteria } = criteria;
     if (orders && orders.length > 0) processCriteriaOrder(criteria, orders);
     if (pageInfo) processCriteriaPage(criteria, pageInfo);
-    const listPromise = this.restClient.post(`${this.apiPrefix()}/list`, criteria) as Promise<Entity[]>;
+    const listPromise = this.restClient.post(this.getApiUri('list'), criteria) as Promise<Entity[]>;
     if (pageInfo) {
-      const countPromise = this.restClient.post(`${this.apiPrefix()}/count`, countCriteria) as Promise<number>;
+      const countPromise = this.restClient.post(this.getApiUri('count'), countCriteria) as Promise<number>;
       return Promise.all([listPromise, countPromise]).then(([results, totalCount]) => ({
         results,
         totalCount,
@@ -140,19 +140,19 @@ export class DomainService<D extends MobxDomainStore> {
    * @param newItem
    */
   save(item: Entity): Promise<Entity> {
-    return this.restClient.post(`${this.apiPrefix()}/save`, item).then(data => this.changeCurrentItem(data as Entity));
+    return this.restClient.post(this.getApiUri('save'), item).then(data => this.changeCurrentItem(data as Entity));
   }
 
   get(id: any): Promise<Entity> {
-    return this.restClient.post(`${this.apiPrefix()}/get`, id).then(data => this.changeCurrentItem(data as Entity));
+    return this.restClient.post(this.getApiUri('get'), { id }).then(data => this.changeCurrentItem(data as Entity));
   }
 
   delete(id: any): Promise<number> {
-    return this.restClient.post(`${this.apiPrefix()}/delete`, id);
+    return this.restClient.post(this.getApiUri('delete'), { id });
   }
 
   deleteByIds(ids: any[]): Promise<any> {
-    return this.restClient.post(`${this.apiPrefix()}/deleteByIds`, ids);
+    return this.restClient.post(this.getApiUri('deleteByIds'), { ids });
   }
 
   syncPageInfo(newPageInfo: PageInfo) {

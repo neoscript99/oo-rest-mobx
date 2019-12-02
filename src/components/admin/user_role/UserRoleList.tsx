@@ -26,7 +26,7 @@ export class UserRoleList extends EntityPageList<AdminPageProps> {
     return columns;
   }
   getQueryParam(): ListOptions {
-    const param = { criteria: {}, orders: ['user'] };
+    const param = { criteria: {}, orders: ['user.name'] };
     const { searchParam } = this.domainService.store;
     if (searchParam && StringUtil.isNotBlank(searchParam.searchKey)) {
       const key = `${searchParam.searchKey}%`;

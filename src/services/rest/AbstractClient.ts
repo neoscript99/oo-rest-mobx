@@ -10,7 +10,7 @@ export abstract class AbstractClient {
   fetch: SomeFetch;
 
   protected constructor(public fetchOptions: FetchOptions) {
-    this.fetch = fetchOptions.fetch || fetch;
+    this.fetch = fetchOptions.fetch || window.fetch.bind(window);
   }
 
   /**

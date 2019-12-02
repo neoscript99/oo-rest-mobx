@@ -19,16 +19,23 @@ describe('Domain CURD', () => {
     expect(data).not.toBeNull();
     expect(data.totalCount).toBeGreaterThan(0);
     console.log(data.results[0].id);
-    //expect(await userService.get(data.results[0].id)).toHaveProperty('name');
+    expect(await userService.get(data.results[0].id)).toHaveProperty('name');
   });
 
-  it('department create and update and delete', async () => {
-    let department = await deptService.save({ name: 'GraphqlStoreTest', seq: 999, enabled: false });
-    const id = department.id;
+  it('create, update, list, delete', async () => {
+    await deptService.save({ name: 'DeptTest1', seq: 999, enabled: false });
+    await deptService.save({ name: 'DeptTest2', seq: 999, enabled: false });
+    const department = await deptService.save({ name: 'DeptTest3', seq: 999, enabled: false });
     expect(department.seq).toEqual(999);
-    department = await deptService.save({ id, seq: 888 });
-    expect(department.seq).toEqual(888);
+    department.seq = 888;
+    const updatedDept = await deptService.save(department);
+    expect(updatedDept.seq).toEqual(888);
 
-    expect(await deptService.delete(department.id).then(data => data === 1)).toEqual(true);
+    const firstDept = await deptService.findFirst({ eq: [['seq', 888]] });
+    console.log(firstDept);
+    if (firstDept) expect(await deptService.delete(firstDept.id)).toEqual(1);
+
+    const listDept = await deptService.listFirstPage({ criteria: { eq: [['seq', 999]] } });
+    expect(await deptService.deleteByIds(listDept.results.map(dept => dept.id))).toEqual(2);
   });
 });

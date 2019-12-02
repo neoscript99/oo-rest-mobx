@@ -13,7 +13,7 @@ export interface DataResult {
 export class PortletDataSourceService extends DomainService<MobxDomainStore> {
   getData(portletDataSource: Entity): Promise<DataResult> {
     return this.restClient
-      .post(`${this.apiPrefix()}/getPortletData`, { dataSourceId: portletDataSource.id })
+      .post(this.getApiUri('getPortletData'), { dataSourceId: portletDataSource.id })
       .then(jsonData => {
         if (portletDataSource.type === 'LivebosQuery') return transLivebosData(jsonData as LivebosObject);
         return { dataList: jsonData };

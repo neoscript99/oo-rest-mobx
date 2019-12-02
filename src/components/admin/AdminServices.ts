@@ -5,7 +5,6 @@ import {
   ParamService,
   RoleService,
   UserService,
-  UserRoleService,
   AbstractClient,
 } from '../../services/';
 import { DomainService } from '../../services';
@@ -19,12 +18,12 @@ export class AdminServices {
   noteService: DomainService<MobxDomainStore>;
   menuService: MenuService;
   deptService: DeptService;
-  userRoleService: UserRoleService;
+  userRoleService: DomainService<MobxDomainStore>;
 
   constructor(restClient: AbstractClient, afterLogin: AfterLogin) {
     this.paramService = new ParamService(restClient);
     this.noteService = new DomainService({ domain: 'note', storeClass: MobxDomainStore, restClient });
-    this.userRoleService = new UserRoleService(restClient);
+    this.userRoleService = new DomainService({ domain: 'userRole', storeClass: MobxDomainStore, restClient });
     this.roleService = new RoleService(restClient);
     this.menuService = new MenuService(restClient);
     this.userService = new UserService(restClient, [this.afterLogin.bind(this), afterLogin]);
