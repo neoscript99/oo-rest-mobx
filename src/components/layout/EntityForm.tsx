@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, ReactNode } from 'react';
 
-import { Form, message } from 'antd';
+import { Card, Form, message, Modal } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { DomainService, Entity } from '../../services';
 import { EntityColumnProps } from './EntityList';
@@ -10,18 +10,41 @@ export interface EntityFormProps extends FormComponentProps {
   title: string;
   okText: string;
   domainService: DomainService<MobxDomainStore>;
-  columns: EntityColumnProps[];
+  columns?: EntityColumnProps[];
   inputItem?: Entity;
-  onSuccess: (item: Entity) => void;
-  onError: (reason: any) => void;
-  onCancel: () => void;
-
+  onSuccess?: (item: Entity) => void;
+  onCancel?: () => void;
+  containerType?: 'Modal' | 'Card';
   [key: string]: any;
 }
 
 export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> extends Component<P, S> {
+  render() {
+    const { title, okText, containerType } = this.props;
+    const formBody = this.getForm();
+    switch (containerType) {
+      case 'Card':
+        return <Card title={title}>{formBody}</Card>;
+      default:
+        return (
+          <Modal
+            visible={true}
+            title={title}
+            okText={okText}
+            onCancel={this.handleCancel.bind(this)}
+            onOk={this.handleOK.bind(this)}
+          >
+            {formBody}
+          </Modal>
+        );
+    }
+  }
+  getForm(): ReactNode {
+    return null;
+  }
   handleCancel() {
-    this.props.onCancel();
+    const { onCancel } = this.props;
+    if (onCancel) onCancel();
   }
 
   handleOK() {
@@ -35,12 +58,13 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
     this.saveEntity(saveItem)
       .then(v => {
         message.success('保存成功');
-        onSuccess(v);
+        const { onSuccess } = this.props;
+        if (onSuccess) onSuccess(v);
         return v;
       })
       .catch(reason => {
         console.error(reason);
-        onError(reason);
+        message.error(`保存失败：${reason}`);
       });
   }
 
@@ -60,7 +84,7 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
           });
           return fieldMap;
         }, {});
-      else
+      else if (columns)
         return columns.reduce((fieldMap, col) => {
           if (col.dataIndex && col.initValue !== undefined)
             fieldMap[col.dataIndex] = Form.createFormField({
@@ -68,6 +92,7 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
             });
           return fieldMap;
         }, {});
+      else return;
     },
   });
 }

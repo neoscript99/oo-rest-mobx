@@ -124,4 +124,7 @@ export class UserService extends DomainService<UserStore> {
   saveUserRoles(user: Entity, roleIds: string[]) {
     return this.restClient.post(this.getApiUri('saveWithRoles'), { user, roleIds });
   }
+  resetPassword(user: Entity, passwordHash: string) {
+    return this.restClient.post(this.getApiUri('resetPassword'), { userId: user.id, passwordHash });
+  }
 }

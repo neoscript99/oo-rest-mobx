@@ -252,10 +252,6 @@ export abstract class EntityList<
     this.setState({ formProps: undefined });
   }
 
-  handleFormError(reason: any) {
-    message.error(`处理失败：${reason}`);
-  }
-
   getFormProps(action: string, item?: Entity): Partial<EntityFormProps> {
     return {
       title: `${action}${this.props.name}`,
@@ -263,7 +259,6 @@ export abstract class EntityList<
       domainService: this.domainService,
       onSuccess: this.handleFormSuccess.bind(this),
       onCancel: this.handleFormCancel.bind(this),
-      onError: this.handleFormError.bind(this),
       columns: this.columns,
       inputItem: item || this.getInitItem(),
     };
