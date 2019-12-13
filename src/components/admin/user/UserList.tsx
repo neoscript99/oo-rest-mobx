@@ -23,6 +23,9 @@ export class UserList extends EntityPageList<UserListProps> {
   }
 
   get columns(): EntityColumnProps[] {
+    return this.getUserColumns();
+  }
+  getUserColumns(): EntityColumnProps[] {
     const pass = this.props.initPassword || INIT_PASSWORD;
     const opCol = (text: string, record: any) => {
       return (

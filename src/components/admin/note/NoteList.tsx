@@ -1,9 +1,7 @@
 import React from 'react';
-import { EntityPageList, EntityColumnProps } from '../layout';
-import { AdminPageProps } from './AdminServices';
-import { commonColumns } from '../../utils';
-import { DomainService } from '../../services';
-import { MobxDomainStore } from '../../stores';
+import { AdminPageProps } from '../AdminServices';
+import { commonColumns } from '../../../utils';
+import { EntityColumnProps, EntityPageList } from '../../layout';
 
 const columns: EntityColumnProps[] = [
   { title: '标题', dataIndex: 'title' },
@@ -13,12 +11,12 @@ const columns: EntityColumnProps[] = [
   commonColumns.lastUpdated,
 ];
 
-export class Note extends EntityPageList<AdminPageProps> {
+export class NoteList extends EntityPageList<AdminPageProps> {
   get columns(): EntityColumnProps[] {
     return columns;
   }
 
-  get domainService(): DomainService<MobxDomainStore> {
+  get domainService() {
     return this.props.services.noteService;
   }
 }
