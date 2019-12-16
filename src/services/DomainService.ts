@@ -18,7 +18,7 @@ export interface DictInitService {
  * Mobx Store基类
  * 内部的属性会被JSON.stringify序列化，如果是嵌套结构或大对象，可以用Promise包装，规避序列化
  */
-export class DomainService<D extends MobxDomainStore> {
+export class DomainService<D extends MobxDomainStore = MobxDomainStore> {
   public store: D;
   domain: string;
   restClient: AbstractClient;

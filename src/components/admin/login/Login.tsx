@@ -14,6 +14,18 @@ export interface LoginFormProps extends FormComponentProps, RouteComponentProps 
 
 @observer
 class LoginForm extends Component<LoginFormProps> {
+  componentDidUpdate() {
+    const {
+      adminServices: {
+        userService: {
+          store: { lastRoutePath, loginInfo },
+        },
+      },
+      history,
+    } = this.props;
+    if (loginInfo.success) history.push(lastRoutePath);
+  }
+
   handleSubmit(e: FormEvent) {
     e.preventDefault();
     const {
@@ -28,18 +40,14 @@ class LoginForm extends Component<LoginFormProps> {
       form: { getFieldDecorator },
       adminServices: {
         userService: {
-          store: { lastRoutePath, casConfig, loginInfo },
+          store: { casConfig, loginInfo },
         },
       },
       title,
       introRender,
-      history,
     } = this.props;
 
-    if (loginInfo.success) {
-      history.push(lastRoutePath);
-      return null;
-    }
+    if (loginInfo.success) return null;
 
     if (casConfig.clientEnabled) return <Spin />;
 

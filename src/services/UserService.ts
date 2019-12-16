@@ -2,6 +2,7 @@ import { sha256 } from 'js-sha256';
 import { message } from 'antd';
 import { UserStore } from '../stores';
 import { AbstractClient, DomainService, Entity } from './index';
+import { observable } from 'mobx';
 
 export interface UserEntity extends Entity {
   account: string;
@@ -34,8 +35,10 @@ export interface AfterLogin {
 
 const USERNAME_KEY = 'loginUsername';
 const PASSWORD_KEY = 'loginPassword';
-
-export class UserService extends DomainService<UserStore> {
+export interface UserFormService {
+  saveUserRoles(user: Entity, roleIds: string[]);
+}
+export class UserService extends DomainService<UserStore> implements UserFormService {
   constructor(restClient: AbstractClient, private afterLogins?: AfterLogin[]) {
     super({ domain: 'user', storeClass: UserStore, restClient });
     //cas默认为true，初始化时去获取服务端的配置信息，如果为false，再显示登录界面
@@ -76,6 +79,7 @@ export class UserService extends DomainService<UserStore> {
     localStorage.removeItem(USERNAME_KEY);
     localStorage.removeItem(PASSWORD_KEY);
     this.store.loginInfo = { success: false };
+    this.store.lastRoutePath = '/';
   }
 
   getLoginInfoLocal() {

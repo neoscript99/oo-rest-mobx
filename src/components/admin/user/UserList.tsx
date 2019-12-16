@@ -2,11 +2,12 @@ import React from 'react';
 import { AdminPageProps } from '../AdminServices';
 import { commonColumns, StringUtil } from '../../../utils';
 import { EntityPageList, EntityColumnProps, SimpleSearchForm, EntityFormProps } from '../../layout';
-import { ListOptions } from '../../../services';
+import { DomainService, ListOptions } from '../../../services';
 import { UserForm } from './UserForm';
 import { Entity } from '../../../services';
 import { sha256 } from 'js-sha256';
 import { Button, message, Popconfirm } from 'antd';
+import { MobxDomainStore } from '../../../stores';
 
 const INIT_PASSWORD = 'abc000';
 export interface UserListProps extends AdminPageProps {
@@ -18,7 +19,7 @@ export class UserList extends EntityPageList<UserListProps> {
     super(props);
   }
 
-  get domainService() {
+  get domainService(): DomainService<MobxDomainStore> {
     return this.props.services.userService;
   }
 
@@ -70,7 +71,8 @@ export class UserList extends EntityPageList<UserListProps> {
     return sha256(this.props.initPassword || INIT_PASSWORD);
   }
   resetPassword(user: Entity) {
-    this.domainService.resetPassword(user, this.getInitPasswordHash()).then(() => message.success('重置成功'));
+    const { userService } = this.props.services;
+    userService.resetPassword(user, this.getInitPasswordHash()).then(() => message.success('重置成功'));
   }
   getOperatorEnable() {
     const base = super.getOperatorEnable();

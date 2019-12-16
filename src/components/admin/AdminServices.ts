@@ -20,13 +20,14 @@ export class AdminServices {
   deptService: DeptService;
   userRoleService: DomainService<MobxDomainStore>;
 
-  constructor(restClient: AbstractClient, afterLogin: AfterLogin) {
+  constructor(restClient: AbstractClient, afterLogin: AfterLogin, initServices: Partial<AdminServices> = {}) {
     this.paramService = new ParamService(restClient);
     this.noteService = new DomainService({ domain: 'note', storeClass: MobxDomainStore, restClient });
     this.userRoleService = new DomainService({ domain: 'userRole', storeClass: MobxDomainStore, restClient });
     this.roleService = new RoleService(restClient);
     this.menuService = new MenuService(restClient);
-    this.userService = new UserService(restClient, [this.afterLogin.bind(this), afterLogin]);
+    this.userService =
+      initServices.userService || new UserService(restClient, [this.afterLogin.bind(this), afterLogin]);
     this.deptService = new DeptService(restClient);
   }
 

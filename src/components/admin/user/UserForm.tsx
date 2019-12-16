@@ -3,7 +3,7 @@ import { Form, Input, Modal, Checkbox, Select } from 'antd';
 import { EntityForm, EntityFormProps } from '../../layout';
 import { commonRules } from '../../../utils';
 import { DeptEntity } from '../../../services/DeptService';
-import { Entity } from '../../../services';
+import { Entity, UserFormService } from '../../../services';
 import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { AdminServices } from '../AdminServices';
 const { required } = commonRules;
@@ -14,6 +14,9 @@ interface S {
   deptList: DeptEntity[];
 }
 export class UserForm extends EntityForm<UserFormProps, S> {
+  get userService(): UserFormService {
+    return this.props.services.userService;
+  }
   roleIds: string[] = [];
   async componentDidMount() {
     console.log('UserForm.componentDidMount');
@@ -88,8 +91,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
   saveEntity(saveItem: Entity) {
     saveItem.dept = { id: saveItem.deptId };
     const { inputItem } = this.props;
-    const { userService } = this.props.services;
-    return userService.saveUserRoles({ ...inputItem, ...saveItem }, this.roleIds);
+    return this.userService.saveUserRoles({ ...inputItem, ...saveItem }, this.roleIds);
   }
 
   onChangeRoles(roleIds: CheckboxValueType[]) {

@@ -1,5 +1,5 @@
 import { AbstractClient } from './rest';
-import { MenuStore, MobxDomainStore } from '../stores';
+import { MobxDomainStore } from '../stores';
 import { DictInitService, DomainService } from './DomainService';
 import { Entity } from './index';
 
@@ -13,7 +13,7 @@ export interface ParamEntity extends Entity {
 
 export class ParamService extends DomainService<MobxDomainStore> implements DictInitService {
   constructor(restClient: AbstractClient) {
-    super({ domain: 'param', storeClass: MenuStore, restClient });
+    super({ domain: 'param', storeClass: MobxDomainStore, restClient });
   }
   /**
    * 登陆成功后调用本方法
