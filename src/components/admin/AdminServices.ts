@@ -5,9 +5,10 @@ import {
   ParamService,
   RoleService,
   UserService,
+  DictService,
+  DomainService,
   AbstractClient,
 } from '../../services/';
-import { DomainService } from '../../services';
 import { MobxDomainStore } from '../../stores';
 import { EntityListProps } from '../layout';
 
@@ -15,10 +16,11 @@ export class AdminServices {
   userService: UserService;
   roleService: RoleService;
   paramService: ParamService;
-  noteService: DomainService<MobxDomainStore>;
+  noteService: DomainService;
   menuService: MenuService;
   deptService: DeptService;
-  userRoleService: DomainService<MobxDomainStore>;
+  userRoleService: DomainService;
+  dictService: DictService;
 
   constructor(restClient: AbstractClient, afterLogin: AfterLogin, initServices: Partial<AdminServices> = {}) {
     this.paramService = new ParamService(restClient);
@@ -26,15 +28,19 @@ export class AdminServices {
     this.userRoleService = new DomainService({ domain: 'userRole', storeClass: MobxDomainStore, restClient });
     this.roleService = new RoleService(restClient);
     this.menuService = new MenuService(restClient);
+    //userService支持替换
     this.userService =
       initServices.userService || new UserService(restClient, [this.afterLogin.bind(this), afterLogin]);
-    this.deptService = new DeptService(restClient);
+    //deptService支持替换
+    this.deptService = initServices.deptService || new DeptService(restClient);
+    this.dictService = new DictService(restClient);
   }
 
   afterLogin() {
     this.paramService.initDictList();
     this.deptService.initDictList();
     this.roleService.initDictList();
+    this.dictService.initDictList();
     this.menuService.getMenuTree();
   }
 }

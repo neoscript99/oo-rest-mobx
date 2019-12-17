@@ -9,7 +9,7 @@ export interface DeptEntity extends Entity {
   enabled: boolean;
 }
 
-export class DeptService extends DomainService<MobxDomainStore> implements DictInitService {
+export class DeptService extends DomainService implements DictInitService {
   constructor(restClient: AbstractClient) {
     super({ domain: 'department', storeClass: MobxDomainStore, restClient });
   }

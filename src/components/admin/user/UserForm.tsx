@@ -1,13 +1,15 @@
-import React from 'react';
-import { Form, Input, Modal, Checkbox, Select } from 'antd';
+import React, { ReactNode } from 'react';
+import { Form, Input, Checkbox, Select } from 'antd';
 import { EntityForm, EntityFormProps } from '../../layout';
-import { commonRules } from '../../../utils';
+import { SelectWrap } from '../../input';
+import { commonRules, genRules, flexForm } from '../../../utils';
 import { DeptEntity } from '../../../services/DeptService';
 import { Entity, UserFormService } from '../../../services';
 import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { AdminServices } from '../AdminServices';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
 const { required } = commonRules;
-
+const formItemCss: React.CSSProperties = { width: '22em', marginBottom: '10px' };
 interface S {
   allRoles: CheckboxOptionType[];
   userRoleIds: string[];
@@ -51,37 +53,45 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     } = this.props;
     const { allRoles, userRoleIds, deptList } = this.state;
     return (
-      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
-        <Form.Item label="帐号">
+      <Form style={flexForm()}>
+        <Form.Item label="帐号" style={formItemCss}>
           {getFieldDecorator('account', {
-            rules: [required],
+            rules: [genRules.minString(4)],
           })(<Input maxLength={16} />)}
         </Form.Item>
-        <Form.Item label="称呼">
+        <Form.Item label="称呼" style={formItemCss}>
           {getFieldDecorator('name', {
-            rules: [required],
+            rules: [genRules.minString(2)],
           })(<Input maxLength={16} />)}
         </Form.Item>
-        <Form.Item label="机构">
+        <Form.Item label="机构" style={formItemCss}>
           {getFieldDecorator('deptId', {
             rules: [required],
-          })(
-            <Select>
-              {deptList.map(dept => (
-                <Select.Option key={dept.id} value={dept.id}>
-                  {dept.name}
-                </Select.Option>
-              ))}
-            </Select>,
-          )}
+          })(<SelectWrap dataSource={deptList} valueProp="id" labelProp="name" />)}
         </Form.Item>
-        <Form.Item label="启用">
+        <Form.Item label="启用" style={formItemCss}>
           {getFieldDecorator('enabled', {
             valuePropName: 'checked',
             initialValue: true,
           })(<Checkbox />)}
         </Form.Item>
-        <Form.Item label="角色">
+        <Form.Item label="联系电话" style={formItemCss}>
+          {getFieldDecorator('phoneNumber', {
+            rules: [{ type: 'number' }],
+          })(<Input maxLength={16} />)}
+        </Form.Item>
+        <Form.Item label="电子邮箱" style={formItemCss}>
+          {getFieldDecorator('email', {
+            rules: [{ type: 'email' }],
+          })(<Input maxLength={16} />)}
+        </Form.Item>
+        <Form.Item label="性别" style={formItemCss}>
+          {getFieldDecorator('sexCode', {
+            rules: [required],
+          })(<Input maxLength={16} />)}
+        </Form.Item>
+        {this.getExtraFormItem(getFieldDecorator, formItemCss)}
+        <Form.Item label="角色" style={{ ...formItemCss, width: '46em' }}>
           <Checkbox.Group options={allRoles} defaultValue={userRoleIds} onChange={this.onChangeRoles.bind(this)} />
         </Form.Item>
       </Form>
@@ -96,6 +106,13 @@ export class UserForm extends EntityForm<UserFormProps, S> {
 
   onChangeRoles(roleIds: CheckboxValueType[]) {
     this.roleIds = roleIds as string[];
+  }
+
+  getExtraFormItem(
+    getFieldDecorator: WrappedFormUtils['getFieldDecorator'],
+    formItemCss: React.CSSProperties,
+  ): ReactNode {
+    return null;
   }
 }
 

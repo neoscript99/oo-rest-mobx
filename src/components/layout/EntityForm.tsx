@@ -15,12 +15,13 @@ export interface EntityFormProps extends FormComponentProps {
   onSuccess?: (item: Entity) => void;
   onCancel?: () => void;
   containerType?: 'Modal' | 'Card';
+  width?: string | number;
   [key: string]: any;
 }
 
 export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> extends Component<P, S> {
   render() {
-    const { title, okText, containerType } = this.props;
+    const { title, okText, containerType, width } = this.props;
     const formBody = this.getForm();
     switch (containerType) {
       case 'Card':
@@ -28,6 +29,7 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
       default:
         return (
           <Modal
+            width={width || 520}
             visible={true}
             title={title}
             okText={okText}
@@ -49,12 +51,10 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
 
   handleOK() {
     const { form } = this.props;
-    form.validateFields((err, saveItem) => err || this.handleSave(saveItem));
+    form.validateFields((err, saveItem) => (err ? console.error(err) : this.handleSave(saveItem)));
   }
 
   handleSave(saveItem: Entity) {
-    const { onSuccess, onError } = this.props;
-
     this.saveEntity(saveItem)
       .then(v => {
         message.success('保存成功');

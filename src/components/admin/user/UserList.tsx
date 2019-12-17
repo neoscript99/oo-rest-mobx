@@ -24,9 +24,6 @@ export class UserList extends EntityPageList<UserListProps> {
   }
 
   get columns(): EntityColumnProps[] {
-    return this.getUserColumns();
-  }
-  getUserColumns(): EntityColumnProps[] {
     const pass = this.props.initPassword || INIT_PASSWORD;
     const opCol = (text: string, record: any) => {
       return (
@@ -44,13 +41,16 @@ export class UserList extends EntityPageList<UserListProps> {
       { title: '姓名', dataIndex: 'name' },
       { title: '帐号', dataIndex: 'account' },
       { title: '所属机构', dataIndex: 'dept.name' },
-      commonColumns.enabled,
-      commonColumns.editable,
+      ...this.getExtraColumns(),
       commonColumns.lastUpdated,
       { title: '操作', render: opCol },
     ];
 
     return columns;
+  }
+
+  getExtraColumns(): EntityColumnProps[] {
+    return [commonColumns.enabled, commonColumns.editable];
   }
 
   getSelectItem() {
@@ -61,7 +61,7 @@ export class UserList extends EntityPageList<UserListProps> {
   getFormProps(action: string, item?: Entity): Partial<EntityFormProps> {
     const props = super.getFormProps(action, item);
     const { services } = this.props;
-    return { ...props, services };
+    return { ...props, width: '50em', services };
   }
   getInitItem() {
     const password = this.getInitPasswordHash();
