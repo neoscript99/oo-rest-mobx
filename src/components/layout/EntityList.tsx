@@ -8,6 +8,7 @@ import { SearchBar } from './SearchBar';
 import { SearchForm, SearchFormProps } from './SearchForm';
 import { DomainService, Entity, ListOptions, ListResult } from '../../services';
 import { MobxDomainStore } from '../../stores';
+import { CheckboxField, InputField, SelectField } from '../../ant-design-field';
 
 export interface OperatorSwitch {
   update?: boolean;
@@ -34,7 +35,7 @@ export interface EntityTableProps extends TableProps<Entity> {
 }
 
 export interface EntityColumnProps extends ColumnProps<Entity> {
-  initValue?: any;
+  fieldType?: typeof InputField | typeof SelectField | typeof CheckboxField;
 }
 /**
  * EntityList不做分页，获取所有数据

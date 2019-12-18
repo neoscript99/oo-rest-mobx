@@ -76,20 +76,12 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
   static formWrapper = Form.create({
     name: `EntityForm_${new Date().toISOString()}`,
     mapPropsToFields(props: EntityFormProps) {
-      const { inputItem, columns } = props;
+      const { inputItem } = props;
       if (inputItem)
         return Object.keys(inputItem).reduce((fieldMap, key) => {
           fieldMap[key] = Form.createFormField({
             value: inputItem[key],
           });
-          return fieldMap;
-        }, {});
-      else if (columns)
-        return columns.reduce((fieldMap, col) => {
-          if (col.dataIndex && col.initValue !== undefined)
-            fieldMap[col.dataIndex] = Form.createFormField({
-              value: col.initValue,
-            });
           return fieldMap;
         }, {});
       else return;

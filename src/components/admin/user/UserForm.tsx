@@ -1,13 +1,14 @@
 import React, { ReactNode } from 'react';
-import { Form, Input, Checkbox, Select } from 'antd';
+import { Form, Input, Checkbox, Select, InputNumber } from 'antd';
 import { EntityForm, EntityFormProps } from '../../layout';
-import { SelectWrap } from '../../input';
 import { commonRules, genRules, flexForm } from '../../../utils';
 import { DeptEntity } from '../../../services/DeptService';
 import { Entity, UserFormService } from '../../../services';
 import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { AdminServices } from '../AdminServices';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
+import { SelectField, InputField, CheckboxField } from '../../../ant-design-field';
+import { CheckboxGroupField } from '../../../ant-design-field/CheckboxGroupField';
 const { required } = commonRules;
 const formItemCss: React.CSSProperties = { width: '22em', marginBottom: '10px' };
 interface S {
@@ -48,52 +49,67 @@ export class UserForm extends EntityForm<UserFormProps, S> {
 
   getForm() {
     if (!this.state) return null;
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
+    const { form } = this.props;
+    const { getFieldDecorator } = form;
     const { allRoles, userRoleIds, deptList } = this.state;
+    const [min4, min2, req] = [
+      {
+        rules: [genRules.minString(4)],
+      },
+      {
+        rules: [genRules.minString(2)],
+      },
+      {
+        rules: [required],
+      },
+    ];
+    const genProps = (fieldId: string, label: string) => ({
+      fieldId,
+      formItemProps: { label, style: formItemCss },
+      formUtils: form,
+    });
     return (
       <Form style={flexForm()}>
-        <Form.Item label="帐号" style={formItemCss}>
-          {getFieldDecorator('account', {
-            rules: [genRules.minString(4)],
-          })(<Input maxLength={16} />)}
-        </Form.Item>
-        <Form.Item label="称呼" style={formItemCss}>
-          {getFieldDecorator('name', {
-            rules: [genRules.minString(2)],
-          })(<Input maxLength={16} />)}
-        </Form.Item>
-        <Form.Item label="机构" style={formItemCss}>
-          {getFieldDecorator('deptId', {
-            rules: [required],
-          })(<SelectWrap dataSource={deptList} valueProp="id" labelProp="name" />)}
-        </Form.Item>
-        <Form.Item label="启用" style={formItemCss}>
-          {getFieldDecorator('enabled', {
-            valuePropName: 'checked',
-            initialValue: true,
-          })(<Checkbox />)}
-        </Form.Item>
+        <InputField {...genProps('account', '帐号')} maxLength={16} decorator={min4} />
+        <InputField {...genProps('name', '姓名')} maxLength={16} decorator={min2} />
+        <SelectField
+          {...genProps('deptId', '机构')}
+          dataSource={deptList}
+          valueProp="id"
+          labelProp="name"
+          decorator={req}
+        />
+        <CheckboxField {...genProps('enabled', '启用')} decorator={{ initialValue: true }} />
         <Form.Item label="联系电话" style={formItemCss}>
           {getFieldDecorator('phoneNumber', {
             rules: [{ type: 'number' }],
-          })(<Input maxLength={16} />)}
+          })(<InputNumber />)}
         </Form.Item>
-        <Form.Item label="电子邮箱" style={formItemCss}>
-          {getFieldDecorator('email', {
+        <InputField
+          {...genProps('email', '电子邮箱')}
+          maxLength={32}
+          decorator={{
             rules: [{ type: 'email' }],
-          })(<Input maxLength={16} />)}
-        </Form.Item>
+          }}
+        />
         <Form.Item label="性别" style={formItemCss}>
           {getFieldDecorator('sexCode', {
             rules: [required],
-          })(<Input maxLength={16} />)}
+          })(
+            <Select>
+              <Select.Option value="POST">POST</Select.Option>
+              <Select.Option value="GET">GET</Select.Option>
+            </Select>,
+          )}
         </Form.Item>
         {this.getExtraFormItem(getFieldDecorator, formItemCss)}
-        <Form.Item label="角色" style={{ ...formItemCss, width: '46em' }}>
-          <Checkbox.Group options={allRoles} defaultValue={userRoleIds} onChange={this.onChangeRoles.bind(this)} />
-        </Form.Item>
+        <CheckboxGroupField
+          fieldId="roleIds"
+          options={allRoles}
+          formItemProps={{ label: '角色', style: { ...formItemCss, width: '46em' } }}
+          formUtils={form}
+          decorator={{ initialValue: userRoleIds }}
+        />
       </Form>
     );
   }
@@ -101,11 +117,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
   saveEntity(saveItem: Entity) {
     saveItem.dept = { id: saveItem.deptId };
     const { inputItem } = this.props;
-    return this.userService.saveUserRoles({ ...inputItem, ...saveItem }, this.roleIds);
-  }
-
-  onChangeRoles(roleIds: CheckboxValueType[]) {
-    this.roleIds = roleIds as string[];
+    return this.userService.saveUserRoles({ ...inputItem, ...saveItem }, saveItem.roleIds);
   }
 
   getExtraFormItem(
