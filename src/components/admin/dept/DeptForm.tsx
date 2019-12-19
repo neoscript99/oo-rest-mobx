@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Form, Input, Modal, Checkbox, InputNumber } from 'antd';
 import { EntityForm } from '../../layout';
 import { commonRules } from '../../../utils';
@@ -26,7 +26,11 @@ export class DeptForm extends EntityForm {
             initialValue: true,
           })(<Checkbox />)}
         </Form.Item>
+        {this.getExtraFormItem()}
       </Form>
     );
+  }
+  getExtraFormItem(): ReactNode {
+    return null;
   }
 }

@@ -100,7 +100,7 @@ export abstract class EntityList<
     );
   }
 
-  abstract get domainService(): DomainService<MobxDomainStore>;
+  abstract get domainService(): DomainService;
 
   abstract get columns(): EntityColumnProps[];
 

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Form, Input, Checkbox, Select, InputNumber } from 'antd';
+import { Form, InputNumber } from 'antd';
 import { EntityForm, EntityFormProps } from '../../layout';
 import { commonRules, genRules, flexForm } from '../../../utils';
 import { DeptEntity } from '../../../services/DeptService';
@@ -10,13 +10,13 @@ import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { SelectField, InputField, CheckboxField } from '../../../ant-design-field';
 import { CheckboxGroupField } from '../../../ant-design-field/CheckboxGroupField';
 const { required } = commonRules;
-const formItemCss: React.CSSProperties = { width: '22em', marginBottom: '10px' };
 interface S {
   allRoles: CheckboxOptionType[];
   userRoleIds: string[];
   deptList: DeptEntity[];
 }
 export class UserForm extends EntityForm<UserFormProps, S> {
+  formItemCss: React.CSSProperties = { width: '22em', marginBottom: '10px' };
   get userService(): UserFormService {
     return this.props.services.userService;
   }
@@ -49,64 +49,57 @@ export class UserForm extends EntityForm<UserFormProps, S> {
 
   getForm() {
     if (!this.state) return null;
-    const { form } = this.props;
+    const {
+      form,
+      services: { dictService },
+    } = this.props;
     const { getFieldDecorator } = form;
     const { allRoles, userRoleIds, deptList } = this.state;
     const [min4, min2, req] = [
-      {
-        rules: [genRules.minString(4)],
-      },
-      {
-        rules: [genRules.minString(2)],
-      },
-      {
-        rules: [required],
-      },
+      { rules: [genRules.minString(4)] },
+      { rules: [genRules.minString(2)] },
+      { rules: [required] },
     ];
-    const genProps = (fieldId: string, label: string) => ({
+    const make = (fieldId: string, label: string) => ({
       fieldId,
-      formItemProps: { label, style: formItemCss },
+      formItemProps: { label, style: this.formItemCss },
       formUtils: form,
     });
     return (
       <Form style={flexForm()}>
-        <InputField {...genProps('account', '帐号')} maxLength={16} decorator={min4} />
-        <InputField {...genProps('name', '姓名')} maxLength={16} decorator={min2} />
+        <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} />
+        <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} />
         <SelectField
-          {...genProps('deptId', '机构')}
+          {...make('deptId', '机构')}
           dataSource={deptList}
           valueProp="id"
           labelProp="name"
           decorator={req}
         />
-        <CheckboxField {...genProps('enabled', '启用')} decorator={{ initialValue: true }} />
-        <Form.Item label="联系电话" style={formItemCss}>
-          {getFieldDecorator('phoneNumber', {
-            rules: [{ type: 'number' }],
-          })(<InputNumber />)}
-        </Form.Item>
+        <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} />
+        <InputField {...make('phoneNumber', '联系电话')} maxLength={16} />
         <InputField
-          {...genProps('email', '电子邮箱')}
+          {...make('email', '电子邮箱')}
           maxLength={32}
           decorator={{
             rules: [{ type: 'email' }],
           }}
         />
-        <Form.Item label="性别" style={formItemCss}>
-          {getFieldDecorator('sexCode', {
+        <SelectField
+          {...make('sexCode', '性别')}
+          dataSource={dictService.getDict('pub-sex')}
+          valueProp="code"
+          labelProp="name"
+          decorator={{
             rules: [required],
-          })(
-            <Select>
-              <Select.Option value="POST">POST</Select.Option>
-              <Select.Option value="GET">GET</Select.Option>
-            </Select>,
-          )}
-        </Form.Item>
-        {this.getExtraFormItem(getFieldDecorator, formItemCss)}
+            initialValue: 'male',
+          }}
+        />
+        {this.getExtraFormItem()}
         <CheckboxGroupField
           fieldId="roleIds"
           options={allRoles}
-          formItemProps={{ label: '角色', style: { ...formItemCss, width: '46em' } }}
+          formItemProps={{ label: '角色', style: { ...this.formItemCss, width: '46em' } }}
           formUtils={form}
           decorator={{ initialValue: userRoleIds }}
         />
@@ -120,10 +113,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     return this.userService.saveUserRoles({ ...inputItem, ...saveItem }, saveItem.roleIds);
   }
 
-  getExtraFormItem(
-    getFieldDecorator: WrappedFormUtils['getFieldDecorator'],
-    formItemCss: React.CSSProperties,
-  ): ReactNode {
+  getExtraFormItem(): ReactNode {
     return null;
   }
 }
