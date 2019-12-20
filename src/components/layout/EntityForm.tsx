@@ -16,6 +16,7 @@ export interface EntityFormProps extends FormComponentProps {
   onCancel?: () => void;
   containerType?: 'Modal' | 'Card';
   width?: string | number;
+  readonly?: boolean;
   [key: string]: any;
 }
 

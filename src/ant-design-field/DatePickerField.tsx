@@ -18,7 +18,7 @@ export class DatePickerField extends AbstractField<DatePickerFieldProps> {
       formUtils,
       fieldId,
       decorator: decorator || {
-        rules: [genRules.momentDate(required, 'day')],
+        rules: [genRules.momentDay(required)],
       },
       formItemProps,
     };

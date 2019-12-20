@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/lib/table';
 import { message, Table, Tag } from 'antd';
-import { fromPageInfo, toPageInfo, getClassName } from '../../utils';
+import { fromPageInfo, toPageInfo, LangUtil } from '../../utils';
 import { EntityForm, EntityFormProps } from './EntityForm';
 import { OperatorBar } from './OperatorBar';
 import { SearchBar } from './SearchBar';
@@ -36,6 +36,7 @@ export interface EntityTableProps extends TableProps<Entity> {
 
 export interface EntityColumnProps extends ColumnProps<Entity> {
   fieldType?: typeof InputField | typeof SelectField | typeof CheckboxField;
+  valueTransfer?: (value: any) => any;
 }
 /**
  * EntityList不做分页，获取所有数据
@@ -169,7 +170,7 @@ export abstract class EntityList<
   }
 
   get className() {
-    return getClassName(this);
+    return LangUtil.getClassName(this);
   }
 
   pageChange(page: number): void {
