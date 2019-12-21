@@ -5,9 +5,8 @@ import { fromPageInfo, toPageInfo, LangUtil } from '../../utils';
 import { EntityForm, EntityFormProps } from './EntityForm';
 import { OperatorBar } from './OperatorBar';
 import { SearchBar } from './SearchBar';
-import { SearchForm, SearchFormProps } from './SearchForm';
+import { SearchForm } from './SearchForm';
 import { DomainService, Entity, ListOptions, ListResult } from '../../services';
-import { MobxDomainStore } from '../../stores';
 import { CheckboxField, InputField, SelectField } from '../../ant-design-field';
 
 export interface OperatorSwitch {
