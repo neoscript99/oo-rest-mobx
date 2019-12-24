@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import moment, { max } from 'moment';
 import numeral from 'numeral';
 import { PaginationConfig } from 'antd/lib/table';
-import { wordBreakText, hiddenText } from './styleUtil';
+import { StyleUtil } from './styleUtil';
 import { EntityColumnProps } from '../components/layout';
 import { PageInfo } from '../services';
 
@@ -31,12 +31,12 @@ export function numberColorLabel(value?: number): ReactNode {
 }
 
 export function hiddenTextRender(maxSize: number, value: string) {
-  const HiddenText = hiddenText(maxSize);
+  const HiddenText = StyleUtil.hiddenText(maxSize);
   return <HiddenText>{value}</HiddenText>;
 }
 
 export function wordBreakTextRender(maxSize: number, value: string) {
-  const BreakText = wordBreakText(maxSize);
+  const BreakText = StyleUtil.wordBreakText(maxSize);
   return <BreakText>{value}</BreakText>;
 }
 

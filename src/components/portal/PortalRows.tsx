@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Row } from 'antd';
-import { clearEntity } from '../../utils/serviceUtil';
+import { ServiceUtil } from '../../utils';
 import { PortalCol } from './PortalCol';
 import { PortletMap } from './PortletSwitch';
 import { PortalRequiredServices } from './PortalRequiredServices';
@@ -22,7 +22,7 @@ export class PortalRows extends React.Component<P> {
     return (
       <Fragment>
         {relList.map(rel => (
-          <Row {...clearEntity(rel.row, 'rowName', 'rowOrder', 'cols')} key={rel.id}>
+          <Row {...ServiceUtil.clearEntity(rel.row, 'rowName', 'rowOrder', 'cols')} key={rel.id}>
             {rel.row.cols
               .slice()
               .sort((a: Entity, b: Entity) => a.colOrder - b.colOrder)

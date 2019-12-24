@@ -8,7 +8,7 @@ import { MobxDomainStore } from '../../stores';
 import { Portlet } from './Portlet';
 import stringTemplate from 'string-template';
 import styled from 'styled-components';
-import { hiddenText } from '../../utils';
+import { StyleUtil } from '../../utils';
 
 const { dateStringConvert } = StringUtil;
 
@@ -25,7 +25,7 @@ export class PortletListView extends Portlet {
       </a>
     );
     const TitleText = titleMaxSize
-      ? hiddenText(titleMaxSize)
+      ? StyleUtil.hiddenText(titleMaxSize)
       : styled.p`
           white-space: ${titleWhiteSpace};
           margin: 0;

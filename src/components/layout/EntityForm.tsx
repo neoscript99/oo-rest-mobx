@@ -5,6 +5,8 @@ import { FormComponentProps } from 'antd/lib/form';
 import { DomainService, Entity } from '../../services';
 import { EntityColumnProps } from './EntityList';
 import { MobxDomainStore } from '../../stores';
+import { ModalProps } from 'antd/lib/modal';
+import { CardProps } from 'antd/lib/card';
 
 export interface EntityFormProps extends FormComponentProps {
   title: string;
@@ -15,27 +17,33 @@ export interface EntityFormProps extends FormComponentProps {
   onSuccess?: (item: Entity) => void;
   onCancel?: () => void;
   containerType?: 'Modal' | 'Card';
-  width?: string | number;
+  containerProps?: ModalProps | CardProps;
   readonly?: boolean;
   [key: string]: any;
 }
 
 export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> extends Component<P, S> {
   render() {
-    const { title, okText, containerType, width } = this.props;
+    const { title, okText, containerType, containerProps } = this.props;
     const formBody = this.getForm();
     switch (containerType) {
       case 'Card':
-        return <Card title={title}>{formBody}</Card>;
+        return (
+          <Card title={title} {...(containerProps as CardProps)}>
+            {formBody}
+          </Card>
+        );
       default:
         return (
           <Modal
-            width={width || 520}
+            width={520}
             visible={true}
             title={title}
             okText={okText}
             onCancel={this.handleCancel.bind(this)}
             onOk={this.handleOK.bind(this)}
+            maskClosable={false}
+            {...(containerProps as ModalProps)}
           >
             {formBody}
           </Modal>

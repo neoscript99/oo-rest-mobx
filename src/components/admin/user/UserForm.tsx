@@ -1,12 +1,11 @@
 import React, { ReactNode } from 'react';
-import { Form, InputNumber } from 'antd';
+import { Form } from 'antd';
 import { EntityForm, EntityFormProps } from '../../layout';
-import { commonRules, genRules, flexForm } from '../../../utils';
+import { commonRules, genRules, StyleUtil } from '../../../utils';
 import { DeptEntity } from '../../../services/DeptService';
 import { Entity, UserFormService } from '../../../services';
-import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
+import { CheckboxOptionType } from 'antd/lib/checkbox/Group';
 import { AdminServices } from '../AdminServices';
-import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { SelectField, InputField, CheckboxField } from '../../../ant-design-field';
 import { CheckboxGroupField } from '../../../ant-design-field/CheckboxGroupField';
 const { required } = commonRules;
@@ -53,7 +52,6 @@ export class UserForm extends EntityForm<UserFormProps, S> {
       form,
       services: { dictService },
     } = this.props;
-    const { getFieldDecorator } = form;
     const { allRoles, userRoleIds, deptList } = this.state;
     const [min4, min2, req] = [
       { rules: [genRules.minString(4)] },
@@ -66,13 +64,13 @@ export class UserForm extends EntityForm<UserFormProps, S> {
       formUtils: form,
     });
     return (
-      <Form style={flexForm()}>
+      <Form style={StyleUtil.flexForm()}>
         <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} />
         <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} />
         <SelectField
           {...make('deptId', '机构')}
           dataSource={deptList}
-          valueProp="id"
+          valueProp="code"
           labelProp="name"
           decorator={req}
         />

@@ -1,4 +1,4 @@
-import { processCriteriaOrder } from '../src/utils/serviceUtil';
+import { ServiceUtil } from '../src/utils/serviceUtil';
 import { Criteria, CriteriaOrder } from '../src/services';
 import moment = require('moment');
 import { LangUtil } from '../src/utils';
@@ -13,7 +13,7 @@ describe('pureGraphqlObject', () => {
   it('processCriteriaOrder test', () => {
     const criteria: Criteria = {};
     const orders: CriteriaOrder[] = ['aa', ['bb', 'desc'], ['cc.name', 'asc']];
-    processCriteriaOrder(criteria, orders);
+    ServiceUtil.processCriteriaOrder(criteria, orders);
     console.debug(criteria);
     expect(criteria).toEqual({
       order: [
@@ -24,7 +24,7 @@ describe('pureGraphqlObject', () => {
     });
 
     const criteria2: Criteria = {};
-    processCriteriaOrder(criteria2, ['portal.seq', 'rowOrder']);
+    ServiceUtil.processCriteriaOrder(criteria2, ['portal.seq', 'rowOrder']);
     console.debug(criteria2);
     expect(criteria2).toEqual({ order: [['rowOrder', 'asc']], portal: { order: [['seq', 'asc']] } });
   });
@@ -34,6 +34,7 @@ describe('pureGraphqlObject', () => {
     console.log(moment.isMoment(undefined));
     const m = moment();
     console.log(m.format());
+    console.log(m.format('MMDDHHmmssSSS'));
     console.log(m.format().substr(0, 10));
     console.log(typeof m);
     console.log(typeof m.date());

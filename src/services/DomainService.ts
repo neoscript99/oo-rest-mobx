@@ -1,7 +1,7 @@
 import { Criteria, CriteriaOrder, Entity, ListOptions, ListResult, PageInfo } from './';
 import { MobxDomainStore } from '../stores';
 import { AbstractClient } from './rest/AbstractClient';
-import { processCriteriaOrder, processCriteriaPage } from '../utils';
+import { ServiceUtil } from '../utils';
 
 export interface DomainServiceOptions<D extends MobxDomainStore> {
   domain: string;
@@ -72,8 +72,8 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> {
 
   list({ criteria = {}, pageInfo, orders }: ListOptions): Promise<ListResult> {
     const { maxResults, firstResult, order, ...countCriteria } = criteria;
-    if (orders && orders.length > 0) processCriteriaOrder(criteria, orders);
-    if (pageInfo) processCriteriaPage(criteria, pageInfo);
+    if (orders && orders.length > 0) ServiceUtil.processCriteriaOrder(criteria, orders);
+    if (pageInfo) ServiceUtil.processCriteriaPage(criteria, pageInfo);
     const listPromise = this.restClient.post(this.getApiUri('list'), criteria) as Promise<Entity[]>;
     if (pageInfo) {
       const countPromise = this.restClient.post(this.getApiUri('count'), countCriteria) as Promise<number>;
