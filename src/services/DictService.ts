@@ -28,7 +28,8 @@ export class DictService extends DomainService implements DictInitService {
     return this.typeMap[typeId];
   }
   dictRender = (typeId: string, code: string) => {
-    return this.getDict(typeId).find(dict => dict.code === code)?.name;
+    const dict = this.getDict(typeId).find(dict => dict.code === code);
+    return dict ? dict.name : code;
   };
   initDictList() {
     this.listAll({ orders: ['type', 'seq'] });

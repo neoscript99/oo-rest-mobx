@@ -3,7 +3,7 @@ import { FormItemProps } from 'antd/lib/form';
 
 export interface FieldProps {
   fieldId: string;
-  decorator?: GetFieldDecoratorOptions;
-  formUtils?: WrappedFormUtils;
-  formItemProps?: FormItemProps;
+  decorator?: Readonly<GetFieldDecoratorOptions>;
+  formUtils?: Readonly<WrappedFormUtils>;
+  formItemProps?: Readonly<FormItemProps>;
 }
