@@ -24,7 +24,7 @@ export interface EntityListProps {
 export interface EntityListState {
   selectedRowKeys?: any[];
   dataList?: Entity[];
-  formProps?: Partial<EntityFormProps>;
+  formProps?: EntityFormProps;
   searchParam?: any;
 }
 
@@ -253,10 +253,9 @@ export abstract class EntityList<
     this.setState({ formProps: undefined });
   }
 
-  getFormProps(action: string, item?: Entity): Partial<EntityFormProps> {
+  getFormProps(action: string, item?: Entity): EntityFormProps {
     return {
-      title: `${action}${this.props.name}`,
-      okText: action,
+      modalProps: { title: `${action}${this.props.name}`, okText: action },
       domainService: this.domainService,
       onSuccess: this.handleFormSuccess.bind(this),
       onCancel: this.handleFormCancel.bind(this),
@@ -274,7 +273,7 @@ export abstract class EntityList<
   getEntityForm(): typeof EntityForm {
     return EntityForm;
   }
-  getEntityFormPop(formProps?: Partial<EntityFormProps>) {
+  getEntityFormPop(formProps?: EntityFormProps) {
     if (formProps) {
       const FormComponent = EntityForm.formWrapper(this.getEntityForm());
       return <FormComponent {...formProps} />;

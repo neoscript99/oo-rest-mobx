@@ -10,13 +10,16 @@ import { sha256 } from 'js-sha256';
 import { InputField } from '../../../ant-design-field';
 
 const { required, email } = commonRules;
+
 interface S {
   showPassword: boolean;
 }
+
 export class UserProfile extends Component<AdminPageProps, S> {
   handleCheckboxChange(e: CheckboxChangeEvent) {
     this.setState({ showPassword: e.target.checked });
   }
+
   handleSave(item: Entity) {
     const { services } = this.props;
     services.userService.save(item).then(item => {
@@ -24,6 +27,7 @@ export class UserProfile extends Component<AdminPageProps, S> {
       message.success('保存成功');
     });
   }
+
   render() {
     const { services } = this.props;
     const { user } = services.userService.store.loginInfo;
@@ -63,6 +67,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
       }
     });
   }
+
   render() {
     const { form, showPassword, onCheckboxChange } = this.props;
     const { getFieldDecorator } = form;

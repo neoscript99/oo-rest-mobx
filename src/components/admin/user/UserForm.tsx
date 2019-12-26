@@ -10,9 +10,14 @@ import { SelectField, InputField, CheckboxField } from '../../../ant-design-fiel
 import { CheckboxGroupField } from '../../../ant-design-field/CheckboxGroupField';
 const { required } = commonRules;
 interface S {
-  allRoles: CheckboxOptionType[];
+  allRoles?: CheckboxOptionType[];
   userRoleIds: string[];
   deptList: DeptEntity[];
+}
+export interface UserFormProps extends EntityFormProps {
+  services: AdminServices;
+  hideRoles?: boolean;
+  justSameDept?: boolean;
 }
 export class UserForm extends EntityForm<UserFormProps, S> {
   formItemCss: React.CSSProperties = { width: '22em', marginBottom: '10px' };
@@ -24,17 +29,23 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     console.log('UserForm.componentDidMount');
     const {
       inputItem,
-      services: { userRoleService, roleService, deptService },
+      justSameDept,
+      hideRoles,
+      services: { userRoleService, roleService, deptService, userService },
     } = this.props;
-    const deptList = deptService.store.allList.filter(dept => dept.enabled) as DeptEntity[];
-    const allRoles: CheckboxOptionType[] = roleService.store.allList
-      .filter(role => role.enabled)
-      .map(role => ({ label: role.roleName as string, value: role.id as string }));
+    const deptList = justSameDept
+      ? [userService.store.loginInfo.user?.dept]
+      : (deptService.store.allList.filter(dept => dept.enabled) as DeptEntity[]);
+    const allRoles =
+      hideRoles ||
+      roleService.store.allList
+        .filter(role => role.enabled)
+        .map(role => ({ label: role.roleName as string, value: role.id as string }));
     const state: any = {
       allRoles,
       deptList,
     };
-    if (inputItem && inputItem.id) {
+    if (inputItem && inputItem.id && !hideRoles) {
       const userRoleIds: string[] = await userRoleService
         .list({ criteria: { eq: [['user.id', inputItem.id]] } })
         .then(res => {
@@ -50,6 +61,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     if (!this.state) return null;
     const {
       form,
+      hideRoles,
       services: { dictService },
     } = this.props;
     const { allRoles, userRoleIds, deptList } = this.state;
@@ -73,6 +85,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           valueProp="code"
           labelProp="name"
           decorator={req}
+          defaultSelectFirst
         />
         <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} />
         <InputField {...make('phoneNumber', '联系电话')} maxLength={16} />
@@ -94,28 +107,27 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           }}
         />
         {this.getExtraFormItem()}
-        <CheckboxGroupField
-          fieldId="roleIds"
-          options={allRoles}
-          formItemProps={{ label: '角色', style: { ...this.formItemCss, width: '46em' } }}
-          formUtils={form}
-          decorator={{ initialValue: userRoleIds }}
-        />
+        {hideRoles || (
+          <CheckboxGroupField
+            fieldId="roleIds"
+            options={allRoles}
+            formItemProps={{ label: '角色', style: { ...this.formItemCss, width: '46em' } }}
+            formUtils={form}
+            decorator={{ initialValue: userRoleIds }}
+          />
+        )}
       </Form>
     );
   }
 
   saveEntity(saveItem: Entity) {
     saveItem.dept = { id: saveItem.deptId };
-    const { inputItem } = this.props;
-    return this.userService.saveUserRoles({ ...inputItem, ...saveItem }, saveItem.roleIds);
+    const { inputItem, hideRoles } = this.props;
+    if (hideRoles) return super.saveEntity(saveItem);
+    else return this.userService.saveUserRoles({ ...inputItem, ...saveItem }, saveItem.roleIds);
   }
 
   getExtraFormItem(): ReactNode {
     return null;
   }
-}
-
-export interface UserFormProps extends EntityFormProps {
-  services: AdminServices;
 }

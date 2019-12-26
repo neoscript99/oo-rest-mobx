@@ -58,10 +58,10 @@ export class UserList extends EntityPageList<UserListProps> {
     if (item) item.deptId = item.dept.id;
     return item;
   }
-  getFormProps(action: string, item?: Entity): Partial<EntityFormProps> {
+  getFormProps(action: string, item?: Entity) {
     const props = super.getFormProps(action, item);
     const { services } = this.props;
-    return { ...props, containerProps: { width: '50em' }, services };
+    return { ...props, modalProps: { width: '50em' }, services };
   }
   getInitItem() {
     const password = this.getInitPasswordHash();

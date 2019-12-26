@@ -5,9 +5,9 @@ import { commonRules } from '../../../utils';
 const { required } = commonRules;
 export class DeptForm extends EntityForm {
   getForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
+    const { form } = this.props;
+    if (!form) return null;
+    const { getFieldDecorator } = form;
     return (
       <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
         <Form.Item label="序号">
