@@ -1,7 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 
 import { Card, Form, message, Modal, Collapse } from 'antd';
-import { FormComponentProps } from 'antd/lib/form';
 import { DomainService, Entity } from '../../services';
 import { EntityColumnProps } from './EntityList';
 import { MobxDomainStore } from '../../stores';
@@ -12,6 +11,7 @@ import { WrappedFormUtils } from 'antd/lib/form/Form';
 
 export interface EntityFormProps {
   domainService: DomainService<MobxDomainStore>;
+  title?: string;
   columns?: EntityColumnProps[];
   inputItem?: Entity;
   onSuccess?: (item: Entity) => void;
@@ -26,15 +26,19 @@ export interface EntityFormProps {
 
 export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> extends Component<P, S> {
   render() {
-    const { containerType, modalProps, cardProps, collapseProps } = this.props;
+    const { containerType, title, modalProps, cardProps, collapseProps } = this.props;
     const formBody = this.getForm();
     switch (containerType) {
       case 'Card':
-        return <Card {...cardProps}>{formBody}</Card>;
+        return (
+          <Card title={title} {...cardProps}>
+            {formBody}
+          </Card>
+        );
       case 'Collapse':
         return (
           <Collapse defaultActiveKey="1">
-            <Collapse.Panel key="1" {...collapseProps}>
+            <Collapse.Panel header={title} key="1" {...collapseProps}>
               {formBody}
             </Collapse.Panel>
           </Collapse>
@@ -43,6 +47,7 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
         return (
           <Modal
             width={520}
+            title={title}
             visible={true}
             okText="提交"
             onCancel={this.handleCancel.bind(this)}
@@ -88,23 +93,21 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
     return domainService.save({ ...inputItem, ...saveItem });
   }
 
-  static formWrapper<PP extends FormWrapperProps>(component: React.ComponentType<PP>) {
-    return Form.create<PP & FormComponentProps>({
+  static formWrapper<PP>(component: React.ComponentType<PP>): React.ComponentType<Omit<PP, 'form'>> {
+    return Form.create({
       name: `EntityForm_${new Date().toISOString()}`,
-      mapPropsToFields(props) {
-        const { inputItem } = props;
-        if (inputItem)
-          return Object.keys(inputItem).reduce((fieldMap, key) => {
-            fieldMap[key] = Form.createFormField({
-              value: inputItem[key],
-            });
-            return fieldMap;
-          }, {});
-        else return;
-      },
-    })(component);
+      mapPropsToFields,
+    })(component as any);
   }
 }
-interface FormWrapperProps {
-  inputItem?: Entity;
-}
+const mapPropsToFields = props => {
+  const { inputItem } = props;
+  if (inputItem) {
+    const fieldMap: any = {};
+    for (const key in inputItem)
+      fieldMap[key] = Form.createFormField({
+        value: inputItem[key],
+      });
+    return fieldMap;
+  } else return;
+};
