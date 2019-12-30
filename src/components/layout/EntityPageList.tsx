@@ -26,6 +26,14 @@ export abstract class EntityPageList<
     return promise;
   }
 
+  /**
+   * EntityList切换页面到第一页时不会触发查询，所以需要手工调用query
+   * EntityPageList切换页面后会触发查询
+   */
+  refresh() {
+    this.pageChange(1);
+  }
+
   restoreState() {
     const { pageInfo, pageList } = this.domainService.store;
     Object.assign(this.tableProps.pagination, fromPageInfo(pageInfo));

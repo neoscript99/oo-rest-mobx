@@ -15,10 +15,10 @@ export interface SelectFieldProps extends SelectProps, FieldProps {
 
 export class SelectField extends AbstractField<SelectFieldProps> {
   getFieldProps(): FieldProps {
-    const { decorator, defaultSelectFirst, dataSource } = this.props;
+    const { decorator, defaultSelectFirst, dataSource, valueProp } = this.props;
     const newDecorator: GetFieldDecoratorOptions = { ...decorator };
     if (defaultSelectFirst && dataSource && dataSource.length > 0) {
-      newDecorator.initialValue = dataSource[0].code;
+      newDecorator.initialValue = dataSource[0][valueProp];
     }
     return { ...super.getFieldProps(), decorator: newDecorator };
   }

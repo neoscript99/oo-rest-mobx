@@ -1,9 +1,9 @@
 import React from 'react';
 import { AdminPageProps } from '../AdminServices';
 import { commonColumns, StringUtil } from '../../../utils';
-import { EntityPageList, EntityColumnProps, SimpleSearchForm, EntityFormProps } from '../../layout';
+import { EntityPageList, EntityColumnProps, SimpleSearchForm } from '../../layout';
 import { DomainService, ListOptions } from '../../../services';
-import { UserForm } from './UserForm';
+import { UserForm, UserFormProps } from './UserForm';
 import { Entity } from '../../../services';
 import { sha256 } from 'js-sha256';
 import { Button, message, Popconfirm } from 'antd';
@@ -58,12 +58,12 @@ export class UserList extends EntityPageList<UserListProps> {
     if (item) item.deptId = item.dept.id;
     return item;
   }
-  getFormProps(action: string, item?: Entity) {
+  getFormProps(action: string, item?: Entity): UserFormProps {
     const props = super.getFormProps(action, item);
     const { services } = this.props;
     return { ...props, modalProps: { width: '50em' }, services };
   }
-  getInitItem() {
+  getInitItem(): Entity {
     const password = this.getInitPasswordHash();
     return { editable: true, password };
   }

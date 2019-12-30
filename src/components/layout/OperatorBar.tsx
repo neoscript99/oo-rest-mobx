@@ -3,9 +3,9 @@ import { Button, Popconfirm } from 'antd';
 import { OperatorSwitch } from './EntityList';
 
 export interface OperatorBarProps {
-  onCreate: () => void;
-  onUpdate: () => void;
-  onDelete: () => void;
+  onCreate?: () => void;
+  onUpdate?: () => void;
+  onDelete?: () => void;
   operatorVisible?: OperatorSwitch;
   operatorEnable: OperatorSwitch;
 }

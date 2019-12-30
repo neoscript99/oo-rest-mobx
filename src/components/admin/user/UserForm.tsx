@@ -82,7 +82,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
         <SelectField
           {...make('deptId', '机构')}
           dataSource={deptList}
-          valueProp="code"
+          valueProp="id"
           labelProp="name"
           decorator={req}
           defaultSelectFirst

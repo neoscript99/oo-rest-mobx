@@ -8,6 +8,7 @@ import { SearchBar } from './SearchBar';
 import { SearchForm } from './SearchForm';
 import { DomainService, Entity, ListOptions, ListResult } from '../../services';
 import { CheckboxField, InputField, SelectField } from '../../ant-design-field';
+import { RouteComponentProps } from 'react-router';
 
 export interface OperatorSwitch {
   update?: boolean;
@@ -15,7 +16,7 @@ export interface OperatorSwitch {
   delete?: boolean;
 }
 
-export interface EntityListProps {
+export interface EntityListProps extends Partial<RouteComponentProps> {
   name?: string;
   operatorVisible?: OperatorSwitch;
   searchBarOnTop?: boolean;
@@ -23,7 +24,7 @@ export interface EntityListProps {
 
 export interface EntityListState {
   selectedRowKeys?: any[];
-  dataList?: Entity[];
+  dataList: Entity[];
   formProps?: EntityFormProps;
   searchParam?: any;
 }
@@ -46,6 +47,7 @@ export abstract class EntityList<
   P extends EntityListProps = EntityListProps,
   S extends EntityListState = EntityListState
 > extends Component<P, S> {
+  state = { dataList: [] as Entity[] } as S;
   tableProps: EntityTableProps = {
     loading: false,
     rowKey: 'id',
@@ -65,12 +67,11 @@ export abstract class EntityList<
     },
   };
   uuid = new Date().toISOString();
+  entityFormWrapper?: React.ComponentType<Omit<EntityFormProps, 'form'>>;
 
   render() {
-    if (!this.state) return null;
     const { operatorVisible, searchBarOnTop } = this.props;
-
-    const { dataList } = this.state;
+    const { dataList, formProps } = this.state;
     const searchForm = this.getSearchForm();
     const searchBar = searchForm && (
       <SearchBar
@@ -81,7 +82,7 @@ export abstract class EntityList<
     );
     return (
       <div>
-        {this.getEntityFormPop(this.state.formProps)}
+        {this.getEntityFormPop(formProps)}
         {searchBarOnTop && searchBar}
         <div
           style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', margin: '0.2rem 0' }}
@@ -109,6 +110,15 @@ export abstract class EntityList<
     const p = this.domainService.listAll(this.getQueryParam());
     this.updateTableProps(p);
     return p;
+  }
+
+  /**
+   * EntityList切换页面到第一页时不会触发查询，所以需要手工调用query
+   * EntityPageList切换页面后会触发查询
+   */
+  refresh() {
+    this.pageChange(1);
+    this.query();
   }
 
   updateTableProps(promise: Promise<any>): void {
@@ -245,8 +255,7 @@ export abstract class EntityList<
 
   handleFormSuccess(item: Entity) {
     this.setState({ formProps: undefined });
-    this.pageChange(1);
-    this.query();
+    this.refresh();
   }
 
   handleFormCancel() {
@@ -275,7 +284,8 @@ export abstract class EntityList<
   }
   getEntityFormPop(formProps?: EntityFormProps) {
     if (formProps) {
-      const FormComponent = EntityForm.formWrapper(this.getEntityForm());
+      if (!this.entityFormWrapper) this.entityFormWrapper = EntityForm.formWrapper(this.getEntityForm());
+      const FormComponent = this.entityFormWrapper;
       return <FormComponent {...formProps} />;
     } else return null;
   }
