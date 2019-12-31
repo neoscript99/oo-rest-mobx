@@ -8,6 +8,7 @@ import {
   DictService,
   DomainService,
   AbstractClient,
+  LoginService,
 } from '../../services/';
 import { MobxDomainStore } from '../../stores';
 import { EntityListProps } from '../layout';
@@ -21,6 +22,7 @@ export class AdminServices {
   deptService: DeptService;
   userRoleService: DomainService;
   dictService: DictService;
+  loginService: LoginService;
 
   constructor(restClient: AbstractClient, afterLogin: AfterLogin, initServices: Partial<AdminServices> = {}) {
     this.paramService = new ParamService(restClient);
@@ -29,11 +31,11 @@ export class AdminServices {
     this.roleService = new RoleService(restClient);
     this.menuService = new MenuService(restClient);
     //userService支持替换
-    this.userService =
-      initServices.userService || new UserService(restClient, [this.afterLogin.bind(this), afterLogin]);
+    this.userService = initServices.userService || new UserService(restClient);
     //deptService支持替换
     this.deptService = initServices.deptService || new DeptService(restClient);
     this.dictService = new DictService(restClient);
+    this.loginService = new LoginService(restClient, [this.afterLogin.bind(this), afterLogin]);
   }
 
   afterLogin() {

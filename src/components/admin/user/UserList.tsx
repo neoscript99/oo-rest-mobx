@@ -1,25 +1,22 @@
 import React from 'react';
 import { AdminPageProps } from '../AdminServices';
 import { commonColumns, StringUtil } from '../../../utils';
-import { EntityPageList, EntityColumnProps, SimpleSearchForm } from '../../layout';
-import { DomainService, ListOptions } from '../../../services';
+import { EntityPageList, EntityColumnProps, SimpleSearchForm, EntityListState } from '../../layout';
+import { ListOptions, UserService } from '../../../services';
 import { UserForm, UserFormProps } from './UserForm';
 import { Entity } from '../../../services';
-import { sha256 } from 'js-sha256';
 import { Button, message, Popconfirm } from 'antd';
-import { MobxDomainStore } from '../../../stores';
 
 const INIT_PASSWORD = 'abc000';
 export interface UserListProps extends AdminPageProps {
   initPassword?: string;
 }
 
-export class UserList extends EntityPageList<UserListProps> {
-  constructor(props: AdminPageProps) {
-    super(props);
-  }
-
-  get domainService(): DomainService<MobxDomainStore> {
+export class UserList<
+  P extends UserListProps = UserListProps,
+  S extends EntityListState = EntityListState
+> extends EntityPageList<P, S> {
+  get domainService(): UserService {
     return this.props.services.userService;
   }
 
@@ -68,11 +65,11 @@ export class UserList extends EntityPageList<UserListProps> {
     return { editable: true, password };
   }
   getInitPasswordHash() {
-    return sha256(this.props.initPassword || INIT_PASSWORD);
+    const pass = this.props.initPassword || INIT_PASSWORD;
+    return StringUtil.sha256(pass as string);
   }
   resetPassword(user: Entity) {
-    const { userService } = this.props.services;
-    userService.resetPassword(user, this.getInitPasswordHash()).then(() => message.success('重置成功'));
+    this.domainService.resetPassword(user, this.getInitPasswordHash()).then(() => message.success('重置成功'));
   }
   getOperatorEnable() {
     const base = super.getOperatorEnable();

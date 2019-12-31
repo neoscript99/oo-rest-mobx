@@ -54,12 +54,12 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
     const {
       serverLogout,
       serverRoot,
-      adminServices: { userService },
+      adminServices: { loginService },
     } = this.props;
-    userService.clearLoginInfoLocal();
+    loginService.clearLoginInfoLocal();
     if (serverLogout) window.location.href = `${serverRoot}/logout`;
     else {
-      userService.logout();
+      loginService.logout();
       //清除store缓存信息,例如needRefresh等
       window.location.reload();
     }
@@ -67,7 +67,7 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
 
   render() {
     const {
-      adminServices: { menuService, userService },
+      adminServices: { menuService, loginService },
       location,
       match,
       logoRender,
@@ -78,9 +78,9 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
     } = this.props;
     const pathPrefix = match.path;
     const { store: menuStore } = menuService;
-    const { loginInfo } = userService.store;
+    const { loginInfo } = loginService.store;
     if (!loginInfo.success) {
-      userService.store.lastRoutePath = location.pathname;
+      loginService.store.lastRoutePath = location.pathname;
       history.push(loginPath);
       return null;
     }

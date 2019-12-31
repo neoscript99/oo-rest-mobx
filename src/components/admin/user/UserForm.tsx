@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
 import { Form } from 'antd';
 import { EntityForm, EntityFormProps } from '../../layout';
-import { commonRules, genRules, StyleUtil } from '../../../utils';
+import { commonRules, genRules, StringUtil, StyleUtil } from '../../../utils';
 import { DeptEntity } from '../../../services/DeptService';
-import { Entity, UserFormService } from '../../../services';
+import { Entity, UserService } from '../../../services';
 import { CheckboxOptionType } from 'antd/lib/checkbox/Group';
 import { AdminServices } from '../AdminServices';
 import { SelectField, InputField, CheckboxField } from '../../../ant-design-field';
@@ -17,11 +17,13 @@ interface S {
 export interface UserFormProps extends EntityFormProps {
   services: AdminServices;
   hideRoles?: boolean;
+  hideEnabled?: boolean;
   justSameDept?: boolean;
+  autoGenerateAccount?: boolean;
 }
 export class UserForm extends EntityForm<UserFormProps, S> {
   formItemCss: React.CSSProperties = { width: '22em', marginBottom: '10px' };
-  get userService(): UserFormService {
+  get userService(): UserService {
     return this.props.services.userService;
   }
   roleIds: string[] = [];
@@ -31,10 +33,10 @@ export class UserForm extends EntityForm<UserFormProps, S> {
       inputItem,
       justSameDept,
       hideRoles,
-      services: { userRoleService, roleService, deptService, userService },
+      services: { userRoleService, roleService, deptService, loginService },
     } = this.props;
     const deptList = justSameDept
-      ? [userService.store.loginInfo.user?.dept]
+      ? [loginService.dept]
       : (deptService.store.allList.filter(dept => dept.enabled) as DeptEntity[]);
     const allRoles =
       hideRoles ||
@@ -62,6 +64,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     const {
       form,
       hideRoles,
+      hideEnabled,
+      autoGenerateAccount,
       services: { dictService },
     } = this.props;
     const { allRoles, userRoleIds, deptList } = this.state;
@@ -77,7 +81,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     });
     return (
       <Form style={StyleUtil.flexForm()}>
-        <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} />
+        {!autoGenerateAccount && <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} />}
         <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} />
         <SelectField
           {...make('deptId', '机构')}
@@ -87,7 +91,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           decorator={req}
           defaultSelectFirst
         />
-        <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} />
+        {!hideEnabled && <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} />}{' '}
         <InputField {...make('phoneNumber', '联系电话')} maxLength={16} />
         <InputField
           {...make('email', '电子邮箱')}
@@ -121,8 +125,13 @@ export class UserForm extends EntityForm<UserFormProps, S> {
   }
 
   saveEntity(saveItem: Entity) {
+    const { inputItem, hideRoles, autoGenerateAccount } = this.props;
     saveItem.dept = { id: saveItem.deptId };
-    const { inputItem, hideRoles } = this.props;
+    if (autoGenerateAccount) {
+      const { deptList } = this.state;
+      const dept = deptList.find(d => d.id === saveItem.deptId);
+      saveItem.account = `${dept!.name}-${saveItem.name}-${StringUtil.randomString()}`;
+    }
     if (hideRoles) return super.saveEntity(saveItem);
     else return this.userService.saveUserRoles({ ...inputItem, ...saveItem }, saveItem.roleIds);
   }

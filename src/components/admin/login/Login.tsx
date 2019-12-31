@@ -17,7 +17,7 @@ class LoginForm extends Component<LoginFormProps> {
   componentDidUpdate() {
     const {
       adminServices: {
-        userService: {
+        loginService: {
           store: { lastRoutePath, loginInfo },
         },
       },
@@ -30,16 +30,16 @@ class LoginForm extends Component<LoginFormProps> {
     e.preventDefault();
     const {
       form: { validateFields },
-      adminServices: { userService },
+      adminServices: { loginService },
     } = this.props;
-    validateFields((err, values) => err || userService.login(values.username, values.password, values.remember));
+    validateFields((err, values) => err || loginService.login(values.username, values.password, values.remember));
   }
 
   render() {
     const {
       form: { getFieldDecorator },
       adminServices: {
-        userService: {
+        loginService: {
           store: { casConfig, loginInfo },
         },
       },

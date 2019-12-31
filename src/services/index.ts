@@ -2,6 +2,7 @@ export * from './DomainService';
 export * from './LivebosServerService';
 export * from './PortletDataSourceService';
 export * from './UserService';
+export * from './LoginService';
 export * from './MenuService';
 export * from './ParamService';
 export * from './DeptService';

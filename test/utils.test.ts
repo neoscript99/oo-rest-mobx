@@ -1,13 +1,10 @@
-import { ServiceUtil } from '../src/utils/serviceUtil';
 import { Criteria, CriteriaOrder } from '../src/services';
 import moment = require('moment');
-import { LangUtil } from '../src/utils';
+import { LangUtil, StringUtil, ServiceUtil } from '../src/utils';
 
 describe('pureGraphqlObject', () => {
-  it('string index', () => {
-    const pstr = 'name';
-    console.log(pstr[0]);
-    expect(pstr[0].indexOf('.')).toEqual(-1);
+  it('string util', () => {
+    for (let i = 0; i < 10; i++) console.log(StringUtil.randomString(128));
   });
 
   it('processCriteriaOrder test', () => {

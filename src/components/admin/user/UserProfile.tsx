@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { AdminPageProps } from '../AdminServices';
 import { Button, Card, Checkbox, Form, Input, message } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import { commonRules, genRules } from '../../../utils';
+import { commonRules, genRules, StringUtil } from '../../../utils';
 import { EntityForm } from '../../layout';
 import { CheckboxChangeEvent, CheckboxProps } from 'antd/lib/checkbox';
 import { Entity, UserEntity } from '../../../services';
-import { sha256 } from 'js-sha256';
 import { InputField } from '../../../ant-design-field';
 
 const { required, email } = commonRules;
@@ -23,14 +22,14 @@ export class UserProfile extends Component<AdminPageProps, S> {
   handleSave(item: Entity) {
     const { services } = this.props;
     services.userService.save(item).then(item => {
-      services.userService.store.loginInfo.user = item as UserEntity;
+      services.loginService.store.loginInfo.user = item as UserEntity;
       message.success('保存成功');
     });
   }
 
   render() {
     const { services } = this.props;
-    const { user } = services.userService.store.loginInfo;
+    const { user } = services.loginService.store.loginInfo;
     const showPassword = this.state && this.state.showPassword;
     return (
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
@@ -61,7 +60,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
       if (!err) {
         if (showPassword) {
           if (saveItem.password === saveItem.passwordAgain)
-            onSave({ id: inputItem.id, ...saveItem, password: sha256(saveItem.password) });
+            onSave({ id: inputItem.id, ...saveItem, password: StringUtil.sha256(saveItem.password) });
           else message.error('两次输入的密码不一致');
         } else onSave({ id: inputItem.id, ...saveItem });
       }
