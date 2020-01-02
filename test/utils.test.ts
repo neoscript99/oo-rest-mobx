@@ -36,5 +36,7 @@ describe('pureGraphqlObject', () => {
     console.log(typeof m);
     console.log(typeof m.date());
     console.log(LangUtil.getClassName(m));
+    const mm = moment(m);
+    console.log(mm.format());
   });
 });

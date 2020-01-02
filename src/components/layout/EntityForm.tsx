@@ -8,6 +8,8 @@ import { ModalProps } from 'antd/lib/modal';
 import { CardProps } from 'antd/lib/card';
 import { CollapsePanelProps } from 'antd/lib/collapse';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
+import isObject from 'lodash/isObject';
+import isArray from 'lodash/isArray';
 
 export interface EntityFormProps {
   domainService: DomainService<MobxDomainStore>;
@@ -26,7 +28,7 @@ export interface EntityFormProps {
 
 export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> extends Component<P, S> {
   render() {
-    const { containerType, title, modalProps, cardProps, collapseProps } = this.props;
+    const { containerType, title, modalProps, cardProps, collapseProps, readonly } = this.props;
     const formBody = this.getForm();
     switch (containerType) {
       case 'Card':
@@ -52,7 +54,8 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
             okText="提交"
             onCancel={this.handleCancel.bind(this)}
             onOk={this.handleOK.bind(this)}
-            maskClosable={false}
+            maskClosable={!!readonly}
+            footer={readonly && null}
             {...modalProps}
           >
             {formBody}
@@ -104,10 +107,19 @@ const mapPropsToFields = props => {
   const { inputItem } = props;
   if (inputItem) {
     const fieldMap: any = {};
-    for (const key in inputItem)
-      fieldMap[key] = Form.createFormField({
-        value: inputItem[key],
-      });
+    //{name:'aa', dept:{id: 'd1', name: 'dn'}} =>
+    //{name:field, dept.id:field, dept.name:field
+    for (const key in inputItem) {
+      const value = inputItem[key];
+      //判断是否为嵌套属性
+      // @ts-ignore
+      if (isObject(value) && !isArray(value) && (value.id || value.code || value.lastUpdated || value.dateCreated))
+        for (const key2 in value) {
+          const kk = `${key}.${key2}`;
+          fieldMap[kk] = Form.createFormField({ value: value[key2] });
+        }
+      else fieldMap[key] = Form.createFormField({ value: inputItem[key] });
+    }
     return fieldMap;
   } else return;
 };

@@ -14,6 +14,7 @@ export interface OperatorSwitch {
   update?: boolean;
   create?: boolean;
   delete?: boolean;
+  view?: boolean;
 }
 
 export interface EntityListProps extends Partial<RouteComponentProps> {
@@ -70,7 +71,7 @@ export abstract class EntityList<
   entityFormWrapper?: React.ComponentType<Omit<EntityFormProps, 'form'>>;
 
   render() {
-    const { operatorVisible, searchBarOnTop } = this.props;
+    const { searchBarOnTop } = this.props;
     const { dataList, formProps } = this.state;
     const searchForm = this.getSearchForm();
     const searchBar = searchForm && (
@@ -92,7 +93,8 @@ export abstract class EntityList<
             onCreate={this.handleCreate.bind(this)}
             onUpdate={this.handleUpdate.bind(this)}
             onDelete={this.handleDelete.bind(this)}
-            operatorVisible={operatorVisible}
+            onView={this.handleView.bind(this)}
+            operatorVisible={this.getOperatorVisible()}
             operatorEnable={this.getOperatorEnable()}
           />
         </div>
@@ -209,7 +211,7 @@ export abstract class EntityList<
    */
   handleCreate() {
     this.setState({
-      formProps: this.getFormProps('新增'),
+      formProps: this.genFormProps('新增'),
     });
   }
 
@@ -224,7 +226,7 @@ export abstract class EntityList<
     const item = this.getSelectItem();
     if (item)
       this.setState({
-        formProps: this.getFormProps('修改', item),
+        formProps: this.genFormProps('修改', item),
       });
   }
 
@@ -237,6 +239,13 @@ export abstract class EntityList<
       });
   }
 
+  handleView() {
+    const item = this.getSelectItem();
+    if (item) {
+      const formProps = this.genFormProps('查看', item, { readonly: true });
+      this.setState({ formProps });
+    }
+  }
   /**
    * 不用get property是因为无法继承
    */
@@ -262,7 +271,7 @@ export abstract class EntityList<
     this.setState({ formProps: undefined });
   }
 
-  getFormProps(action: string, item?: Entity): EntityFormProps {
+  genFormProps(action: string, item?: Entity, exProps?: Partial<EntityFormProps>): EntityFormProps {
     return {
       modalProps: { title: `${action}${this.props.name}`, okText: action },
       domainService: this.domainService,
@@ -270,6 +279,7 @@ export abstract class EntityList<
       onCancel: this.handleFormCancel.bind(this),
       columns: this.columns,
       inputItem: item || this.getInitItem(),
+      ...exProps,
     };
   }
 
@@ -292,9 +302,16 @@ export abstract class EntityList<
   getSearchForm(): typeof SearchForm | null {
     return null;
   }
-  getOperatorEnable() {
+  getOperatorEnable(): OperatorSwitch {
     const { selectedRowKeys } = this.state;
     const selectedNum = selectedRowKeys ? selectedRowKeys.length : 0;
-    return { update: selectedNum === 1, delete: selectedNum > 0 };
+    return { update: selectedNum === 1, view: selectedNum === 1, delete: selectedNum > 0 };
+  }
+
+  /**
+   * 可以通过props传入，也可以重载本方法
+   */
+  getOperatorVisible(): OperatorSwitch | undefined {
+    return this.props.operatorVisible;
   }
 }

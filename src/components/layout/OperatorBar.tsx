@@ -6,6 +6,7 @@ export interface OperatorBarProps {
   onCreate?: () => void;
   onUpdate?: () => void;
   onDelete?: () => void;
+  onView?: () => void;
   operatorVisible?: OperatorSwitch;
   operatorEnable: OperatorSwitch;
 }
@@ -16,7 +17,7 @@ const buttonCss: CSSProperties = {
 
 export class OperatorBar extends Component<OperatorBarProps> {
   render() {
-    const { onCreate, onUpdate, onDelete, operatorVisible, operatorEnable } = this.props;
+    const { onCreate, onUpdate, onView, onDelete, operatorVisible, operatorEnable } = this.props;
     if (!operatorVisible) return null;
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -28,6 +29,11 @@ export class OperatorBar extends Component<OperatorBarProps> {
         {operatorVisible.update && (
           <Button type="primary" disabled={!operatorEnable.update} icon="edit" style={buttonCss} onClick={onUpdate}>
             修改
+          </Button>
+        )}
+        {operatorVisible.view && (
+          <Button type="primary" disabled={!operatorEnable.view} icon="read" style={buttonCss} onClick={onView}>
+            查看
           </Button>
         )}
         {operatorVisible.delete && (

@@ -3,30 +3,56 @@ import { DatePicker } from 'antd';
 import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { DatePickerProps } from 'antd/lib/date-picker/interface';
-import { genRules } from '../utils';
+import { commonRules } from '../utils';
 import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
 import moment from 'moment';
+import isArray from 'lodash/isArray';
+
 export interface DatePickerFieldProps extends DatePickerProps, FieldProps {
   required?: boolean;
   defaultDiffDays?: number;
+  originValue?: moment.MomentInput;
 }
+
+/**
+ * 输入为moment.MomentInput
+ * 输出为string，可重载decorator.getValueFromEvent
+ */
 export class DatePickerField extends AbstractField<DatePickerFieldProps> {
   getField() {
-    const { required, ...pureProps } = this.getInputProps();
-    return <DatePicker {...pureProps} />;
+    const { required, defaultDiffDays, originValue, ...pureProps } = this.getInputProps();
+    return <DatePickerWrapper {...pureProps} />;
   }
   getFieldProps(): FieldProps {
-    const { formUtils, fieldId, decorator, defaultDiffDays, formItemProps, required } = this.props;
-    const newDecorator: GetFieldDecoratorOptions = { ...decorator };
-    if (!newDecorator.rules) newDecorator.rules = [genRules.momentDay(required)];
-    if (defaultDiffDays != undefined) {
-      newDecorator.initialValue = moment().add(defaultDiffDays, 'day');
-    }
+    const { formUtils, fieldId, decorator, defaultDiffDays, formItemProps, required, format } = this.props;
+    const dateFormat = format ? (isArray(format) ? format[0] : format) : 'YYYY-MM-DD';
+    const defaultDecorator: GetFieldDecoratorOptions = {
+      rules: required ? [commonRules.required] : undefined,
+      valuePropName: 'originValue',
+      getValueFromEvent: (date, dateString) => dateString,
+      initialValue:
+        defaultDiffDays != undefined
+          ? moment()
+              .add(defaultDiffDays, 'day')
+              .format(dateFormat)
+          : undefined,
+    };
     return {
       formUtils,
       fieldId,
-      decorator: newDecorator,
+      decorator: { ...defaultDecorator, ...decorator },
       formItemProps,
     };
+  }
+}
+
+export interface DatePickerWrapperProps extends DatePickerProps {
+  originValue?: moment.MomentInput;
+  onChangeForString?: (dateString: string) => void;
+}
+export class DatePickerWrapper extends React.Component<DatePickerWrapperProps> {
+  render() {
+    const { originValue, value, ...pureProps } = this.props;
+    return <DatePicker {...pureProps} value={originValue ? moment(originValue) : value} />;
   }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { AdminPageProps } from '../AdminServices';
 import { commonColumns, StringUtil } from '../../../utils';
-import { EntityPageList, EntityColumnProps, SimpleSearchForm, EntityListState } from '../../layout';
+import { EntityPageList, EntityColumnProps, SimpleSearchForm, EntityListState, EntityFormProps } from '../../layout';
 import { ListOptions, UserService } from '../../../services';
 import { UserForm, UserFormProps } from './UserForm';
 import { Entity } from '../../../services';
@@ -50,13 +50,8 @@ export class UserList<
     return [commonColumns.enabled, commonColumns.editable];
   }
 
-  getSelectItem() {
-    const item = super.getSelectItem();
-    if (item) item.deptId = item.dept.id;
-    return item;
-  }
-  getFormProps(action: string, item?: Entity): UserFormProps {
-    const props = super.getFormProps(action, item);
+  genFormProps(action: string, item?: Entity, exProps?: Partial<EntityFormProps>): UserFormProps {
+    const props = super.genFormProps(action, item, exProps);
     const { services } = this.props;
     return { ...props, modalProps: { width: '50em' }, services };
   }
@@ -74,6 +69,7 @@ export class UserList<
   getOperatorEnable() {
     const base = super.getOperatorEnable();
     return {
+      ...base,
       update: base.update && this.getSelectItem()!.editable,
       delete: base.delete && this.getSelectItems().every(item => item.editable),
     };

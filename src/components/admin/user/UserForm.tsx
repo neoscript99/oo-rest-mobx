@@ -67,6 +67,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
       hideEnabled,
       autoGenerateAccount,
       services: { dictService },
+      readonly,
     } = this.props;
     const { allRoles, userRoleIds, deptList } = this.state;
     const [min4, min2, req] = [
@@ -81,24 +82,30 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     });
     return (
       <Form style={StyleUtil.flexForm()}>
-        {!autoGenerateAccount && <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} />}
-        <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} />
+        {!autoGenerateAccount && (
+          <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} disabled={readonly} />
+        )}
+        <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} disabled={readonly} />
         <SelectField
-          {...make('deptId', '机构')}
+          {...make('dept.id', '机构')}
           dataSource={deptList}
           valueProp="id"
           labelProp="name"
           decorator={req}
           defaultSelectFirst
+          disabled={readonly}
         />
-        {!hideEnabled && <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} />}{' '}
-        <InputField {...make('phoneNumber', '联系电话')} maxLength={16} />
+        {!hideEnabled && (
+          <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} disabled={readonly} />
+        )}{' '}
+        <InputField {...make('phoneNumber', '联系电话')} maxLength={16} disabled={readonly} />
         <InputField
           {...make('email', '电子邮箱')}
           maxLength={32}
           decorator={{
             rules: [{ type: 'email' }],
           }}
+          disabled={readonly}
         />
         <SelectField
           {...make('sexCode', '性别')}
@@ -109,6 +116,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
             rules: [required],
             initialValue: 'male',
           }}
+          disabled={readonly}
         />
         {this.getExtraFormItem()}
         {hideRoles || (
@@ -118,6 +126,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
             formItemProps={{ label: '角色', style: { ...this.formItemCss, width: '46em' } }}
             formUtils={form}
             decorator={{ initialValue: userRoleIds }}
+            disabled={readonly}
           />
         )}
       </Form>
@@ -126,10 +135,9 @@ export class UserForm extends EntityForm<UserFormProps, S> {
 
   saveEntity(saveItem: Entity) {
     const { inputItem, hideRoles, autoGenerateAccount } = this.props;
-    saveItem.dept = { id: saveItem.deptId };
     if (autoGenerateAccount) {
       const { deptList } = this.state;
-      const dept = deptList.find(d => d.id === saveItem.deptId);
+      const dept = deptList.find(d => d.id === saveItem.dept.id);
       saveItem.account = `${dept!.name}-${saveItem.name}-${StringUtil.randomString()}`;
     }
     if (hideRoles) return super.saveEntity(saveItem);
