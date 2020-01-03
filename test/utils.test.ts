@@ -39,4 +39,14 @@ describe('pureGraphqlObject', () => {
     const mm = moment(m);
     console.log(mm.format());
   });
+
+  it('flattenObject test', () => {
+    const flat = LangUtil.flattenObject({
+      user: { map: { a: '123424', b: { b1: 'XYZ', b2: moment() } } },
+      name: 'name',
+    });
+    console.log(flat);
+    console.log(typeof flat['user.map.b.b2']);
+    expect(flat['user.map.b.b1']).toEqual('XYZ');
+  });
 });

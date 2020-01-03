@@ -6,7 +6,7 @@ import { AbstractField } from './AbstractField';
 import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
 
 export interface SelectFieldProps extends SelectProps, FieldProps {
-  dataSource: any[];
+  dataSource?: any[];
   keyProp?: string;
   valueProp: string;
   labelProp: string;
@@ -28,11 +28,12 @@ export class SelectField extends AbstractField<SelectFieldProps> {
 
     return (
       <Select {...selectProps}>
-        {dataSource.map(item => (
-          <Select.Option key={item[keyProp || valueProp]} value={item[valueProp]}>
-            {item[labelProp]}
-          </Select.Option>
-        ))}
+        {dataSource &&
+          dataSource.map(item => (
+            <Select.Option key={item[keyProp || valueProp]} value={item[valueProp]}>
+              {item[labelProp]}
+            </Select.Option>
+          ))}
       </Select>
     );
   }

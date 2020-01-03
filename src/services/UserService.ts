@@ -8,10 +8,27 @@ export interface UserEntity extends Entity {
 }
 
 export class UserService extends DomainService {
+  deptUserMap: Record<string, DeptEntity[]> = {};
   constructor(restClient: AbstractClient, domain = 'user') {
     super({ domain, storeClass: MobxDomainStore, restClient });
   }
+  async getDeptUsers(dept: DeptEntity) {
+    const id = dept.id as string;
+    if (!this.deptUserMap[id])
+      this.deptUserMap[id] = (
+        await this.list({
+          criteria: {
+            eq: [
+              ['dept.id', id],
+              ['enabled', true],
+            ],
+          },
+          orders: ['name'],
+        })
+      ).results as DeptEntity[];
 
+    return this.deptUserMap[id];
+  }
   saveUserRoles(user: Entity, roleIds: string[]) {
     return this.restClient.post(this.getApiUri('saveWithRoles'), { user, roleIds });
   }
