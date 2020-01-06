@@ -1,6 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 
-import { Card, Form, message, Modal, Collapse } from 'antd';
+import { Card, message, Modal, Collapse } from 'antd';
 import { DomainService, Entity } from '../../services';
 import { EntityColumnProps } from './EntityList';
 import { MobxDomainStore } from '../../stores';
@@ -8,8 +8,7 @@ import { ModalProps } from 'antd/lib/modal';
 import { CardProps } from 'antd/lib/card';
 import { CollapsePanelProps } from 'antd/lib/collapse';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
-import isPlainObject from 'lodash/isPlainObject';
-import { LangUtil } from '../../utils';
+import { ReactUtil } from '../../utils/ReactUtil';
 
 export interface EntityFormProps {
   domainService: DomainService<MobxDomainStore>;
@@ -96,20 +95,5 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
     return domainService.save({ ...inputItem, ...saveItem });
   }
 
-  static formWrapper<PP>(component: React.ComponentType<PP>): React.ComponentType<Omit<PP, 'form'>> {
-    return Form.create({
-      name: `EntityForm_${new Date().toISOString()}`,
-      mapPropsToFields,
-    })(component as any);
-  }
+  static formWrapper = ReactUtil.formWrapper;
 }
-const mapPropsToFields = props => {
-  const { inputItem } = props;
-  if (inputItem) {
-    const flat = LangUtil.flattenObject(inputItem);
-    for (const key in flat) {
-      flat[key] = Form.createFormField({ value: flat[key] });
-    }
-    return flat;
-  } else return;
-};

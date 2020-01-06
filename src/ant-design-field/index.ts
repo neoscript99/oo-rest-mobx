@@ -5,3 +5,4 @@ export * from './FieldProps';
 export * from './InputField';
 export * from './InputNumberField';
 export * from './SelectField';
+export * from './UploadField';

@@ -77,7 +77,7 @@ export abstract class EntityList<
     const searchBar = searchForm && (
       <SearchBar
         onSearch={this.handleSearch.bind(this)}
-        searchForm={searchForm!}
+        SearchForm={searchForm!}
         searchParam={this.domainService.store.searchParam}
       />
     );

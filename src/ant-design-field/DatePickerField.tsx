@@ -9,6 +9,7 @@ import moment from 'moment';
 import isArray from 'lodash/isArray';
 
 export interface DatePickerFieldProps extends DatePickerProps, FieldProps {
+  //DatePicker的required可能根据返回值不同而变化
   required?: boolean;
   defaultDiffDays?: number;
   originValue?: moment.MomentInput;
@@ -23,10 +24,10 @@ export class DatePickerField extends AbstractField<DatePickerFieldProps> {
     const { required, defaultDiffDays, originValue, ...pureProps } = this.getInputProps();
     return <DatePickerWrapper {...pureProps} />;
   }
-  getFieldProps(): FieldProps {
-    const { formUtils, fieldId, decorator, defaultDiffDays, formItemProps, required, format } = this.props;
+  get defaultDecorator() {
+    const { defaultDiffDays, required, format } = this.props;
     const dateFormat = format ? (isArray(format) ? format[0] : format) : 'YYYY-MM-DD';
-    const defaultDecorator: GetFieldDecoratorOptions = {
+    return {
       rules: required ? [commonRules.required] : undefined,
       valuePropName: 'originValue',
       getValueFromEvent: (date, dateString) => dateString,
@@ -36,12 +37,6 @@ export class DatePickerField extends AbstractField<DatePickerFieldProps> {
               .add(defaultDiffDays, 'day')
               .format(dateFormat)
           : undefined,
-    };
-    return {
-      formUtils,
-      fieldId,
-      decorator: { ...defaultDecorator, ...decorator },
-      formItemProps,
     };
   }
 }

@@ -1,10 +1,10 @@
 import React, { Component, KeyboardEvent } from 'react';
-import { Form, Input } from 'antd';
-import { WrappedFormUtils } from 'antd/lib/form/Form';
+import { Form } from 'antd';
+import { FormComponentProps } from 'antd/lib/form/Form';
+import { InputField } from '../../ant-design-field';
 
-export interface SearchFormProps {
-  form: WrappedFormUtils;
-  onSearch: () => void;
+export interface SearchFormProps extends FormComponentProps {
+  onChange: () => void;
 }
 
 /**
@@ -12,10 +12,10 @@ export interface SearchFormProps {
  */
 export abstract class SearchForm<P extends SearchFormProps = SearchFormProps> extends Component<P> {
   searchOnEnter(e: KeyboardEvent<any>) {
-    const { onSearch } = this.props;
+    const { onChange } = this.props;
     if (e.keyCode === 13) {
       e.stopPropagation();
-      onSearch();
+      onChange();
     }
   }
 }
@@ -25,20 +25,16 @@ export class SimpleSearchForm extends SearchForm {
   width = '16em';
 
   render() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
+    const { form } = this.props;
     return (
       <Form layout="inline">
-        <Form.Item>
-          {getFieldDecorator('searchKey')(
-            <Input
-              style={{ width: this.width }}
-              placeholder={this.placeholder}
-              onKeyDown={this.searchOnEnter.bind(this)}
-            />,
-          )}
-        </Form.Item>
+        <InputField
+          fieldId="searchKey"
+          style={{ width: this.width }}
+          placeholder={this.placeholder}
+          onKeyDown={this.searchOnEnter.bind(this)}
+          formUtils={form}
+        />
       </Form>
     );
   }

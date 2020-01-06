@@ -9,4 +9,5 @@ export interface FieldProps {
    */
   formUtils?: Readonly<WrappedFormUtils>;
   formItemProps?: Readonly<FormItemProps>;
+  readonly?: boolean;
 }

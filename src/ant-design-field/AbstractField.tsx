@@ -1,6 +1,7 @@
 import React from 'react';
 import { FieldProps } from './FieldProps';
 import { Form } from 'antd';
+import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
 
 /**
  * FormItem目前必须耦合在一起，否则FormItem.getControls拿不到下级组件，
@@ -20,11 +21,15 @@ export abstract class AbstractField<P extends FieldProps = FieldProps, S = any> 
 
   abstract getField(): React.ReactNode;
   getInputProps() {
-    const { formUtils, fieldId, decorator, formItemProps, ...pureProps } = this.props;
-    return pureProps;
+    const { formUtils, fieldId, decorator, formItemProps, readonly, ...pureProps } = this.props;
+    return { ...pureProps, disabled: readonly };
   }
   getFieldProps(): FieldProps {
     const { formUtils, fieldId, decorator, formItemProps } = this.props;
-    return { formUtils, fieldId, decorator, formItemProps };
+    return { formUtils, fieldId, decorator: { ...this.defaultDecorator, ...decorator }, formItemProps };
+  }
+
+  get defaultDecorator(): GetFieldDecoratorOptions | null {
+    return null;
   }
 }

@@ -11,7 +11,7 @@ export class MobxDomainStore {
   allList: Entity[] = [];
   pageList: Entity[] = [];
   needRefresh = true;
-  searchParam: any = null;
+  searchParam: any = {};
 }
 
 decorate(MobxDomainStore, {
