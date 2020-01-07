@@ -32,7 +32,7 @@ export class DatePickerField extends AbstractField<DatePickerFieldProps> {
       valuePropName: 'originValue',
       getValueFromEvent: (date, dateString) => dateString,
       initialValue:
-        defaultDiffDays != undefined
+        defaultDiffDays !== undefined
           ? moment()
               .add(defaultDiffDays, 'day')
               .format(dateFormat)
