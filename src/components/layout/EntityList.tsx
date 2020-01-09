@@ -8,7 +8,7 @@ import { SearchBar } from './SearchBar';
 import { SearchForm } from './SearchForm';
 import { DomainService, Entity, ListOptions, ListResult } from '../../services';
 import { CheckboxField, InputField, SelectField } from '../../ant-design-field';
-import { RouteComponentProps } from 'react-router';
+import { RouteChildrenProps } from 'react-router';
 
 export interface OperatorSwitch {
   update?: boolean;
@@ -17,7 +17,7 @@ export interface OperatorSwitch {
   view?: boolean;
 }
 
-export interface EntityListProps extends Partial<RouteComponentProps> {
+export interface EntityListProps extends Partial<RouteChildrenProps> {
   name?: string;
   operatorVisible?: OperatorSwitch;
   searchBarOnTop?: boolean;
@@ -230,13 +230,14 @@ export abstract class EntityList<
       });
   }
 
-  handleDelete() {
+  handleDelete(): Promise<any> {
     const { selectedRowKeys } = this.state;
-    selectedRowKeys &&
-      this.domainService.deleteByIds(selectedRowKeys as any[]).then(() => {
+    if (selectedRowKeys)
+      return this.domainService.deleteByIds(selectedRowKeys as any[]).then(() => {
         message.success('删除成功');
         this.query();
       });
+    else return Promise.reject('请先选择记录');
   }
 
   handleView() {

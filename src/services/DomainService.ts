@@ -2,6 +2,7 @@ import { Criteria, CriteriaOrder, Entity, ListOptions, ListResult, PageInfo } fr
 import { MobxDomainStore } from '../stores';
 import { AbstractClient } from './rest/AbstractClient';
 import { ServiceUtil } from '../utils';
+import { RestService } from './RestService';
 
 export interface DomainServiceOptions<D extends MobxDomainStore> {
   domain: string;
@@ -18,10 +19,9 @@ export interface DictInitService {
  * Mobx Store基类
  * 内部的属性会被JSON.stringify序列化，如果是嵌套结构或大对象，可以用Promise包装，规避序列化
  */
-export class DomainService<D extends MobxDomainStore = MobxDomainStore> {
+export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends RestService {
   public store: D;
   domain: string;
-  restClient: AbstractClient;
 
   /**
    *
@@ -30,12 +30,12 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> {
    * @param dependStoreMap 依赖的其它store，格式如下：{aaStore:aa,bbStore:bb}
    */
   constructor(options: DomainServiceOptions<D>) {
+    super(options.restClient);
     if (options.initStore) this.store = options.initStore;
     else if (options.storeClass) this.store = new options.storeClass();
     else throw 'DomainService.constructor need initStore or storeClass';
 
     this.domain = options.domain;
-    this.restClient = options.restClient;
   }
 
   getApiUri(operator: string) {
@@ -54,7 +54,6 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> {
    * @param criteria
    * @returns {Promise<{client: *, fields?: *}>}
    */
-
   listAll(options: ListOptions): Promise<ListResult> {
     return this.list(options).then(data => {
       this.store.allList = data.results;
@@ -69,14 +68,13 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> {
    * @param orders
    * @returns {Promise<{client: *, fields?: *}>}
    */
-
   list({ criteria = {}, pageInfo, orders }: ListOptions): Promise<ListResult> {
     const { maxResults, firstResult, order, ...countCriteria } = criteria;
     if (orders && orders.length > 0) ServiceUtil.processCriteriaOrder(criteria, orders);
     if (pageInfo) ServiceUtil.processCriteriaPage(criteria, pageInfo);
-    const listPromise = this.restClient.post(this.getApiUri('list'), criteria) as Promise<Entity[]>;
+    const listPromise = this.postApi('list', criteria) as Promise<Entity[]>;
     if (pageInfo) {
-      const countPromise = this.restClient.post(this.getApiUri('count'), countCriteria) as Promise<number>;
+      const countPromise = this.postApi('count', countCriteria) as Promise<number>;
       return Promise.all([listPromise, countPromise]).then(([results, totalCount]) => ({
         results,
         totalCount,
@@ -140,19 +138,19 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> {
    * @param newItem
    */
   save(item: Entity): Promise<Entity> {
-    return this.restClient.post(this.getApiUri('save'), item).then(data => this.changeCurrentItem(data as Entity));
+    return this.postApi('save', item).then(data => this.changeCurrentItem(data as Entity));
   }
 
   get(id: any): Promise<Entity> {
-    return this.restClient.post(this.getApiUri('get'), { id }).then(data => this.changeCurrentItem(data as Entity));
+    return this.postApi('get', { id }).then(data => this.changeCurrentItem(data as Entity));
   }
 
   delete(id: any): Promise<number> {
-    return this.restClient.post(this.getApiUri('delete'), { id });
+    return this.postApi('delete', { id });
   }
 
   deleteByIds(ids: any[]): Promise<any> {
-    return this.restClient.post(this.getApiUri('deleteByIds'), { ids });
+    return this.postApi('deleteByIds', { ids });
   }
 
   syncPageInfo(newPageInfo: PageInfo) {

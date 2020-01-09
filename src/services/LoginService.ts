@@ -3,6 +3,7 @@ import { AbstractClient, DeptEntity, UserEntity } from './index';
 import { StringUtil } from '../utils';
 import { LoginStore } from '../stores/LoginStore';
 import { computed } from 'mobx';
+import { RestService } from './RestService';
 
 /**
  * 如果是系统自己认证：user 有 ， account 有
@@ -29,9 +30,10 @@ export interface AfterLogin {
 
 const USERNAME_KEY = 'loginUsername';
 const PASSWORD_KEY = 'loginPassword';
-export class LoginService {
+export class LoginService extends RestService {
   store = new LoginStore();
-  constructor(private restClient: AbstractClient, private afterLogins?: AfterLogin[]) {
+  constructor(restClient: AbstractClient, private afterLogins?: AfterLogin[]) {
+    super(restClient);
     //cas默认为true，初始化时去获取服务端的配置信息，如果为false，再显示登录界面
     this.getCasConfig();
   }
@@ -45,7 +47,7 @@ export class LoginService {
   }
 
   loginHash(username: string, passwordHash: string, remember = false): Promise<LoginInfo> {
-    return this.restClient.post(this.getApiUri('login'), { username, passwordHash }).then(data => {
+    return this.postApi('login', { username, passwordHash }).then(data => {
       const loginInfo = data;
       this.store.loginInfo = loginInfo;
       if (loginInfo.success) {
@@ -84,7 +86,7 @@ export class LoginService {
   }
 
   trySessionLogin(): Promise<LoginInfo> {
-    return this.restClient.post(this.getApiUri('sessionLogin')).then(data => {
+    return this.postApi('sessionLogin').then(data => {
       const loginInfo = data;
       this.store.loginInfo = loginInfo;
       if (loginInfo.success) {
@@ -98,11 +100,11 @@ export class LoginService {
   }
 
   logout() {
-    return this.restClient.post(this.getApiUri('logout'));
+    return this.postApi('logout');
   }
 
   getCasConfig(): Promise<CasConfig> {
-    return this.restClient.post(this.getApiUri('getCasConfig')).then(data => {
+    return this.postApi('getCasConfig').then(data => {
       this.store.casConfig = data;
       return data;
     });

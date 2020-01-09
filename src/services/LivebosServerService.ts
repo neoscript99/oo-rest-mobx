@@ -44,11 +44,11 @@ export interface LivebosObjectMetaData {
 
 export class LivebosServerService extends DomainService<MobxDomainStore> {
   getUserInfo(livebosServerId: string, userId: string): Promise<LiveUserInfo> {
-    return this.restClient.post(this.getApiUri('livebosGetUserInfo'), { livebosServerId, userId });
+    return this.postApi('livebosGetUserInfo', { livebosServerId, userId });
   }
 
   queryNotices(livebosServerId: string, userId: string, type = '0'): Promise<LivebosNotice> {
-    return this.restClient.post(this.getApiUri('livebosQueryNotices'), { livebosServerId, userId, type });
+    return this.postApi('livebosQueryNotices', { livebosServerId, userId, type });
   }
 }
 

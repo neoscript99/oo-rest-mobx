@@ -1,31 +1,32 @@
 import React, { ReactNode } from 'react';
-import { Form, Input, Modal, Checkbox, InputNumber } from 'antd';
+import { Form } from 'antd';
 import { EntityForm } from '../../layout';
 import { commonRules } from '../../../utils';
+import { CheckboxField, InputField, InputNumberField } from '../../../ant-design-field';
 const { required } = commonRules;
 export class DeptForm extends EntityForm {
   getForm() {
-    const { form } = this.props;
-    if (!form) return null;
-    const { getFieldDecorator } = form;
+    const { form, readonly } = this.props;
+    const req = { rules: [commonRules.required] };
     return (
       <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
-        <Form.Item label="序号">
-          {getFieldDecorator('seq', {
-            initialValue: 1,
-          })(<InputNumber max={999999} />)}
-        </Form.Item>
-        <Form.Item label="机构名">
-          {getFieldDecorator('name', {
-            rules: [required],
-          })(<Input maxLength={16} />)}
-        </Form.Item>
-        <Form.Item label="启用">
-          {getFieldDecorator('enabled', {
-            valuePropName: 'checked',
-            initialValue: true,
-          })(<Checkbox />)}
-        </Form.Item>
+        <InputNumberField
+          fieldId="seq"
+          formItemProps={{ label: '序号' }}
+          formUtils={form}
+          readonly={readonly}
+          max={999999}
+          decorator={{ initialValue: 1 }}
+        />
+        <InputField
+          fieldId="name"
+          formItemProps={{ label: '机构名' }}
+          formUtils={form}
+          maxLength={18}
+          readonly={readonly}
+          decorator={req}
+        />
+        <CheckboxField fieldId="enabled" formUtils={form} formItemProps={{ label: '启用' }} readonly={readonly} />
         {this.getExtraFormItem()}
       </Form>
     );

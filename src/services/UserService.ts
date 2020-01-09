@@ -30,9 +30,9 @@ export class UserService extends DomainService {
     return this.deptUserMap[id];
   }
   saveUserRoles(user: Entity, roleIds: string[]) {
-    return this.restClient.post(this.getApiUri('saveWithRoles'), { user, roleIds });
+    return this.postApi('saveWithRoles', { user, roleIds });
   }
   resetPassword(user: Entity, passwordHash: string) {
-    return this.restClient.post(this.getApiUri('resetPassword'), { userId: user.id, passwordHash });
+    return this.postApi('resetPassword', { userId: user.id, passwordHash });
   }
 }

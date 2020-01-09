@@ -8,6 +8,6 @@ export class MenuService extends DomainService<MenuStore> {
   }
 
   getMenuTree(): void {
-    this.restClient.post(this.getApiUri('menuTree')).then(data => (this.store.menuTree = data));
+    this.postApi('menuTree').then(data => (this.store.menuTree = data));
   }
 }
