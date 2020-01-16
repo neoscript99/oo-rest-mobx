@@ -14,20 +14,33 @@ export interface SelectFieldProps extends SelectProps, FieldProps {
 }
 
 export class SelectField extends AbstractField<SelectFieldProps> {
-  getFieldProps(): FieldProps {
-    const { decorator, defaultSelectFirst, dataSource, valueProp } = this.props;
-    const newDecorator: GetFieldDecoratorOptions = { ...decorator };
+  get defaultDecorator() {
+    const { defaultSelectFirst, dataSource, valueProp, mode } = this.props;
+    const newDecorator: GetFieldDecoratorOptions = {};
     if (defaultSelectFirst && dataSource && dataSource.length > 0) {
       newDecorator.initialValue = dataSource[0][valueProp];
     }
-    return { ...super.getFieldProps(), decorator: newDecorator };
+    //'multiple', 'tags'的区别是tags可以增加新的
+    //todo
+    if (mode && ['multiple', 'tags'].includes(mode)) console.log(mode);
+
+    return newDecorator;
   }
 
   getField() {
-    const { dataSource, keyProp, valueProp, labelProp, defaultSelectFirst, ...selectProps } = this.getInputProps();
-
+    const {
+      dataSource,
+      keyProp,
+      valueProp,
+      labelProp,
+      defaultSelectFirst,
+      mode,
+      ...selectProps
+    } = this.getInputProps();
+    let tokenSeparators;
+    if (mode && ['multiple', 'tags'].includes(mode)) tokenSeparators = [','];
     return (
-      <Select {...selectProps}>
+      <Select tokenSeparators={tokenSeparators} mode={mode} {...selectProps}>
         {dataSource &&
           dataSource.map(item => (
             <Select.Option key={item[keyProp || valueProp]} value={item[valueProp]}>

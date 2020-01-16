@@ -22,7 +22,7 @@ export interface DatePickerFieldProps extends DatePickerProps, FieldProps {
 export class DatePickerField extends AbstractField<DatePickerFieldProps> {
   getField() {
     const { required, defaultDiffDays, originValue, ...pureProps } = this.getInputProps();
-    return <DatePickerWrapper {...pureProps} />;
+    return <DatePickerWrap {...pureProps} />;
   }
   get defaultDecorator() {
     const { defaultDiffDays, required, format } = this.props;
@@ -41,11 +41,11 @@ export class DatePickerField extends AbstractField<DatePickerFieldProps> {
   }
 }
 
-export interface DatePickerWrapperProps extends DatePickerProps {
+export interface DatePickerWrapProps extends DatePickerProps {
   originValue?: moment.MomentInput;
   onChangeForString?: (dateString: string) => void;
 }
-export class DatePickerWrapper extends React.Component<DatePickerWrapperProps> {
+export class DatePickerWrap extends React.Component<DatePickerWrapProps> {
   render() {
     const { originValue, value, ...pureProps } = this.props;
     return <DatePicker {...pureProps} value={originValue ? moment(originValue) : value} />;
