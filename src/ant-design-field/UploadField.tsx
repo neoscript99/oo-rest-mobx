@@ -15,11 +15,13 @@ export class UploadField extends AbstractField<UploadProps & FieldProps> {
 }
 interface UploadWrapProps extends UploadProps {
   value?: any;
+  maxNumber?: number;
 }
 class UploadWrap extends React.Component<UploadWrapProps> {
   render() {
-    const { value, ...uploadProps } = this.props;
-    const fileList = value && (Array.isArray(value) ? value : [value]);
+    const { value, maxNumber, ...uploadProps } = this.props;
+    //单一附件
+    const fileList = value && maxNumber === 1 ? [value] : value;
     return <Upload {...uploadProps} fileList={fileList} />;
   }
 }
