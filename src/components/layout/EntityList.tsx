@@ -274,7 +274,7 @@ export abstract class EntityList<
 
   genFormProps(action: string, item?: Entity, exProps?: Partial<EntityFormProps>): EntityFormProps {
     return {
-      modalProps: { title: `${action}${this.props.name}`, okText: action },
+      modalProps: { title: `${action}${this.name}`, okText: action },
       domainService: this.domainService,
       onSuccess: this.handleFormSuccess.bind(this),
       onCancel: this.handleFormCancel.bind(this),
@@ -314,5 +314,9 @@ export abstract class EntityList<
    */
   getOperatorVisible(): OperatorSwitch | undefined {
     return this.props.operatorVisible;
+  }
+
+  get name(): string | undefined {
+    return this.props.name;
   }
 }

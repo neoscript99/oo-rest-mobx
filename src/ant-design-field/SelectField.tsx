@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select } from 'antd';
-import { SelectProps } from 'antd/lib/select';
+import { ModeOption, SelectProps } from 'antd/lib/select';
 import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
@@ -20,34 +20,46 @@ export class SelectField extends AbstractField<SelectFieldProps> {
     if (defaultSelectFirst && dataSource && dataSource.length > 0) {
       newDecorator.initialValue = dataSource[0][valueProp];
     }
-    //'multiple', 'tags'的区别是tags可以增加新的
-    //todo
-    if (mode && ['multiple', 'tags'].includes(mode)) console.log(mode);
+    //如果是以上多值方式，将选择项的value转为为逗号分隔的字符串
+    if (isMultipleMode(mode)) {
+      newDecorator.getValueFromEvent = array => (array as string[]).join(',');
+
+      newDecorator.valuePropName = 'originValue';
+    }
 
     return newDecorator;
   }
 
   getField() {
-    const {
-      dataSource,
-      keyProp,
-      valueProp,
-      labelProp,
-      defaultSelectFirst,
-      mode,
-      ...selectProps
-    } = this.getInputProps();
-    let tokenSeparators;
-    if (mode && ['multiple', 'tags'].includes(mode)) tokenSeparators = [','];
+    const { dataSource, keyProp, valueProp, labelProp, defaultSelectFirst, ...selectProps } = this.getInputProps();
     return (
-      <Select tokenSeparators={tokenSeparators} mode={mode} {...selectProps}>
+      <SelectWrap {...selectProps}>
         {dataSource &&
           dataSource.map(item => (
             <Select.Option key={item[keyProp || valueProp]} value={item[valueProp]}>
               {item[labelProp]}
             </Select.Option>
           ))}
-      </Select>
+      </SelectWrap>
     );
   }
+}
+interface SelectWrapProps extends SelectProps {
+  originValue?: string;
+}
+
+class SelectWrap extends React.Component<SelectWrapProps> {
+  render() {
+    const { originValue, value, mode, ...selectProps } = this.props;
+    const v = isMultipleMode(mode) ? originValue && originValue.split(',') : value;
+    return <Select mode={mode} value={v} {...selectProps}></Select>;
+  }
+}
+
+/**
+ * 'multiple', 'tags'的区别是tags可以增加新的
+ * @param mode
+ */
+function isMultipleMode(mode?: string) {
+  return mode && ['multiple', 'tags'].includes(mode);
 }

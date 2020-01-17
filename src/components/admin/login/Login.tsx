@@ -67,6 +67,7 @@ class LoginForm extends Component<LoginFormProps> {
                   <Input
                     prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder="用户名"
+                    size="large"
                     autoComplete="username"
                   />,
                 )}
@@ -78,6 +79,7 @@ class LoginForm extends Component<LoginFormProps> {
                   <Input
                     prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                     type="password"
+                    size="large"
                     autoComplete="password"
                     placeholder="密码"
                   />,
@@ -89,7 +91,7 @@ class LoginForm extends Component<LoginFormProps> {
                   initialValue: true,
                 })(<Checkbox>自动登录</Checkbox>)}
                 <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-                  Log in
+                  登录
                 </Button>
               </Form.Item>
             </Form>

@@ -7,6 +7,9 @@ export const LoginPage = styled.div`
   margin: 0;
   min-height: 10em;
   height: 100vh;
+  background-image: url(https://images.unsplash.com/photo-1517673132405-a56a62b18caf);
+  background-size: cover;
+  background-position: center top;
   color: #888;
   line-height: 1.75;
   padding-top: 8rem;
