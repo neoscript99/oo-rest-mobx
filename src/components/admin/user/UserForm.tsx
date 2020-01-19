@@ -31,15 +31,13 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     console.log('UserForm.componentDidMount');
     const {
       inputItem,
-      justSameDept,
-      hideRoles,
       services: { userRoleService, roleService, deptService, loginService },
     } = this.props;
-    const deptList = justSameDept
+    const deptList = this.justSameDept
       ? [loginService.dept]
       : (deptService.store.allList.filter(dept => dept.enabled) as DeptEntity[]);
     const allRoles =
-      hideRoles ||
+      this.hideRoles ||
       roleService.store.allList
         .filter(role => role.enabled)
         .map(role => ({ label: role.roleName as string, value: role.id as string }));
@@ -47,7 +45,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
       allRoles,
       deptList,
     };
-    if (inputItem && inputItem.id && !hideRoles) {
+    if (inputItem && inputItem.id && !this.hideRoles) {
       const userRoleIds: string[] = await userRoleService
         .list({ criteria: { eq: [['user.id', inputItem.id]] } })
         .then(res => {
@@ -63,7 +61,6 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     if (!this.state) return null;
     const {
       form,
-      hideRoles,
       hideEnabled,
       autoGenerateAccount,
       services: { dictService },
@@ -119,7 +116,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           disabled={readonly}
         />
         {this.getExtraFormItem()}
-        {hideRoles || (
+        {this.hideRoles || (
           <CheckboxGroupField
             fieldId="roleIds"
             options={allRoles}
@@ -134,17 +131,27 @@ export class UserForm extends EntityForm<UserFormProps, S> {
   }
 
   saveEntity(saveItem: Entity) {
-    const { inputItem, hideRoles, autoGenerateAccount } = this.props;
+    const { inputItem, autoGenerateAccount } = this.props;
     if (autoGenerateAccount) {
       const { deptList } = this.state;
       const dept = deptList.find(d => d.id === saveItem.dept.id);
       saveItem.account = `${dept!.name}-${saveItem.name}-${StringUtil.randomString()}`;
     }
-    if (hideRoles) return super.saveEntity(saveItem);
+    if (this.hideRoles) return super.saveEntity(saveItem);
     else return this.userService.saveUserRoles({ ...inputItem, ...saveItem }, saveItem.roleIds);
   }
 
   getExtraFormItem(): ReactNode {
     return null;
+  }
+
+  get hideRoles() {
+    const { hideRoles } = this.props;
+    return hideRoles;
+  }
+
+  get justSameDept() {
+    const { justSameDept } = this.props;
+    return justSameDept;
   }
 }

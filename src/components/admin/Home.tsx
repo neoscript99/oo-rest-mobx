@@ -31,6 +31,7 @@ export interface HomeProps extends RouteComponentProps {
   footRender: ReactNode;
   PageSwitch: ComponentType<PageSwitchProps>;
   loginPath: string;
+  profilePath?: string;
 }
 export interface PageSwitchProps {
   pathPrefix: string;
@@ -67,7 +68,7 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
 
   render() {
     const {
-      adminServices: { menuService, loginService },
+      adminServices: { menuService, loginService, paramService },
       location,
       match,
       logoRender,
@@ -83,6 +84,15 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
       loginService.store.lastRoutePath = location.pathname;
       history.push(loginPath);
       return null;
+    } else if (
+      loginService.store.forcePasswordChange &&
+      paramService.getByCode('ChangeInitPassword')?.value === 'true'
+    ) {
+      const profilePath = this.props.profilePath || '/Profile';
+      if (location.pathname !== profilePath) {
+        history.push('/Profile');
+        return null;
+      }
     }
     return (
       <Layout style={{ minHeight: '100vh' }}>

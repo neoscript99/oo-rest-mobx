@@ -7,13 +7,8 @@ import { UserForm, UserFormProps } from './UserForm';
 import { Entity } from '../../../services';
 import { Button, message, Popconfirm } from 'antd';
 
-const INIT_PASSWORD = 'abc000';
-export interface UserListProps extends AdminPageProps {
-  initPassword?: string;
-}
-
 export class UserList<
-  P extends UserListProps = UserListProps,
+  P extends AdminPageProps = AdminPageProps,
   S extends EntityListState = EntityListState
 > extends EntityPageList<P, S> {
   get domainService(): UserService {
@@ -21,11 +16,11 @@ export class UserList<
   }
 
   get columns(): EntityColumnProps[] {
-    const pass = this.props.initPassword || INIT_PASSWORD;
+    const { initPassword } = this.props.services.loginService;
     const opCol = (text: string, record: any) => {
       return (
         <Popconfirm
-          title={`确定重置? (${pass})`}
+          title={`确定重置? (${initPassword})`}
           onConfirm={this.resetPassword.bind(this, record)}
           okText="确定"
           cancelText="取消"
@@ -56,15 +51,12 @@ export class UserList<
     return { ...props, modalProps: { width: '50em' }, services };
   }
   getInitItem(): Entity {
-    const password = this.getInitPasswordHash();
+    const password = this.props.services.loginService.initPasswordHash;
     return { editable: true, password };
   }
-  getInitPasswordHash() {
-    const pass = this.props.initPassword || INIT_PASSWORD;
-    return StringUtil.sha256(pass as string);
-  }
   resetPassword(user: Entity) {
-    this.domainService.resetPassword(user, this.getInitPasswordHash()).then(() => message.success('重置成功'));
+    const password = this.props.services.loginService.initPasswordHash;
+    this.domainService.resetPassword(user, password).then(() => message.success('重置成功'));
   }
   getOperatorEnable() {
     const base = super.getOperatorEnable();

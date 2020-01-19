@@ -9,4 +9,6 @@ export class LoginStore {
   casConfig: CasConfig = { clientEnabled: true };
   @observable
   loginInfo: LoginInfo = { success: false };
+  @observable
+  forcePasswordChange = false;
 }

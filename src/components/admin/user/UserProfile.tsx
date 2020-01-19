@@ -21,16 +21,22 @@ export class UserProfile extends Component<AdminPageProps, S> {
 
   handleSave(item: Entity) {
     const { services } = this.props;
-    services.userService.save(item).then(item => {
-      services.loginService.store.loginInfo.user = item as UserEntity;
-      message.success('保存成功');
-    });
+    if (item.password === services.loginService.initPasswordHash) message.error('新密码不能和初始密码相同');
+    else
+      services.userService.save(item).then(item => {
+        services.loginService.store.forcePasswordChange = false;
+        services.loginService.store.loginInfo.user = item as UserEntity;
+        message.success('保存成功');
+      });
   }
 
   render() {
     const { services } = this.props;
-    const { user } = services.loginService.store.loginInfo;
-    const showPassword = this.state && this.state.showPassword;
+    const {
+      loginInfo: { user },
+      forcePasswordChange,
+    } = services.loginService.store;
+    const showPassword = this.state ? this.state.showPassword : forcePasswordChange;
     return (
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Card title={`${user?.name} 个人信息设置`} style={{ width: '40rem' }}>
