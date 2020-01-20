@@ -80,9 +80,14 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     return (
       <Form style={StyleUtil.flexForm()}>
         {!autoGenerateAccount && (
-          <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} disabled={readonly} />
+          <InputField
+            {...make('account', '帐号')}
+            maxLength={16}
+            decorator={min4}
+            readonly={readonly || this.accountReadonly}
+          />
         )}
-        <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} disabled={readonly} />
+        <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} readonly={readonly} />
         <SelectField
           {...make('dept.id', '机构')}
           dataSource={deptList}
@@ -90,19 +95,19 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           labelProp="name"
           decorator={req}
           defaultSelectFirst
-          disabled={readonly}
+          readonly={readonly}
         />
         {!hideEnabled && (
-          <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} disabled={readonly} />
+          <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} readonly={readonly} />
         )}{' '}
-        <InputField {...make('phoneNumber', '联系电话')} maxLength={16} disabled={readonly} />
+        <InputField {...make('phoneNumber', '联系电话')} maxLength={16} readonly={readonly} />
         <InputField
           {...make('email', '电子邮箱')}
           maxLength={32}
           decorator={{
             rules: [{ type: 'email' }],
           }}
-          disabled={readonly}
+          readonly={readonly}
         />
         <SelectField
           {...make('sexCode', '性别')}
@@ -113,7 +118,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
             rules: [required],
             initialValue: 'male',
           }}
-          disabled={readonly}
+          readonly={readonly}
         />
         {this.getExtraFormItem()}
         {this.hideRoles || (
@@ -123,7 +128,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
             formItemProps={{ label: '角色', style: { ...this.formItemCss, width: '46em' } }}
             formUtils={form}
             decorator={{ initialValue: userRoleIds }}
-            disabled={readonly}
+            readonly={readonly}
           />
         )}
       </Form>
@@ -153,5 +158,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
   get justSameDept() {
     const { justSameDept } = this.props;
     return justSameDept;
+  }
+  get accountReadonly() {
+    return false;
   }
 }

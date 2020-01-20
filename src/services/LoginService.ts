@@ -69,7 +69,7 @@ export class LoginService extends RestService {
 
   tryLocalLogin() {
     const info = this.getLoginInfoLocal();
-    if (info.username && info.password) this.loginHash(info.username, info.password, false);
+    if (info.username && info.password) this.loginHash(info.username, info.password, true);
   }
 
   saveLoginInfoLocal(username: string, password: string) {
