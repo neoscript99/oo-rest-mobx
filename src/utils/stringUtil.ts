@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { sha224, sha256 } from 'js-sha256';
+import { sha256 } from 'js-sha256';
 type HashMessage = string | number[] | ArrayBuffer | Uint8Array;
 
 export class StringUtil {

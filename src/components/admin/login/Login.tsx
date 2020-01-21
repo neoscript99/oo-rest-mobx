@@ -10,6 +10,7 @@ export interface LoginFormProps extends FormComponentProps, RouteComponentProps 
   adminServices: AdminServices;
   title: ReactNode;
   introRender: ReactNode;
+  backgroundImage?: any;
 }
 
 @observer
@@ -45,6 +46,7 @@ class LoginForm extends Component<LoginFormProps> {
       },
       title,
       introRender,
+      backgroundImage,
     } = this.props;
 
     if (loginInfo.success) return null;
@@ -52,7 +54,7 @@ class LoginForm extends Component<LoginFormProps> {
     if (casConfig.clientEnabled) return <Spin />;
 
     return (
-      <LoginPage>
+      <LoginPage style={{ backgroundImage: backgroundImage }}>
         <LoginBox>
           <LoginBoxItem>
             <LoginBoxTitle>{title}</LoginBoxTitle>

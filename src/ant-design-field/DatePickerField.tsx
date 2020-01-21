@@ -20,13 +20,14 @@ export interface DatePickerFieldProps extends DatePickerProps, FieldProps {
  * 输出为string，可重载decorator.getValueFromEvent
  */
 export class DatePickerField extends AbstractField<DatePickerFieldProps> {
+  static DEFAULT_DATE_FORMAT = 'YYYY-MM-DD';
   getField() {
     const { required, defaultDiffDays, originValue, ...pureProps } = this.getInputProps();
     return <DatePickerWrap {...pureProps} />;
   }
   get defaultDecorator() {
     const { defaultDiffDays, required, format } = this.props;
-    const dateFormat = format ? (isArray(format) ? format[0] : format) : 'YYYY-MM-DD';
+    const dateFormat = format ? (isArray(format) ? format[0] : format) : DatePickerField.DEFAULT_DATE_FORMAT;
     return {
       rules: required ? [commonRules.required] : undefined,
       valuePropName: 'originValue',
