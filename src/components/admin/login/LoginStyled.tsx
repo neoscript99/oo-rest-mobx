@@ -7,6 +7,7 @@ export const LoginPage = styled.div`
   margin: 0;
   min-height: 10em;
   height: 100vh;
+  background-image: url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950);
   background-size: cover;
   background-position: center top;
   color: #888;

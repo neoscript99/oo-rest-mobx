@@ -80,7 +80,7 @@ class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
       if (!beforeUpload(file, fileList)) return false;
     }
     const num = maxNumber || 10;
-    if (this.state?.fileList?.length || 0 >= num) {
+    if ((this.state?.fileList?.length || 0) >= num) {
       message.error(`最多只能选择个${num}附件`);
       return false;
     }
