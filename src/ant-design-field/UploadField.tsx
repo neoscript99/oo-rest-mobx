@@ -5,13 +5,14 @@ import { AbstractField } from './AbstractField';
 import { RcFile, UploadChangeParam, UploadProps } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { AttachmentEntity, AttachmentService } from '../services';
+import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
 
 export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
   getField() {
     const { readonly } = this.props;
     return <UploadWrap {...this.getInputProps()}>{!readonly && <Button icon="upload">选择文件</Button>}</UploadWrap>;
   }
-  get defaultDecorator() {
+  get defaultDecorator(): GetFieldDecoratorOptions {
     const { maxNumber, required } = this.props;
     const single = maxNumber === 1;
     return {
@@ -19,8 +20,9 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
       getValueFromEvent: (info: UploadChangeParam) => {
         console.debug('UploadField.getValueFromEvent: ', info);
         const all = info.fileList.filter(file => file.status === 'done').map(file => file.response);
-        return single && all.length > 0 ? all[0] : all;
+        return single ? (all.length > 0 ? all[0] : undefined) : all;
       },
+      trigger: 'onValueChange',
     };
   }
 }
@@ -32,6 +34,7 @@ export interface UploadWrapProps extends UploadProps {
   maxNumber?: number;
   required?: boolean;
   attachmentService: AttachmentService;
+  onValueChange?: (info: UploadChangeParam) => void;
   maxSizeMB?: number;
 }
 interface UploadWrapState {
@@ -56,9 +59,12 @@ class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
       };
     }
   }
+
   handleChange(info: UploadChangeParam) {
-    const { onChange, attachmentService } = this.props;
+    const { onChange, onValueChange, attachmentService } = this.props;
     onChange && onChange(info);
+    //中间步骤的状态，不用通知外部form
+    onValueChange && ['done', 'removed'].includes(info.file.status || '') && onValueChange(info);
     console.debug('UploadWrap.handleChange: ', info);
     //去除beforeUpload校验不通过的附件，目前观察status为空
     const fileList = info.fileList.filter(file => {
@@ -81,7 +87,7 @@ class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
     }
     const num = maxNumber || 10;
     if ((this.state?.fileList?.length || 0) >= num) {
-      message.error(`最多只能选择个${num}附件`);
+      message.error(`最多上传${num}个附件`);
       return false;
     }
     const size = maxSizeMB || 20;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select } from 'antd';
-import { ModeOption, SelectProps } from 'antd/lib/select';
+import { SelectProps } from 'antd/lib/select';
 import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
@@ -52,7 +52,10 @@ interface SelectWrapProps extends SelectProps {
 class SelectWrap extends React.Component<SelectWrapProps> {
   render() {
     const { originValue, value, mode, ...selectProps } = this.props;
-    const v = isMultipleMode(mode) ? originValue?.split(',') : value;
+    let v = value;
+    if (isMultipleMode(mode)) {
+      v = StringUtil.isNotBlank(originValue) ? originValue!.split(',') : undefined;
+    }
     return <Select mode={mode} value={v} {...selectProps}></Select>;
   }
 }

@@ -51,6 +51,7 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
             title={title}
             visible={true}
             okText="提交"
+            cancelText="取消"
             onCancel={this.handleCancel.bind(this)}
             onOk={this.handleOK.bind(this)}
             maskClosable={!!readonly}
