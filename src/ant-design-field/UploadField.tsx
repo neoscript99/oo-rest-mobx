@@ -9,8 +9,7 @@ import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
 
 export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
   getField() {
-    const { readonly } = this.props;
-    return <UploadWrap {...this.getInputProps()}>{!readonly && <Button icon="upload">选择文件</Button>}</UploadWrap>;
+    return <UploadWrap {...this.getInputProps()} />;
   }
   get defaultDecorator(): GetFieldDecoratorOptions {
     const { maxNumber, required } = this.props;
@@ -78,19 +77,18 @@ class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
   handleRemove(file: UploadFile) {
     //被主表关联，不能直接删除，先把owner值为空，由定时任务删除
     //return this.props.attachmentService.delete(file.response.id).then(count => count === 1);
-    return this.props.attachmentService.save({ id: file.response.id, ownerId: null, ownerName: null }).then(v => true);
+    //return this.props.attachmentService.save({ id: file.response.id, ownerId: null, ownerName: null }).then(v => true);
+    //附件不能直接删除，界面还未提交，统一由后台定时任务处理
+    return true;
   }
   beforeUpload(file: RcFile, fileList: RcFile[]) {
-    const { maxNumber, maxSizeMB, beforeUpload } = this.props;
+    const { maxSizeMB, beforeUpload, attachmentService } = this.props;
     if (beforeUpload) {
       if (!beforeUpload(file, fileList)) return false;
     }
-    const num = maxNumber || 10;
-    if ((this.state?.fileList?.length || 0) >= num) {
-      message.error(`最多上传${num}个附件`);
-      return false;
-    }
-    const size = maxSizeMB || 20;
+    let size = maxSizeMB || 20; //默认20M
+    //不能超过服务端最大文件限制
+    if (size > attachmentService.maxSizeMB) size = attachmentService.maxSizeMB;
     if (file.size / 1024 / 1024 > size) {
       message.error(`文件太大，不能超过${size}MB`);
       return false;
@@ -98,8 +96,9 @@ class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
     return true;
   }
   render() {
-    const { disabled, attachmentService, required, ...uploadProps } = this.props;
+    const { disabled, maxNumber, attachmentService, required, ...uploadProps } = this.props;
 
+    const underLimit = (this.state?.fileList?.length || 0) < (maxNumber || 10);
     return (
       <Upload
         fileList={this.state?.fileList}
@@ -110,7 +109,9 @@ class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
         {...uploadProps}
         onChange={this.handleChange.bind(this)}
         beforeUpload={this.beforeUpload.bind(this)}
-      />
+      >
+        {!disabled && underLimit && <Button icon="upload">选择文件</Button>}
+      </Upload>
     );
   }
 }

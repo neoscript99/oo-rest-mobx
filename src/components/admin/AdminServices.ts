@@ -42,7 +42,6 @@ export class AdminServices {
   }
 
   afterLogin() {
-    this.paramService.initDictList();
     this.deptService.initDictList();
     this.roleService.initDictList();
     this.dictService.initDictList();

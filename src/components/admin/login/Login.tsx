@@ -1,20 +1,23 @@
 import React, { Component, FormEvent, ReactNode } from 'react';
-import { Form, Icon, Input, Button, Checkbox, Spin } from 'antd';
+import { Form, Icon, Input, Button, Checkbox, Spin, Dropdown, Menu } from 'antd';
 import { observer } from 'mobx-react';
 import { FormComponentProps } from 'antd/lib/form';
 import { AdminServices } from '../AdminServices';
 import { LoginPage, LoginBox, LoginBoxTitle, LoginBoxItem } from './LoginStyled';
 import { RouteComponentProps } from 'react-router';
+import { ClickParam } from 'antd/lib/menu';
+import { ReactUtil } from '../../../utils/ReactUtil';
 
-export interface LoginFormProps extends FormComponentProps, RouteComponentProps {
+export interface LoginFormProps {
   adminServices: AdminServices;
   title: ReactNode;
   introRender: ReactNode;
   backgroundImage?: any;
+  demoUsers?: any[];
 }
 
 @observer
-class LoginForm extends Component<LoginFormProps> {
+class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteComponentProps> {
   componentDidUpdate() {
     const {
       adminServices: {
@@ -27,8 +30,8 @@ class LoginForm extends Component<LoginFormProps> {
     if (loginInfo.success) history.push(lastRoutePath);
   }
 
-  handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  handleSubmit(e?: FormEvent) {
+    e && e.preventDefault();
     const {
       form: { validateFields },
       adminServices: { loginService },
@@ -36,6 +39,14 @@ class LoginForm extends Component<LoginFormProps> {
     validateFields((err, values) => err || loginService.login(values.username, values.password, values.remember));
   }
 
+  demoUserClick = ({ key }: ClickParam) => {
+    const {
+      adminServices: { loginService },
+      demoUsers,
+    } = this.props;
+    const item = demoUsers!.find(user => user.username === key);
+    loginService.login(item.username, item.password);
+  };
   render() {
     const {
       form: { getFieldDecorator },
@@ -47,6 +58,7 @@ class LoginForm extends Component<LoginFormProps> {
       title,
       introRender,
       backgroundImage,
+      demoUsers,
     } = this.props;
 
     if (loginInfo.success) return null;
@@ -88,11 +100,14 @@ class LoginForm extends Component<LoginFormProps> {
                 )}
               </Form.Item>
               <Form.Item>
-                {getFieldDecorator('remember', {
-                  valuePropName: 'checked',
-                  initialValue: true,
-                })(<Checkbox>自动登录</Checkbox>)}
-                <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  {getFieldDecorator('remember', {
+                    valuePropName: 'checked',
+                    initialValue: true,
+                  })(<Checkbox>自动登录</Checkbox>)}
+                  {demoUsers && <DemoUserDropdown demoUsers={demoUsers} demoUserClick={this.demoUserClick} />}
+                </div>
+                <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 10 }}>
                   登录
                 </Button>
               </Form.Item>
@@ -104,4 +119,30 @@ class LoginForm extends Component<LoginFormProps> {
   }
 }
 
-export const Login = Form.create({ name: 'normal_login' })(LoginForm);
+export const Login = ReactUtil.formWrapper(LoginForm);
+interface DemoUserDropdownProps {
+  demoUsers: any[];
+  demoUserClick: (param: ClickParam) => void;
+}
+
+const DemoUserDropdown = (props: DemoUserDropdownProps) => {
+  const { demoUsers, demoUserClick } = props;
+  return (
+    <Dropdown
+      trigger={['click']}
+      overlay={
+        <Menu onClick={demoUserClick}>
+          {demoUsers.map(user => (
+            <Menu.Item key={user.username}>
+              {user.name}({user.username})
+            </Menu.Item>
+          ))}
+        </Menu>
+      }
+    >
+      <Button size="small">
+        演示登录 <Icon type="down" />
+      </Button>
+    </Dropdown>
+  );
+};

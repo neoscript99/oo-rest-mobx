@@ -1,6 +1,6 @@
 import { AbstractClient } from './rest';
 import { MobxDomainStore } from '../stores';
-import { DictInitService, DomainService } from './DomainService';
+import { DomainService } from './DomainService';
 import { Entity } from './index';
 
 export interface ParamEntity extends Entity {
@@ -11,15 +11,21 @@ export interface ParamEntity extends Entity {
   type: any;
 }
 
-export class ParamService extends DomainService<MobxDomainStore> implements DictInitService {
+export class ParamService extends DomainService<MobxDomainStore> {
   constructor(restClient: AbstractClient) {
     super({ domain: 'param', storeClass: MobxDomainStore, restClient });
+    //系统参数系统启动后就获取，不需要登录
+    this.initStore();
   }
-  /**
-   * 登陆成功后调用本方法
-   */
-  initDictList() {
-    this.listAll({});
+
+  async initStore() {
+    const list = await this.list({});
+    const exList = await this.listExtra();
+    this.store.allList = list.results.concat(exList);
+  }
+
+  listExtra() {
+    return this.postApi('listExtra');
   }
 
   getByCode(code: string): ParamEntity | undefined {
