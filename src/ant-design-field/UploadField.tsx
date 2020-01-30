@@ -39,7 +39,7 @@ export interface UploadWrapProps extends UploadProps {
 interface UploadWrapState {
   fileList?: Array<UploadFile>;
 }
-class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
+export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
   constructor(props: UploadWrapProps) {
     super(props);
     const { value, maxNumber, attachmentService } = props;
@@ -86,7 +86,7 @@ class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
     if (beforeUpload) {
       if (!beforeUpload(file, fileList)) return false;
     }
-    let size = maxSizeMB || 20; //默认20M
+    let size = maxSizeMB || 10; //默认10M
     //不能超过服务端最大文件限制
     if (size > attachmentService.maxSizeMB) size = attachmentService.maxSizeMB;
     if (file.size / 1024 / 1024 > size) {

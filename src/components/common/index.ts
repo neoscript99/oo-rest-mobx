@@ -1,1 +1,2 @@
-export * from './DictSelectField'
+export * from './DictSelectField';
+export * from './DictView';
