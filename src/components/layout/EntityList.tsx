@@ -233,10 +233,13 @@ export abstract class EntityList<
   handleDelete(): Promise<any> {
     const { selectedRowKeys } = this.state;
     if (selectedRowKeys)
-      return this.domainService.deleteByIds(selectedRowKeys as any[]).then(() => {
-        message.success('删除成功');
-        this.query();
-      });
+      return this.domainService
+        .deleteByIds(selectedRowKeys as any[])
+        .then(() => {
+          message.success('删除成功');
+          this.query();
+        })
+        .catch(err => message.error('删除失败，可能存在依赖信息无法删除'));
     else return Promise.reject('请先选择记录');
   }
 

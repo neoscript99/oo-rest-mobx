@@ -61,12 +61,11 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     if (!this.state) return null;
     const {
       form,
-      hideEnabled,
-      autoGenerateAccount,
       services: { dictService },
       readonly,
     } = this.props;
     const { allRoles, userRoleIds, deptList } = this.state;
+    const { hideEnabled, autoGenerateAccount } = this;
     const [min4, min2, req] = [
       { rules: [genRules.minString(4)] },
       { rules: [genRules.minString(2)] },
@@ -79,13 +78,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     });
     return (
       <Form style={StyleUtil.flexForm()}>
-        {!autoGenerateAccount && (
-          <InputField
-            {...make('account', '帐号')}
-            maxLength={16}
-            decorator={min4}
-            readonly={readonly || this.accountReadonly}
-          />
+        {(!autoGenerateAccount || readonly) && (
+          <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} readonly={readonly} />
         )}
         <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} readonly={readonly} />
         <SelectField
@@ -109,17 +103,19 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           }}
           readonly={readonly}
         />
-        <SelectField
-          {...make('sexCode', '性别')}
-          dataSource={dictService.getDict('pub-sex')}
-          valueProp="code"
-          labelProp="name"
-          decorator={{
-            rules: [required],
-            initialValue: 'male',
-          }}
-          readonly={readonly}
-        />
+        {(!this.autoGenerateSex || readonly) && (
+          <SelectField
+            {...make('sexCode', '性别')}
+            dataSource={dictService.getDict('pub_sex')}
+            valueProp="code"
+            labelProp="name"
+            decorator={{
+              rules: [required],
+              initialValue: 'male',
+            }}
+            readonly={readonly}
+          />
+        )}
         {this.getExtraFormItem()}
         {this.hideRoles || (
           <CheckboxGroupField
@@ -136,8 +132,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
   }
 
   saveEntity(saveItem: Entity) {
-    const { inputItem, autoGenerateAccount } = this.props;
-    if (autoGenerateAccount) {
+    const { inputItem } = this.props;
+    if (this.autoGenerateAccount) {
       const { deptList } = this.state;
       const dept = deptList.find(d => d.id === saveItem.dept.id);
       saveItem.account = `${dept!.name}-${saveItem.name}-${StringUtil.randomString()}`;
@@ -151,15 +147,19 @@ export class UserForm extends EntityForm<UserFormProps, S> {
   }
 
   get hideRoles() {
-    const { hideRoles } = this.props;
-    return hideRoles;
+    return this.props.hideRoles;
   }
 
   get justSameDept() {
-    const { justSameDept } = this.props;
-    return justSameDept;
+    return this.props.justSameDept;
   }
-  get accountReadonly() {
+  get hideEnabled() {
+    return this.props.hideEnabled;
+  }
+  get autoGenerateAccount() {
+    return this.props.autoGenerateAccount;
+  }
+  get autoGenerateSex() {
     return false;
   }
 }
