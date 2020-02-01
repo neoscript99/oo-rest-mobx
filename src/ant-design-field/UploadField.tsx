@@ -3,9 +3,10 @@ import { Upload, Button, message } from 'antd';
 import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { RcFile, UploadChangeParam, UploadProps } from 'antd/lib/upload';
-import { UploadFile } from 'antd/lib/upload/interface';
+import { ShowUploadListInterface, UploadFile } from 'antd/lib/upload/interface';
 import { AttachmentEntity, AttachmentService } from '../services';
 import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
+import isObject from 'lodash/isObject';
 
 export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
   getField() {
@@ -96,15 +97,18 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
     return true;
   }
   render() {
-    const { disabled, maxNumber, attachmentService, required, ...uploadProps } = this.props;
+    const { disabled, maxNumber, attachmentService, required, showUploadList, ...uploadProps } = this.props;
 
     const underLimit = (this.state?.fileList?.length || 0) < (maxNumber || 10);
+    let listSwitch: boolean | ShowUploadListInterface = { showRemoveIcon: !disabled };
+    if (isObject(showUploadList)) listSwitch = { ...(showUploadList as ShowUploadListInterface), ...listSwitch };
+    else if (showUploadList === false) listSwitch = false;
     return (
       <Upload
         fileList={this.state?.fileList}
         action={attachmentService.uploadUrl}
         data={({ uid, name, lastModified, size, type }) => ({ uid, name, lastModified, size, type })}
-        showUploadList={{ showRemoveIcon: !disabled }}
+        showUploadList={listSwitch}
         onRemove={this.handleRemove.bind(this)}
         {...uploadProps}
         onChange={this.handleChange.bind(this)}
