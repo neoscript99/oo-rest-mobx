@@ -23,6 +23,7 @@ const contentCss: React.CSSProperties = {
   height: '100%',
   minHeight: 360,
 };
+
 export interface HomeProps extends RouteComponentProps {
   serverLogout: boolean;
   serverRoot: string;
@@ -33,9 +34,11 @@ export interface HomeProps extends RouteComponentProps {
   loginPath: string;
   profilePath?: string;
 }
+
 export interface PageSwitchProps {
   pathPrefix: string;
 }
+
 @observer
 export class Home extends Component<HomeProps, { collapsed: boolean }> {
   state = {
@@ -66,9 +69,28 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
     }
   }
 
+  goProfile(): boolean {
+    const {
+      adminServices: { loginService, paramService },
+      location,
+      history,
+      profilePath,
+    } = this.props;
+    const pathname = profilePath || '/Profile';
+    if (
+      loginService.store.forcePasswordChange &&
+      paramService.getByCode('ChangeInitPassword')?.value === 'true' &&
+      location.pathname !== pathname
+    ) {
+      console.debug('Home.goProfile: ', location.pathname, pathname);
+      history.push(pathname);
+      return true;
+    }
+    return false;
+  }
   render() {
     const {
-      adminServices: { menuService, loginService, paramService },
+      adminServices: { menuService, loginService },
       location,
       match,
       logoRender,
@@ -84,33 +106,27 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
       loginService.store.lastRoutePath = location.pathname;
       history.push(loginPath);
       return null;
-    } else if (
-      loginService.store.forcePasswordChange &&
-      paramService.getByCode('ChangeInitPassword')?.value === 'true'
-    ) {
-      const profilePath = this.props.profilePath || '/Profile';
-      if (location.pathname !== profilePath) {
-        history.push('/Profile');
-        return null;
-      }
+    } else if (this.goProfile()) {
+      return null;
     }
+    const buttonCss: React.CSSProperties = { padding: '3px' };
     return (
       <Layout style={{ minHeight: '100vh' }}>
         <Header style={headCss}>
           {logoRender}
           <div>
             <Avatar icon="user" style={{ backgroundColor: '#f56a00' }} />
-            <Popover
-              content={
-                <Button type="link" onClick={this.logout.bind(this)}>
-                  退出系统
-                </Button>
-              }
-              placement="bottom"
-              trigger="hover"
-            >
-              <span style={{ margin: '0 0.5rem', lineHeight: '1.2rem' }}>{loginInfo.account}</span>
-            </Popover>
+            <div style={{ display: 'inline-block' }}>
+              <span style={{ marginLeft: '0.5rem', lineHeight: '1.2rem' }}>{loginInfo.account}(</span>
+              <Button type="link" onClick={this.goProfile.bind(this)} style={buttonCss}>
+                个人设置
+              </Button>
+              <span>/</span>
+              <Button type="link" onClick={this.logout.bind(this)} style={buttonCss}>
+                退出系统
+              </Button>
+              <span>)</span>
+            </div>
           </div>
         </Header>
         <Layout hasSider>

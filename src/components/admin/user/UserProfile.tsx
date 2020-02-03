@@ -78,7 +78,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
     const { getFieldDecorator } = form;
     return (
       <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
-        <InputField fieldId="phoneNumber" formItemProps={{ label: '联系电话' }} formUtils={form} maxLength={16} />
+        <InputField fieldId="phoneNumber" formItemProps={{ label: '手机号码' }} formUtils={form} maxLength={16} />
         <InputField
           fieldId="email"
           formItemProps={{ label: '电子邮箱' }}

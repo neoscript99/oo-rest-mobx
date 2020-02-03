@@ -8,6 +8,7 @@ import { CheckboxOptionType } from 'antd/lib/checkbox/Group';
 import { AdminServices } from '../AdminServices';
 import { SelectField, InputField, CheckboxField } from '../../../ant-design-field';
 import { CheckboxGroupField } from '../../../ant-design-field/CheckboxGroupField';
+import { DeptSelectField } from '../../common';
 const { required } = commonRules;
 interface S {
   allRoles?: CheckboxOptionType[];
@@ -22,7 +23,7 @@ export interface UserFormProps extends EntityFormProps {
   autoGenerateAccount?: boolean;
 }
 export class UserForm extends EntityForm<UserFormProps, S> {
-  formItemCss: React.CSSProperties = { width: '22em', marginBottom: '10px' };
+  formItemCss: React.CSSProperties = { width: '22em' };
   get userService(): UserService {
     return this.props.services.userService;
   }
@@ -82,19 +83,17 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} readonly={readonly} />
         )}
         <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} readonly={readonly} />
-        <SelectField
+        <DeptSelectField
           {...make('dept.id', '机构')}
           dataSource={deptList}
-          valueProp="id"
-          labelProp="name"
           decorator={req}
-          defaultSelectFirst
+          defaultSelectFirst={this.justSameDept}
           readonly={readonly}
         />
         {!hideEnabled && (
           <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} readonly={readonly} />
         )}{' '}
-        <InputField {...make('phoneNumber', '联系电话')} maxLength={16} readonly={readonly} />
+        <InputField {...make('phoneNumber', '手机号码')} minLength={11} maxLength={13} readonly={readonly} />
         <InputField
           {...make('email', '电子邮箱')}
           maxLength={32}

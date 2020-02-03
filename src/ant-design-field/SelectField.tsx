@@ -56,7 +56,7 @@ class SelectWrap extends React.Component<SelectWrapProps> {
     if (isMultipleMode(mode)) {
       v = StringUtil.isNotBlank(originValue) ? originValue!.split(',') : undefined;
     }
-    return <Select mode={mode} value={v} {...selectProps}></Select>;
+    return <Select mode={mode} value={v} placeholder="---请选择---" {...selectProps}></Select>;
   }
 }
 
