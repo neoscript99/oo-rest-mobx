@@ -2,6 +2,8 @@ import isPlainObject from 'lodash/isPlainObject';
 
 const IGNORE_CLASS = ['ObserverComponent', 'Connect', 'Injector'];
 
+export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 export class LangUtil {
   static getClassName(instance: any) {
     let _this = instance;

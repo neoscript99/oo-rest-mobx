@@ -10,7 +10,8 @@ export interface SelectFieldProps extends SelectProps, FieldProps {
   dataSource?: any[];
   keyProp?: string;
   valueProp: string;
-  labelProp: string;
+  labelProp?: string;
+  labelRender?: (item) => React.ReactNode;
   defaultSelectFirst?: boolean;
 }
 
@@ -32,13 +33,21 @@ export class SelectField extends AbstractField<SelectFieldProps> {
   }
 
   getField() {
-    const { dataSource, keyProp, valueProp, labelProp, defaultSelectFirst, ...selectProps } = this.getInputProps();
+    const {
+      dataSource,
+      keyProp,
+      valueProp,
+      labelProp,
+      labelRender,
+      defaultSelectFirst,
+      ...selectProps
+    } = this.getInputProps();
     return (
       <SelectWrap {...selectProps}>
         {dataSource &&
           dataSource.map(item => (
             <Select.Option key={item[keyProp || valueProp]} value={item[valueProp]}>
-              {item[labelProp]}
+              {labelRender ? labelRender(item) : labelProp ? item[labelProp] : item[valueProp]}
             </Select.Option>
           ))}
       </SelectWrap>
@@ -56,7 +65,9 @@ class SelectWrap extends React.Component<SelectWrapProps> {
     if (isMultipleMode(mode)) {
       v = StringUtil.isNotBlank(originValue) ? originValue!.split(',') : undefined;
     }
-    return <Select mode={mode} value={v} placeholder="---请选择---" {...selectProps}></Select>;
+    return (
+      <Select mode={mode} value={v} placeholder="---请选择---" optionFilterProp="children" {...selectProps}></Select>
+    );
   }
 }
 

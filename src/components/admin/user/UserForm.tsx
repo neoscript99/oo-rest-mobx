@@ -34,9 +34,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
       inputItem,
       services: { userRoleService, roleService, deptService, loginService },
     } = this.props;
-    const deptList = this.justSameDept
-      ? [loginService.dept]
-      : (deptService.store.allList.filter(dept => dept.enabled) as DeptEntity[]);
+    const deptList = this.justSameDept ? [loginService.dept] : (deptService.store.enabledList as DeptEntity[]);
     const allRoles =
       this.hideRoles ||
       roleService.store.allList
@@ -93,7 +91,15 @@ export class UserForm extends EntityForm<UserFormProps, S> {
         {!hideEnabled && (
           <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} readonly={readonly} />
         )}{' '}
-        <InputField {...make('phoneNumber', '手机号码')} minLength={11} maxLength={13} readonly={readonly} />
+        <InputField
+          {...make('cellPhone', '手机号码')}
+          decorator={{
+            rules: [{ type: 'number' }],
+          }}
+          minLength={11}
+          maxLength={13}
+          readonly={readonly}
+        />
         <InputField
           {...make('email', '电子邮箱')}
           maxLength={32}

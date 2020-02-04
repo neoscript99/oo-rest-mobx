@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AdminPageProps } from '../AdminServices';
-import { Button, Card, Checkbox, Form, Input, message } from 'antd';
+import { Button, Card, Checkbox, Form, Input, message, Tag } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { commonRules, genRules, StringUtil } from '../../../utils';
 import { EntityForm } from '../../layout';
@@ -74,11 +74,12 @@ class ProfileFrom extends Component<ProfileFormProps> {
   }
 
   render() {
-    const { form, showPassword, onCheckboxChange } = this.props;
+    const { form, showPassword, onCheckboxChange, inputItem } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
-        <InputField fieldId="phoneNumber" formItemProps={{ label: '手机号码' }} formUtils={form} maxLength={16} />
+        <InputField fieldId="dept.name" formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
+        <InputField fieldId="cellPhone" formItemProps={{ label: '手机号码' }} formUtils={form} maxLength={16} />
         <InputField
           fieldId="email"
           formItemProps={{ label: '电子邮箱' }}

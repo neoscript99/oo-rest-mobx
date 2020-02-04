@@ -15,6 +15,7 @@ const headCss: React.CSSProperties = {
   background: '#fff',
   boxShadow: '0 2px 8px #f0f1f2',
   fontWeight: 'bolder',
+  padding: '0 16px',
 };
 const contentCss: React.CSSProperties = {
   margin: '0.8rem',

@@ -3,13 +3,12 @@ import { Form } from 'antd';
 import { EntityForm } from '../../layout';
 import { commonRules } from '../../../utils';
 import { CheckboxField, InputField, InputNumberField } from '../../../ant-design-field';
-const { required } = commonRules;
 export class DeptForm extends EntityForm {
   getForm() {
     const { form, readonly } = this.props;
     const req = { rules: [commonRules.required] };
     return (
-      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+      <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
         <InputNumberField
           fieldId="seq"
           formItemProps={{ label: '序号' }}

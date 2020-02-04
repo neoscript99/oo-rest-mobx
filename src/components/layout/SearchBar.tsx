@@ -8,6 +8,7 @@ export interface SearchFromBarProps extends FormComponentProps {
   onSearch: (searchParam: any) => void;
   SearchForm: typeof SearchForm;
   searchParam: any;
+  style?: CSSProperties;
 }
 
 const buttonCss: CSSProperties = {
@@ -16,12 +17,12 @@ const buttonCss: CSSProperties = {
 
 class SearchFromBar extends Component<SearchFromBarProps> {
   render() {
-    const { SearchForm, form } = this.props;
+    const { SearchForm, form, style } = this.props;
     return (
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', ...style }}>
         <SearchForm form={form} onChange={this.handleSearch.bind(this)} />
         <Button icon="search" type="primary" style={buttonCss} title="查询" onClick={this.handleSearch.bind(this)} />
-        <Button icon="reload" style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
+        <Button icon="delete" style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
       </div>
     );
   }

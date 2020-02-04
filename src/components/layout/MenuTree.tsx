@@ -36,7 +36,7 @@ function getTree(menuNode: MenuNode, clickHandle: MenuClickHandler) {
       title={
         <span>
           <Icon type={menuNode.menu.icon || 'folder'} />
-          {menuNode.menu.label}
+          <span>{menuNode.menu.label}</span>
         </span>
       }
     >

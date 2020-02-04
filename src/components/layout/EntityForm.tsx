@@ -3,7 +3,6 @@ import React, { Component, ReactNode } from 'react';
 import { Card, message, Modal, Collapse } from 'antd';
 import { DomainService, Entity } from '../../services';
 import { EntityColumnProps } from './EntityList';
-import { MobxDomainStore } from '../../stores';
 import { ModalProps } from 'antd/lib/modal';
 import { CardProps } from 'antd/lib/card';
 import { CollapsePanelProps } from 'antd/lib/collapse';
@@ -11,7 +10,7 @@ import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { ReactUtil } from '../../utils/ReactUtil';
 
 export interface EntityFormProps {
-  domainService: DomainService<MobxDomainStore>;
+  domainService: DomainService;
   title?: string;
   columns?: EntityColumnProps[];
   inputItem?: Entity;
@@ -27,7 +26,7 @@ export interface EntityFormProps {
 
 export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> extends Component<P, S> {
   render() {
-    const { containerType, title, modalProps, cardProps, collapseProps, readonly } = this.props;
+    const { containerType, title, modalProps, cardProps, collapseProps, readonly } = this.getContainerProps();
     const formBody = this.getForm();
     switch (containerType) {
       case 'Card':
@@ -96,5 +95,12 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
     return domainService.save({ ...inputItem, ...saveItem });
   }
 
+  /**
+   * 子类可以重载，做对应控制
+   */
+  getContainerProps() {
+    const { containerType, title, modalProps, cardProps, collapseProps, readonly } = this.props;
+    return { containerType, title, modalProps, cardProps, collapseProps, readonly };
+  }
   static formWrapper = ReactUtil.formWrapper;
 }

@@ -4,7 +4,7 @@ import { message, Table, Tag } from 'antd';
 import { fromPageInfo, toPageInfo, LangUtil } from '../../utils';
 import { EntityForm, EntityFormProps } from './EntityForm';
 import { OperatorBar } from './OperatorBar';
-import { SearchBar } from './SearchBar';
+import { SearchBar, SearchFromBarProps } from './SearchBar';
 import { SearchForm } from './SearchForm';
 import { DomainService, Entity, ListOptions, ListResult } from '../../services';
 import { CheckboxField, InputField, SelectField } from '../../ant-design-field';
@@ -73,22 +73,14 @@ export abstract class EntityList<
   render() {
     const { searchBarOnTop } = this.props;
     const { dataList, formProps } = this.state;
-    const searchForm = this.getSearchForm();
-    const searchBar = searchForm && (
-      <SearchBar
-        onSearch={this.handleSearch.bind(this)}
-        SearchForm={searchForm!}
-        searchParam={this.domainService.store.searchParam}
-      />
-    );
     return (
       <div>
         {this.getEntityFormPop(formProps)}
-        {searchBarOnTop && searchBar}
+        {searchBarOnTop && this.getSearchFormBar()}
         <div
           style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', margin: '0.2rem 0' }}
         >
-          {!searchBarOnTop && searchBar}
+          {!searchBarOnTop && this.getSearchFormBar()}
           <OperatorBar
             onCreate={this.handleCreate.bind(this)}
             onUpdate={this.handleUpdate.bind(this)}
@@ -305,6 +297,19 @@ export abstract class EntityList<
   }
   getSearchForm(): typeof SearchForm | null {
     return null;
+  }
+  getSearchFormBar(props?: Partial<SearchFromBarProps>): React.ReactNode {
+    const searchForm = this.getSearchForm();
+    return (
+      searchForm && (
+        <SearchBar
+          onSearch={this.handleSearch.bind(this)}
+          SearchForm={searchForm!}
+          searchParam={this.domainService.store.searchParam}
+          {...props}
+        />
+      )
+    );
   }
   getOperatorEnable(): OperatorSwitch {
     const { selectedRowKeys } = this.state;

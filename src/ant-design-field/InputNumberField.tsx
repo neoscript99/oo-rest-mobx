@@ -6,6 +6,6 @@ import { InputNumberProps } from 'antd/lib/input-number';
 
 export class InputNumberField extends AbstractField<InputNumberProps & FieldProps> {
   getField() {
-    return <InputNumber {...this.getInputProps()} />;
+    return <InputNumber style={{ width: '100%' }} {...this.getInputProps()} />;
   }
 }
