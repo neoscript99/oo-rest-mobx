@@ -71,18 +71,9 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
   }
 
   goProfile(): boolean {
-    const {
-      adminServices: { loginService, paramService },
-      location,
-      history,
-      profilePath,
-    } = this.props;
+    const { location, history, profilePath } = this.props;
     const pathname = profilePath || '/Profile';
-    if (
-      loginService.store.forcePasswordChange &&
-      paramService.getByCode('ChangeInitPassword')?.value === 'true' &&
-      location.pathname !== pathname
-    ) {
+    if (location.pathname !== pathname) {
       console.debug('Home.goProfile: ', location.pathname, pathname);
       history.push(pathname);
       return true;
@@ -91,7 +82,7 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
   }
   render() {
     const {
-      adminServices: { menuService, loginService },
+      adminServices: { menuService, loginService, paramService },
       location,
       match,
       logoRender,
@@ -107,7 +98,11 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
       loginService.store.lastRoutePath = location.pathname;
       history.push(loginPath);
       return null;
-    } else if (this.goProfile()) {
+    } else if (
+      loginService.store.forcePasswordChange &&
+      paramService.getByCode('ChangeInitPassword')?.value === 'true' &&
+      this.goProfile()
+    ) {
       return null;
     }
     const buttonCss: React.CSSProperties = { padding: '3px' };

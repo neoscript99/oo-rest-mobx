@@ -8,7 +8,7 @@ import { CheckboxChangeEvent, CheckboxProps } from 'antd/lib/checkbox';
 import { Entity, UserEntity } from '../../../services';
 import { InputField } from '../../../ant-design-field';
 
-const { required, email } = commonRules;
+const { required, email, cellPhone } = commonRules;
 
 interface S {
   showPassword: boolean;
@@ -79,7 +79,15 @@ class ProfileFrom extends Component<ProfileFormProps> {
     return (
       <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
         <InputField fieldId="dept.name" formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
-        <InputField fieldId="cellPhone" formItemProps={{ label: '手机号码' }} formUtils={form} maxLength={16} />
+        <InputField
+          fieldId="cellPhone"
+          formItemProps={{ label: '手机号码' }}
+          decorator={{
+            rules: [required, cellPhone],
+          }}
+          formUtils={form}
+          maxLength={11}
+        />
         <InputField
           fieldId="email"
           formItemProps={{ label: '电子邮箱' }}

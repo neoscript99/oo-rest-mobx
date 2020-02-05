@@ -9,7 +9,7 @@ import { AdminServices } from '../AdminServices';
 import { SelectField, InputField, CheckboxField } from '../../../ant-design-field';
 import { CheckboxGroupField } from '../../../ant-design-field/CheckboxGroupField';
 import { DeptSelectField } from '../../common';
-const { required } = commonRules;
+const { required, cellPhone } = commonRules;
 interface S {
   allRoles?: CheckboxOptionType[];
   userRoleIds: string[];
@@ -94,10 +94,10 @@ export class UserForm extends EntityForm<UserFormProps, S> {
         <InputField
           {...make('cellPhone', '手机号码')}
           decorator={{
-            rules: [{ type: 'number' }],
+            rules: [...(this.justSameDept ? [required] : []), cellPhone],
           }}
           minLength={11}
-          maxLength={13}
+          maxLength={11}
           readonly={readonly}
         />
         <InputField

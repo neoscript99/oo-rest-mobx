@@ -1,13 +1,20 @@
 import { ValidationRule } from 'antd/lib/form';
 import moment, { unitOfTime } from 'moment';
-import { DatePickerField } from '../ant-design-field';
 
 /** built-in validation type, available options: https://github.com/yiminghe/async-validator#type */
 export const commonRules: Readonly<{ [key: string]: ValidationRule }> = {
   required: { required: true, whitespace: true, message: '不能为空!' },
   json: { pattern: /^\{(\".+\":.+\,?)*\}$/, message: '请输入Json格式的字符串，例如：{"user":"one","on":true}' },
   email: { type: 'email', message: '邮箱格式错误' },
-  numberRule: { required: true, type: 'number', message: '数字格式错误' },
+  number: { type: 'number', message: '数字格式错误' },
+  cellPhone: {
+    pattern: /^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$/,
+    message: '手机号码不规范',
+  },
+  cellPhoneSimple: {
+    pattern: /^[1]([3-9])[0-9]{9}$/,
+    message: '手机号码不规范',
+  },
   idCard: {
     validator: async (rule: ValidationRule, value: string) => {
       //空值校验有required处理
