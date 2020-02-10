@@ -4,3 +4,4 @@ export * from './stringUtil';
 export * from './tableUtil';
 export * from './styleUtil';
 export * from './validationRules';
+export * from './Consts';
