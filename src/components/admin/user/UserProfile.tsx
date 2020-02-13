@@ -80,11 +80,17 @@ class ProfileFrom extends Component<ProfileFormProps> {
       <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
         <InputField fieldId="dept.name" formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
         <InputField
+          fieldId="name"
+          formItemProps={{ label: '姓名' }}
+          decorator={{ rules: [required] }}
+          formUtils={form}
+          maxLength={10}
+          minLength={2}
+        />
+        <InputField
           fieldId="cellPhone"
           formItemProps={{ label: '手机号码' }}
-          decorator={{
-            rules: [required, cellPhone],
-          }}
+          decorator={{ rules: [required, cellPhone] }}
           formUtils={form}
           maxLength={11}
         />
@@ -108,9 +114,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
             formUtils={form}
             formItemProps={{ label: '密码' }}
             maxLength={16}
-            decorator={{
-              rules: [genRules.minString(4)],
-            }}
+            decorator={{ rules: [genRules.minString(4)] }}
           />
         )}
         {showPassword && (
@@ -120,12 +124,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
             })(<Input maxLength={16} type="password" allowClear={true} />)}
           </Form.Item>
         )}
-        <Form.Item
-          wrapperCol={{
-            span: 16,
-            offset: 8,
-          }}
-        >
+        <Form.Item wrapperCol={{ span: 16, offset: 8 }}>
           <Button type="primary" onClick={this.handleSubmit.bind(this)}>
             提交
           </Button>

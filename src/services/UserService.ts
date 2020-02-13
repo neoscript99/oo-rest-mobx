@@ -29,6 +29,11 @@ export class UserService extends DomainService {
 
     return this.deptUserMap[id];
   }
+  //部门用户更新、删除后进行刷新
+  clearDeptUsers(dept: DeptEntity) {
+    const id = dept.id as string;
+    if (this.deptUserMap[id]) delete this.deptUserMap[id];
+  }
   saveUserRoles(user: Entity, roleIds: string[]) {
     return this.postApi('saveWithRoles', { user, roleIds });
   }

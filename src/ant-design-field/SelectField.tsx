@@ -58,6 +58,9 @@ interface SelectWrapProps extends SelectProps {
   originValue?: string;
 }
 
+/**
+ * valuePropName： 多值方式：originValue 普通：value
+ */
 class SelectWrap extends React.Component<SelectWrapProps> {
   render() {
     const { originValue, value, mode, ...selectProps } = this.props;
