@@ -32,7 +32,6 @@ export interface EntityListState {
 
 export interface EntityTableProps extends TableProps<Entity> {
   pagination: PaginationConfig;
-  rowSelection: TableRowSelection<Entity>;
 }
 
 export interface EntityColumnProps extends ColumnProps<Entity> {
@@ -194,7 +193,7 @@ export abstract class EntityList<
   }
 
   changeSelectRows(selectedRowKeys?: string[] | number[]) {
-    this.tableProps.rowSelection.selectedRowKeys = selectedRowKeys;
+    if (this.tableProps.rowSelection) this.tableProps.rowSelection.selectedRowKeys = selectedRowKeys;
     this.setState({ selectedRowKeys });
   }
 
