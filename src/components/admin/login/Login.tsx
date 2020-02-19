@@ -74,19 +74,18 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
           </LoginBoxItem>
           <LoginBoxItem>
             <Form onSubmit={this.handleSubmit.bind(this)} style={{ maxWidth: '300px' }}>
-              <Form.Item>
+              <Form.Item label="用户名">
                 {getFieldDecorator('username', {
                   rules: [{ required: true, message: '用户名不能为空!' }],
                 })(
                   <Input
                     prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    placeholder="用户名"
                     size="large"
                     autoComplete="username"
                   />,
                 )}
               </Form.Item>
-              <Form.Item>
+              <Form.Item label="密码">
                 {getFieldDecorator('password', {
                   rules: [{ required: true, message: '密码不能为空!' }],
                 })(
@@ -95,7 +94,6 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
                     type="password"
                     size="large"
                     autoComplete="password"
-                    placeholder="密码"
                   />,
                 )}
               </Form.Item>

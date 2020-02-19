@@ -213,19 +213,19 @@ export abstract class EntityList<
     return undefined;
   }
 
-  handleUpdate() {
-    const item = this.getSelectItem();
+  handleUpdate(entity?: Entity) {
+    const item = entity || this.getSelectItem();
     if (item)
       this.setState({
         formProps: this.genFormProps('修改', item),
       });
   }
 
-  handleDelete(): Promise<any> {
-    const { selectedRowKeys } = this.state;
-    if (selectedRowKeys)
+  handleDelete(keys?: any[]): Promise<any> {
+    const ids = keys || this.state.selectedRowKeys;
+    if (ids)
       return this.domainService
-        .deleteByIds(selectedRowKeys as any[])
+        .deleteByIds(ids as any[])
         .then(() => {
           message.success('删除成功');
           this.query();

@@ -61,7 +61,7 @@ export class LoginService extends RestService {
           message.warn('请修改初始密码');
         }
         if (remember) this.saveLoginInfoLocal(username, passwordHash);
-      }
+      } else message.error(loginInfo.error);
       this.doAfterLogin(loginInfo);
       return loginInfo;
     });
@@ -121,7 +121,7 @@ export class LoginService extends RestService {
         loginInfo.user = { account: loginInfo.account || '', dept: { name: '外部临时用户', seq: 0, enabled: true } };
       if (this.afterLogins) for (const afterLogin of this.afterLogins) await afterLogin(loginInfo);
     } else {
-      console.debug(loginInfo.error);
+      console.debug('LoginService.doAfterLogin: ', loginInfo.error);
     }
     //等待上面的初始化操作全部执行后
     //store信息最后更新，触发界面刷新，保证初始化已完成
