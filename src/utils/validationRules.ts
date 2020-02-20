@@ -6,7 +6,8 @@ export const commonRules: Readonly<{ [key: string]: ValidationRule }> = {
   required: { required: true, whitespace: true, message: '不能为空!' },
   json: { pattern: /^\{(\".+\":.+\,?)*\}$/, message: '请输入Json格式的字符串，例如：{"user":"one","on":true}' },
   email: { type: 'email', message: '邮箱格式错误' },
-  number: { type: 'number', message: '数字格式错误' },
+  number: { type: 'number', required: true, message: '数字格式错误' },
+  array: { type: 'array', required: true, message: '不能为空!' },
   cellPhone: {
     pattern: /^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$/,
     message: '手机号码不规范',

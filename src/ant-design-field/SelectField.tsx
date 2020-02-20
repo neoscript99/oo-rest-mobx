@@ -4,9 +4,8 @@ import { SelectProps } from 'antd/lib/select';
 import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
-import { StringUtil } from '../utils';
 
-export interface SelectFieldProps extends SelectProps, FieldProps {
+export interface SelectFieldProps extends SelectWrapProps, FieldProps {
   dataSource?: any[];
   keyProp?: string;
   valueProp: string;
@@ -17,14 +16,14 @@ export interface SelectFieldProps extends SelectProps, FieldProps {
 
 export class SelectField extends AbstractField<SelectFieldProps> {
   get defaultDecorator() {
-    const { defaultSelectFirst, dataSource, valueProp, mode } = this.props;
+    const { defaultSelectFirst, dataSource, valueProp, mode, originValueType } = this.props;
     const newDecorator: GetFieldDecoratorOptions = {};
     if (defaultSelectFirst && dataSource && dataSource.length > 0) {
       newDecorator.initialValue = dataSource[0][valueProp];
     }
     //如果是以上多值方式，将选择项的value转为为逗号分隔的字符串
     if (isMultipleMode(mode)) {
-      newDecorator.getValueFromEvent = array => (array as string[]).join(',');
+      newDecorator.getValueFromEvent = array => (originValueType === 'array' ? array : (array as string[]).join(','));
 
       newDecorator.valuePropName = 'originValue';
     }
@@ -55,7 +54,11 @@ export class SelectField extends AbstractField<SelectFieldProps> {
   }
 }
 interface SelectWrapProps extends SelectProps {
-  originValue?: string;
+  originValue?: string | any[];
+  //string 逗号分隔value
+  //array 原始功能
+  //默认为string
+  originValueType?: 'string' | 'array';
 }
 
 /**
@@ -63,10 +66,11 @@ interface SelectWrapProps extends SelectProps {
  */
 class SelectWrap extends React.Component<SelectWrapProps> {
   render() {
-    const { originValue, value, mode, ...selectProps } = this.props;
+    const { originValue, originValueType, value, mode, ...selectProps } = this.props;
     let v = value;
     if (isMultipleMode(mode)) {
-      v = StringUtil.isNotBlank(originValue) ? originValue!.split(',') : undefined;
+      v = originValue;
+      if (originValueType !== 'array' && typeof originValue === 'string') v = originValue.split(',');
     }
     return (
       <Select mode={mode} value={v} placeholder="---请选择---" optionFilterProp="children" {...selectProps}></Select>

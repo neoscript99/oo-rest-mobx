@@ -2,10 +2,11 @@ import React from 'react';
 import { AdminPageProps } from '../AdminServices';
 import { commonColumns, StringUtil } from '../../../utils';
 import { EntityPageList, EntityColumnProps, SimpleSearchForm, EntityListState, EntityFormProps } from '../../layout';
-import { ListOptions, UserService } from '../../../services';
+import { Criteria, ListOptions, UserService } from '../../../services';
 import { UserForm, UserFormProps } from './UserForm';
 import { Entity } from '../../../services';
 import { Button, message, Popconfirm } from 'antd';
+import { UserSearchForm } from './UserSearchForm';
 
 export class UserList<
   P extends AdminPageProps = AdminPageProps,
@@ -74,22 +75,13 @@ export class UserList<
   }
   getQueryParam(): ListOptions {
     const param = super.getQueryParam();
-    const { searchParam } = this.domainService.store;
-    if (searchParam && StringUtil.isNotBlank(searchParam.searchKey)) {
-      const key = `${searchParam.searchKey}%`;
-      param.criteria = {
-        or: {
-          ilike: [
-            ['name', key],
-            ['account', key],
-          ],
-        },
-      };
-    }
-    return param;
+    const criteria: Criteria = {};
+    const {
+      searchParam: { account, name, deptId },
+    } = this.domainService.store;
+    if (StringUtil.isNotBlank(account)) criteria.ilike = [['account', account + '%']];
+    if (StringUtil.isNotBlank(name)) criteria.like = [['name', '%' + name + '%']];
+    if (deptId) criteria.dept = { eq: [['id', deptId]] };
+    return { ...param, criteria };
   }
-}
-
-export class UserSearchForm extends SimpleSearchForm {
-  placeholder = '名称、帐号';
 }

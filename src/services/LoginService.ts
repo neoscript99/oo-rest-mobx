@@ -2,9 +2,7 @@ import { message } from 'antd';
 import { AbstractClient, DeptEntity, UserEntity } from './index';
 import { StringUtil } from '../utils';
 import { LoginStore } from '../stores/LoginStore';
-import { computed } from 'mobx';
 import { RestService } from './RestService';
-import { log } from 'util';
 
 /**
  * 如果是系统自己认证：user 有 ， account 有

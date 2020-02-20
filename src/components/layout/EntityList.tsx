@@ -213,16 +213,29 @@ export abstract class EntityList<
     return undefined;
   }
 
-  handleUpdate(entity?: Entity) {
-    const item = entity || this.getSelectItem();
+  handleUpdate() {
+    this.doUpdate(this.getSelectItem());
+  }
+
+  /**
+   * 可用于事件处理参数绑定
+   * @param item
+   */
+  doUpdate(item) {
     if (item)
       this.setState({
         formProps: this.genFormProps('修改', item),
       });
   }
+  handleDelete(): Promise<any> {
+    return this.doDelete(this.state.selectedRowKeys);
+  }
 
-  handleDelete(keys?: any[]): Promise<any> {
-    const ids = keys || this.state.selectedRowKeys;
+  /**
+   * 可用于事件处理参数绑定
+   * @param ids
+   */
+  doDelete(ids): Promise<any> {
     if (ids)
       return this.domainService
         .deleteByIds(ids as any[])
@@ -231,9 +244,8 @@ export abstract class EntityList<
           this.query();
         })
         .catch(err => message.error('删除失败，可能存在依赖信息无法删除'));
-    else return Promise.reject('请先选择记录');
+    else return Promise.reject('请选择记录');
   }
-
   handleView() {
     const item = this.getSelectItem();
     if (item) {
@@ -244,9 +256,9 @@ export abstract class EntityList<
   /**
    * 不用get property是因为无法继承
    */
-  getSelectItem() {
+  getSelectItem(): Entity | undefined {
     const { selectedRowKeys, dataList } = this.state;
-    if (!selectedRowKeys || !dataList) return null;
+    if (!selectedRowKeys || !dataList) return undefined;
     const id = selectedRowKeys[0];
     return dataList.find(v => v.id === id);
   }
