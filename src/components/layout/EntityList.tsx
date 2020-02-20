@@ -5,7 +5,7 @@ import { fromPageInfo, toPageInfo, LangUtil } from '../../utils';
 import { EntityForm, EntityFormProps } from './EntityForm';
 import { OperatorBar } from './OperatorBar';
 import { SearchBar, SearchFromBarProps } from './SearchBar';
-import { SearchForm } from './SearchForm';
+import { SearchForm, SearchFormProps } from './SearchForm';
 import { DomainService, Entity, ListOptions, ListResult } from '../../services';
 import { CheckboxField, InputField, SelectField } from '../../ant-design-field';
 import { RouteChildrenProps } from 'react-router';
@@ -306,20 +306,22 @@ export abstract class EntityList<
       return <FormComponent {...formProps} />;
     } else return null;
   }
+
   getSearchForm(): typeof SearchForm | null {
     return null;
   }
+  searchFormRender(props: SearchFormProps): React.ReactNode {
+    const SearchForm = this.getSearchForm();
+    return SearchForm && <SearchForm {...props} />;
+  }
   getSearchFormBar(props?: Partial<SearchFromBarProps>): React.ReactNode {
-    const searchForm = this.getSearchForm();
     return (
-      searchForm && (
-        <SearchBar
-          onSearch={this.handleSearch.bind(this)}
-          SearchForm={searchForm!}
-          searchParam={this.domainService.store.searchParam}
-          {...props}
-        />
-      )
+      <SearchBar
+        onSearch={this.handleSearch.bind(this)}
+        formRender={this.searchFormRender.bind(this)}
+        searchParam={this.domainService.store.searchParam}
+        {...props}
+      />
     );
   }
   getOperatorEnable(): OperatorSwitch {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { AdminPageProps } from '../AdminServices';
 import { commonColumns, StringUtil } from '../../../utils';
-import { EntityPageList, EntityColumnProps, SimpleSearchForm, EntityListState, EntityFormProps } from '../../layout';
+import { EntityPageList, EntityColumnProps, EntityListState, EntityFormProps, SearchFormProps } from '../../layout';
 import { Criteria, ListOptions, UserService } from '../../../services';
 import { UserForm, UserFormProps } from './UserForm';
 import { Entity } from '../../../services';
@@ -70,8 +70,8 @@ export class UserList<
   getEntityForm() {
     return UserForm;
   }
-  getSearchForm() {
-    return UserSearchForm;
+  searchFormRender(props: SearchFormProps): React.ReactNode {
+    return <UserSearchForm {...props} deptList={this.props.services.deptService.store.enabledList} />;
   }
   getQueryParam(): ListOptions {
     const param = super.getQueryParam();

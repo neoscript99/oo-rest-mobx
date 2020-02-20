@@ -1,12 +1,12 @@
 import React, { Component, CSSProperties } from 'react';
 import { Button } from 'antd';
-import { SearchForm } from './SearchForm';
+import { SearchForm, SearchFormProps } from './SearchForm';
 import { FormComponentProps } from 'antd/lib/form';
 import { ReactUtil } from '../../utils/ReactUtil';
 
 export interface SearchFromBarProps extends FormComponentProps {
   onSearch: (searchParam: any) => void;
-  SearchForm: typeof SearchForm;
+  formRender: (props: SearchFormProps) => React.ReactNode;
   searchParam: any;
   style?: CSSProperties;
 }
@@ -17,13 +17,16 @@ const buttonCss: CSSProperties = {
 
 class SearchFromBar extends Component<SearchFromBarProps> {
   render() {
-    const { SearchForm, form, style } = this.props;
+    const { formRender, form, style } = this.props;
+    const formNode = formRender({ form, onChange: this.handleSearch.bind(this) });
     return (
-      <div style={{ display: 'flex', alignItems: 'center', ...style }}>
-        <SearchForm form={form} onChange={this.handleSearch.bind(this)} />
-        <Button icon="search" type="primary" style={buttonCss} title="查询" onClick={this.handleSearch.bind(this)} />
-        <Button icon="delete" style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
-      </div>
+      formNode && (
+        <div style={{ display: 'flex', alignItems: 'center', ...style }}>
+          {formNode}
+          <Button icon="search" type="primary" style={buttonCss} title="查询" onClick={this.handleSearch.bind(this)} />
+          <Button icon="delete" style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
+        </div>
+      )
     );
   }
 

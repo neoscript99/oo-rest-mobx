@@ -4,5 +4,7 @@ import { Entity } from '../services';
 
 export class DeptStore extends MobxDomainStore {
   @observable
+  completeList: Entity[] = [];
+  @observable
   enabledList: Entity[] = [];
 }

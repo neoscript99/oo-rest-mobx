@@ -15,6 +15,9 @@ export class DeptService extends DomainService<DeptStore> implements DictInitSer
   }
 
   initDictList() {
-    this.listAll({ orders: ['seq'] }).then(res => (this.store.enabledList = res.results.filter(dept => dept.enabled)));
+    this.list({ orders: ['name'] }).then(res => {
+      this.store.completeList = res.results;
+      this.store.enabledList = res.results.filter(dept => dept.enabled);
+    });
   }
 }
