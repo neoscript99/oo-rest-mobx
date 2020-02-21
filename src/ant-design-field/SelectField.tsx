@@ -19,7 +19,8 @@ export class SelectField extends AbstractField<SelectFieldProps> {
     const { defaultSelectFirst, dataSource, valueProp, mode, originValueType } = this.props;
     const newDecorator: GetFieldDecoratorOptions = {};
     if (defaultSelectFirst && dataSource && dataSource.length > 0) {
-      newDecorator.initialValue = dataSource[0][valueProp];
+      const defaultVaule = dataSource[0][valueProp];
+      newDecorator.initialValue = originValueType === 'array' ? [defaultVaule] : defaultVaule;
     }
     //如果是以上多值方式，将选择项的value转为为逗号分隔的字符串
     if (isMultipleMode(mode)) {

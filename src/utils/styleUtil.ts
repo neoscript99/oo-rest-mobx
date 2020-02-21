@@ -1,5 +1,8 @@
 import styled from 'styled-components';
 import React from 'react';
+export interface CommonStyle {
+  [key: string]: React.CSSProperties;
+}
 export class StyleUtil {
   static hiddenText(maxSize: number) {
     return styled.p`
@@ -25,7 +28,9 @@ export class StyleUtil {
     `;
   }
 
-  static flexForm(css?: React.CSSProperties): React.CSSProperties {
-    return { display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%', ...css };
-  }
+  static commonStyle: CommonStyle = {
+    flexFormCss: { display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' },
+    oneSpanFormItemCss: { width: '22em' },
+    twoSpanFormItemCss: { width: '44em' },
+  };
 }

@@ -22,8 +22,8 @@ export interface UserFormProps extends EntityFormProps {
   justSameDept?: boolean;
   autoGenerateAccount?: boolean;
 }
+const { flexFormCss, oneSpanFormItemCss, twoSpanFormItemCss } = StyleUtil.commonStyle;
 export class UserForm extends EntityForm<UserFormProps, S> {
-  formItemCss: React.CSSProperties = { width: '22em' };
   get userService(): UserService {
     return this.props.services.userService;
   }
@@ -72,11 +72,11 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     ];
     const make = (fieldId: string, label: string) => ({
       fieldId,
-      formItemProps: { label, style: this.formItemCss },
+      formItemProps: { label, style: oneSpanFormItemCss },
       formUtils: form,
     });
     return (
-      <Form style={StyleUtil.flexForm()}>
+      <Form style={flexFormCss}>
         {(!autoGenerateAccount || readonly) && (
           <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} readonly={readonly} />
         )}
@@ -126,7 +126,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           <CheckboxGroupField
             fieldId="roleIds"
             options={allRoles}
-            formItemProps={{ label: '角色', style: { ...this.formItemCss, width: '46em' } }}
+            formItemProps={{ label: '角色', style: twoSpanFormItemCss }}
             formUtils={form}
             decorator={{ initialValue: userRoleIds }}
             readonly={readonly}

@@ -243,8 +243,12 @@ export abstract class EntityList<
           message.success('删除成功');
           this.query();
         })
-        .catch(err => message.error('删除失败，可能存在依赖信息无法删除'));
+        .catch(err => this.handleDeleteError(err));
     else return Promise.reject('请选择记录');
+  }
+  handleDeleteError(err, msg?: string) {
+    console.error('EntityList.handleDeleteError: ', err);
+    message.error(msg || '删除失败，可能存在依赖信息无法删除');
   }
   handleView() {
     const item = this.getSelectItem();
