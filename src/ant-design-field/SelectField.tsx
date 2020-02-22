@@ -70,8 +70,9 @@ class SelectWrap extends React.Component<SelectWrapProps> {
     const { originValue, originValueType, value, mode, ...selectProps } = this.props;
     let v = value;
     if (isMultipleMode(mode)) {
-      v = originValue;
-      if (originValueType !== 'array' && typeof originValue === 'string') v = originValue.split(',');
+      // 如果为空必须返回undefined，不能返回null，会导致界面显示一个空选项
+      v = undefined;
+      if (originValue) v = originValueType === 'array' ? originValue : (originValue as string).split(',');
     }
     return (
       <Select mode={mode} value={v} placeholder="---请选择---" optionFilterProp="children" {...selectProps}></Select>

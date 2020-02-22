@@ -76,10 +76,13 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
 
   //props中传入的优先
   handleRemove(file: UploadFile) {
-    //被主表关联，不能直接删除，先把owner值为空，由定时任务删除
     //return this.props.attachmentService.delete(file.response.id).then(count => count === 1);
+    // 被主表关联，不能删除，可以先把owner值为空，由定时任务删除，
+    // 但界面点了删除之后可能没有保存，所以这一步操作也不能做，
+    // 如果要正确处理，需要先把删除信息保存下来，等界面点击提交后再做删除动作
+    // 比如可在EntityForm.saveEntity中判断，saveItem和inputItem的附件是否相同，如果不同删除原附件，
+    // 但这个操作只能手工征对性处理
     //return this.props.attachmentService.save({ id: file.response.id, ownerId: null, ownerName: null }).then(v => true);
-    //附件不能直接删除，界面还未提交，统一由后台定时任务处理
     return true;
   }
   beforeUpload(file: RcFile, fileList: RcFile[]) {
