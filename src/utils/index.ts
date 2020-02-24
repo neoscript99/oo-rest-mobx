@@ -5,3 +5,4 @@ export * from './tableUtil';
 export * from './styleUtil';
 export * from './validationRules';
 export * from './Consts';
+export * from './ObjectUtil';

@@ -4,15 +4,9 @@ import { SelectProps } from 'antd/lib/select';
 import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
+import { ObjectUtil } from '../utils';
 
-export interface SelectFieldProps extends SelectWrapProps, FieldProps {
-  dataSource?: any[];
-  keyProp?: string;
-  valueProp: string;
-  labelProp?: string;
-  labelRender?: (item) => React.ReactNode;
-  defaultSelectFirst?: boolean;
-}
+export interface SelectFieldProps extends SelectWrapProps, FieldProps {}
 
 export class SelectField extends AbstractField<SelectFieldProps> {
   get defaultDecorator() {
@@ -33,28 +27,16 @@ export class SelectField extends AbstractField<SelectFieldProps> {
   }
 
   getField() {
-    const {
-      dataSource,
-      keyProp,
-      valueProp,
-      labelProp,
-      labelRender,
-      defaultSelectFirst,
-      ...selectProps
-    } = this.getInputProps();
-    return (
-      <SelectWrap {...selectProps}>
-        {dataSource &&
-          dataSource.map(item => (
-            <Select.Option key={item[keyProp || valueProp]} value={item[valueProp]}>
-              {labelRender ? labelRender(item) : labelProp ? item[labelProp] : item[valueProp]}
-            </Select.Option>
-          ))}
-      </SelectWrap>
-    );
+    return <SelectWrap {...this.getInputProps()} />;
   }
 }
-interface SelectWrapProps extends SelectProps {
+export interface SelectWrapProps extends SelectProps {
+  dataSource?: any[];
+  keyProp?: string;
+  valueProp: string;
+  labelProp?: string;
+  labelRender?: (item) => React.ReactNode;
+  defaultSelectFirst?: boolean;
   originValue?: string | any[];
   //string 逗号分隔value
   //array 原始功能
@@ -65,17 +47,41 @@ interface SelectWrapProps extends SelectProps {
 /**
  * valuePropName： 多值方式：originValue 普通：value
  */
-class SelectWrap extends React.Component<SelectWrapProps> {
+export class SelectWrap extends React.Component<SelectWrapProps> {
   render() {
-    const { originValue, originValueType, value, mode, ...selectProps } = this.props;
+    const {
+      dataSource,
+      keyProp,
+      valueProp,
+      labelProp,
+      labelRender,
+      defaultSelectFirst,
+      originValue,
+      originValueType,
+      value,
+      mode,
+      ...selectProps
+    } = this.props;
     let v = value;
     if (isMultipleMode(mode)) {
       // 如果为空必须返回undefined，不能返回null，会导致界面显示一个空选项
       v = undefined;
       if (originValue) v = originValueType === 'array' ? originValue : (originValue as string).split(',');
     }
+    if (!v && defaultSelectFirst && dataSource && dataSource.length > 0) v = dataSource[0][valueProp];
     return (
-      <Select mode={mode} value={v} placeholder="---请选择---" optionFilterProp="children" {...selectProps}></Select>
+      <Select mode={mode} value={v} placeholder="---请选择---" optionFilterProp="children" {...selectProps}>
+        {dataSource &&
+          dataSource.map(item => (
+            <Select.Option key={ObjectUtil.get(item, keyProp || valueProp)} value={ObjectUtil.get(item, valueProp)}>
+              {labelRender
+                ? labelRender(item)
+                : labelProp
+                ? ObjectUtil.get(item, labelProp)
+                : ObjectUtil.get(item, valueProp)}
+            </Select.Option>
+          ))}
+      </Select>
     );
   }
 }

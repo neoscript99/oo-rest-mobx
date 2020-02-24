@@ -344,4 +344,7 @@ export abstract class EntityList<
   get name(): string | undefined {
     return this.props.name;
   }
+  get store() {
+    return this.domainService.store;
+  }
 }
