@@ -10,17 +10,14 @@ export interface SelectFieldProps extends SelectWrapProps, FieldProps {}
 
 export class SelectField extends AbstractField<SelectFieldProps> {
   get defaultDecorator() {
-    const { defaultSelectFirst, dataSource, valueProp, mode, originValueType } = this.props;
+    const { mode, multiValueType } = this.props;
     const newDecorator: GetFieldDecoratorOptions = {};
-    if (defaultSelectFirst && dataSource && dataSource.length > 0) {
-      const defaultVaule = dataSource[0][valueProp];
-      newDecorator.initialValue = originValueType === 'array' ? [defaultVaule] : defaultVaule;
-    }
-    //如果是以上多值方式，将选择项的value转为为逗号分隔的字符串
+    newDecorator.initialValue = getFirstValue(this.props);
+    //如果是多值方式，将选择项的value转为为逗号分隔的字符串
     if (isMultipleMode(mode)) {
-      newDecorator.getValueFromEvent = array => (originValueType === 'array' ? array : (array as string[]).join(','));
+      newDecorator.getValueFromEvent = array => (multiValueType === 'array' ? array : (array as string[]).join(','));
 
-      newDecorator.valuePropName = 'originValue';
+      newDecorator.valuePropName = 'multiValue';
     }
 
     return newDecorator;
@@ -37,15 +34,15 @@ export interface SelectWrapProps extends SelectProps {
   labelProp?: string;
   labelRender?: (item) => React.ReactNode;
   defaultSelectFirst?: boolean;
-  originValue?: string | any[];
+  multiValue?: string | any[];
   //string 逗号分隔value
   //array 原始功能
   //默认为string
-  originValueType?: 'string' | 'array';
+  multiValueType?: 'string' | 'array';
 }
 
 /**
- * valuePropName： 多值方式：originValue 普通：value
+ * valuePropName： 多值方式：multiValue 普通：value
  */
 export class SelectWrap extends React.Component<SelectWrapProps> {
   render() {
@@ -56,21 +53,22 @@ export class SelectWrap extends React.Component<SelectWrapProps> {
       labelProp,
       labelRender,
       defaultSelectFirst,
-      originValue,
-      originValueType,
+      multiValue,
+      multiValueType,
       value,
       mode,
       ...selectProps
     } = this.props;
     let v = value;
     if (isMultipleMode(mode)) {
-      // 如果为空必须返回undefined，不能返回null，会导致界面显示一个空选项
-      v = undefined;
-      if (originValue) v = originValueType === 'array' ? originValue : (originValue as string).split(',');
+      if (typeof multiValue === 'string') v = multiValue.split(',');
+      else if (multiValue === null) v = [];
+      else if (multiValue) v = multiValue;
     }
-    if (!v && defaultSelectFirst && dataSource && dataSource.length > 0) v = dataSource[0][valueProp];
+    // value: undefined如果传入，defaultValue不起作用
+    const values = v !== undefined ? { value: v } : { defaultValue: getFirstValue(this.props) };
     return (
-      <Select mode={mode} value={v} placeholder="---请选择---" optionFilterProp="children" {...selectProps}>
+      <Select mode={mode} {...values} placeholder="---请选择---" optionFilterProp="children" {...selectProps}>
         {dataSource &&
           dataSource.map(item => (
             <Select.Option key={ObjectUtil.get(item, keyProp || valueProp)} value={ObjectUtil.get(item, valueProp)}>
@@ -92,4 +90,12 @@ export class SelectWrap extends React.Component<SelectWrapProps> {
  */
 function isMultipleMode(mode?: string) {
   return mode && ['multiple', 'tags'].includes(mode);
+}
+
+function getFirstValue(props: SelectWrapProps): any[] | string | undefined {
+  const { defaultSelectFirst, dataSource, valueProp, mode, multiValueType } = props;
+  if (!(defaultSelectFirst && dataSource && dataSource.length > 0)) return undefined;
+
+  const defaultValue = ObjectUtil.get(dataSource[0], valueProp);
+  return isMultipleMode(mode) && multiValueType === 'array' ? [defaultValue] : defaultValue;
 }
