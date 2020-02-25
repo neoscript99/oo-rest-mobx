@@ -1,6 +1,6 @@
 import React from 'react';
 import { EntityListState, EntityList, EntityListProps } from './EntityList';
-import { fromPageInfo } from '../../utils';
+import { TableUtil } from '../../utils';
 import { ListResult } from '../../services';
 
 export abstract class EntityPageList<
@@ -36,7 +36,7 @@ export abstract class EntityPageList<
 
   restoreState() {
     const { pageInfo, pageList } = this.domainService.store;
-    Object.assign(this.tableProps.pagination, fromPageInfo(pageInfo));
+    Object.assign(this.tableProps.pagination, TableUtil.fromPageInfo(pageInfo));
     this.setState({ dataList: pageList });
   }
 }

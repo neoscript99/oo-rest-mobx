@@ -1,6 +1,7 @@
-import { LangUtil } from './langUtil';
+import { LangUtil } from './LangUtil';
 import { Form } from 'antd';
 import React from 'react';
+import { StyleUtil } from './StyleUtil';
 
 export class ReactUtil {
   static formWrapper<PP>(
@@ -23,5 +24,15 @@ export class ReactUtil {
       }
       return flat;
     } else return;
+  }
+
+  static hiddenTextRender(maxSize: number, value: string) {
+    const HiddenText = StyleUtil.hiddenText(maxSize);
+    return <HiddenText>{value}</HiddenText>;
+  }
+
+  static wordBreakTextRender(maxSize: number, value: string) {
+    const BreakText = StyleUtil.wordBreakText(maxSize);
+    return <BreakText>{value}</BreakText>;
   }
 }

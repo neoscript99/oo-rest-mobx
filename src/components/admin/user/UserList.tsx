@@ -1,6 +1,6 @@
 import React from 'react';
 import { AdminPageProps } from '../AdminServices';
-import { commonColumns, StringUtil } from '../../../utils';
+import { StringUtil, TableUtil } from '../../../utils';
 import { EntityPageList, EntityColumnProps, EntityListState, EntityFormProps, SearchFormProps } from '../../layout';
 import { Criteria, ListOptions, UserService } from '../../../services';
 import { UserForm, UserFormProps } from './UserForm';
@@ -8,6 +8,7 @@ import { Entity } from '../../../services';
 import { Button, message, Popconfirm } from 'antd';
 import { UserSearchForm } from './UserSearchForm';
 
+const { commonColumns } = TableUtil;
 export class UserList<
   P extends AdminPageProps = AdminPageProps,
   S extends EntityListState = EntityListState

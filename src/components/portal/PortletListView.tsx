@@ -1,7 +1,7 @@
 import React from 'react';
 import urlTemplate from 'url-template';
 import { Card, Table } from 'antd';
-import { StringUtil } from '../../utils/stringUtil';
+import { StringUtil } from '../../utils/StringUtil';
 import { ColumnProps } from 'antd/lib/table';
 import { DomainService, Entity } from '../../services';
 import { MobxDomainStore } from '../../stores';

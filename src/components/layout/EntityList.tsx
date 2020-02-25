@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/lib/table';
 import { message, Table, Tag } from 'antd';
-import { fromPageInfo, toPageInfo, LangUtil } from '../../utils';
+import { TableUtil, LangUtil } from '../../utils';
 import { EntityForm, EntityFormProps } from './EntityForm';
 import { OperatorBar } from './OperatorBar';
 import { SearchBar, SearchFromBarProps } from './SearchBar';
@@ -153,7 +153,7 @@ export abstract class EntityList<
 
   restoreState() {
     const { pageInfo, allList } = this.domainService.store;
-    Object.assign(this.tableProps.pagination, fromPageInfo(pageInfo));
+    Object.assign(this.tableProps.pagination, TableUtil.fromPageInfo(pageInfo));
     this.setState({ dataList: allList });
   }
 
@@ -187,7 +187,7 @@ export abstract class EntityList<
   }
 
   updateStorePageInfo() {
-    this.domainService.syncPageInfo(toPageInfo(this.tableProps.pagination));
+    this.domainService.syncPageInfo(TableUtil.toPageInfo(this.tableProps.pagination));
     //目前几种情况下，更新store.pageInfo后，当前页面的选择记录j 都应该清空
     this.changeSelectRows(undefined);
   }

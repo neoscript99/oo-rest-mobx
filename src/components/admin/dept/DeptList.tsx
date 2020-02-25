@@ -1,10 +1,11 @@
 import React from 'react';
 import { AdminPageProps } from '../AdminServices';
-import { commonColumns, StringUtil } from '../../../utils';
+import { TableUtil, StringUtil } from '../../../utils';
 import { EntityList, EntityColumnProps, SimpleSearchForm } from '../../layout';
 import { ListOptions } from '../../../services';
 import { DeptForm } from './DeptForm';
 
+const { commonColumns } = TableUtil;
 export class DeptList extends EntityList<AdminPageProps> {
   constructor(props: AdminPageProps) {
     super(props);

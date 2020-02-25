@@ -4,8 +4,9 @@ import { ColumnProps } from 'antd/lib/table';
 import { DomainService, Entity } from '../../services';
 import { MobxDomainStore } from '../../stores';
 import { Portlet, PortletProps, PortletState } from './Portlet';
-import { commonColumnRenders, commonSortFunctions } from '../../utils';
+import { TableUtil } from '../../utils';
 
+const { commonColumnRenders, commonSortFunctions } = TableUtil;
 export interface PortletColumnProps extends ColumnProps<Entity> {
   renderFun?: string;
   sortFun?: string;

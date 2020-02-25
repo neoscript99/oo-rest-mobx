@@ -1,17 +1,18 @@
 import React from 'react';
 import { AdminPageProps } from '../AdminServices';
-import { booleanLabel, StringUtil, timeFormater } from '../../../utils';
+import { StringUtil, TableUtil } from '../../../utils';
 import { EntityColumnProps, EntityList, SimpleSearchForm } from '../../layout';
 import { MobxDomainStore } from '../../../stores';
 import { DomainService, ListOptions } from '../../../services';
 
+const { booleanLabel, timeFormatter } = TableUtil;
 const columns: EntityColumnProps[] = [
   { title: '角色名', dataIndex: 'roleName' },
   { title: '角色代码(unique)', dataIndex: 'roleCode' },
   { title: '启用', dataIndex: 'enabled', render: booleanLabel },
   { title: '可编辑', dataIndex: 'editable', render: booleanLabel },
   { title: '描述', dataIndex: 'description' },
-  { title: '修改时间', dataIndex: 'lastUpdated', render: timeFormater },
+  { title: '修改时间', dataIndex: 'lastUpdated', render: timeFormatter },
 ];
 
 export class RoleList extends EntityList<AdminPageProps> {
