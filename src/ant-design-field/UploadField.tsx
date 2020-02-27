@@ -19,7 +19,9 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
       rules: required ? [{ required: true, type: single ? 'object' : 'array', message: '不能为空' }] : undefined,
       getValueFromEvent: (info: UploadChangeParam) => {
         console.debug('UploadField.getValueFromEvent: ', info);
-        const all = info.fileList.filter(file => file.status === 'done').map(file => file.response);
+
+        //发送到后台的数据只需要id属性，而且UploadWrap的fileList通过state管理，不需要这里的value回传
+        const all = info.fileList.filter(file => file.status === 'done').map(file => ({ id: file.response.id }));
         return single ? (all.length > 0 ? all[0] : undefined) : all;
       },
       trigger: 'onValueChange',
@@ -100,7 +102,7 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
     return true;
   }
   render() {
-    const { disabled, maxNumber, attachmentService, required, showUploadList, ...uploadProps } = this.props;
+    const { disabled, maxNumber, attachmentService, showUploadList, ...uploadProps } = this.props;
 
     const underLimit = (this.state?.fileList?.length || 0) < (maxNumber || 10);
     let listSwitch: boolean | ShowUploadListInterface = { showRemoveIcon: !disabled };

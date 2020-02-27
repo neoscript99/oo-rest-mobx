@@ -93,7 +93,12 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
 
   saveEntity(saveItem: Entity) {
     const { domainService, inputItem } = this.props;
-    return domainService.save({ ...inputItem, ...saveItem });
+    const id = inputItem?.id;
+    /**
+     * 如果id为空，代表是新增，inputItem是初始值，需要传入
+     * 否则只需传入id，后台支持部分属性更新
+     */
+    return domainService.save({ ...(id ? { id } : inputItem), ...saveItem });
   }
 
   /**
