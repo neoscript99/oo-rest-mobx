@@ -7,3 +7,4 @@ export * from './ValidateUtil';
 export * from './Consts';
 export * from './ObjectUtil';
 export * from './NumberUtil';
+export * from './ReactUtil';
