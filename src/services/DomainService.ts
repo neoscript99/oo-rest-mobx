@@ -4,7 +4,7 @@ import { AbstractClient } from './rest/AbstractClient';
 import { ServiceUtil } from '../utils';
 import { RestService } from './RestService';
 
-export interface DomainServiceOptions<D extends MobxDomainStore> {
+export interface DomainServiceOptions<D extends MobxDomainStore = MobxDomainStore> {
   domain: string;
   initStore?: D;
   storeClass?: new () => D;

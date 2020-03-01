@@ -26,12 +26,12 @@ export class ReactUtil {
     } else return;
   }
 
-  static hiddenTextRender(maxSize: number, value: string) {
+  static hiddenTextRender(maxSize: number, value: React.ReactNode) {
     const HiddenText = StyleUtil.hiddenText(maxSize);
     return <HiddenText>{value}</HiddenText>;
   }
 
-  static wordBreakTextRender(maxSize: number, value: string) {
+  static wordBreakTextRender(maxSize: number, value: React.ReactNode) {
     const BreakText = StyleUtil.wordBreakText(maxSize);
     return <BreakText>{value}</BreakText>;
   }
