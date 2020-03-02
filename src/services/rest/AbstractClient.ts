@@ -24,6 +24,11 @@ export abstract class AbstractClient {
   }
 
   post(uri: string, data?: object): Promise<any> {
-    return this.doFetch(uri, data && { body: JSON.stringify(data) }).then(res => res.json());
+    return (
+      this.doFetch(uri, data && { body: JSON.stringify(data) })
+        //返回为空时，如果直接调用res.json()报错，所以先拿到text
+        .then(res => res.text())
+        .then(text => text && JSON.parse(text))
+    );
   }
 }
