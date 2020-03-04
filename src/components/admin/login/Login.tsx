@@ -7,6 +7,7 @@ import { LoginPage, LoginBox, LoginBoxTitle, LoginBoxItem } from './LoginStyled'
 import { RouteComponentProps } from 'react-router';
 import { ClickParam } from 'antd/lib/menu';
 import { ReactUtil } from '../../../utils/ReactUtil';
+import { commonRules, StringUtil } from '../../../utils';
 
 export interface LoginFormProps {
   adminServices: AdminServices;
@@ -15,56 +16,78 @@ export interface LoginFormProps {
   backgroundImage?: any;
   demoUsers?: any[];
 }
+interface S {
+  kaptchaId: string;
+  kaptchaFree: boolean;
+}
 
+/**
+ * 通过kaptchaFree方法检查当前用户名、客户端IP是否需要验证码
+ * 如果需要，客户端要展示验证码，输入后传给后台
+ */
 @observer
-class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteComponentProps> {
+class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteComponentProps, S> {
+  state = { kaptchaId: 'none', kaptchaFree: true };
+  componentDidMount(): void {
+    this.checkKaptchaFree();
+  }
+
   componentDidUpdate() {
-    const {
-      adminServices: {
-        loginService: {
-          store: { lastRoutePath, loginInfo },
-        },
-      },
-      history,
-    } = this.props;
+    const { history } = this.props;
+    const { lastRoutePath, loginInfo } = this.store;
     if (loginInfo.success) history.push(lastRoutePath);
   }
 
   handleSubmit(e?: FormEvent) {
     e && e.preventDefault();
-    const {
-      form: { validateFields },
-      adminServices: { loginService },
-    } = this.props;
-    validateFields((err, values) => err || loginService.login(values.username, values.password, values.remember));
+    const { form, adminServices } = this.props;
+    //登录前再检查是否需要验证码
+    form.validateFields(async (err, values) => {
+      if (err) return;
+      const loginInfo = await adminServices.loginService.login(values);
+      if (!loginInfo.success) {
+        this.setState({ kaptchaFree: !!loginInfo.kaptchaFree });
+        this.refreshKaptchaId();
+      }
+    });
   }
 
   demoUserClick = ({ key }: ClickParam) => {
-    const {
-      adminServices: { loginService },
-      demoUsers,
-    } = this.props;
+    const { adminServices, demoUsers } = this.props;
     const item = demoUsers!.find(user => user.username === key);
-    loginService.login(item.username, item.password);
+    adminServices.loginService.loginHash(item);
   };
+
+  refreshKaptchaId() {
+    this.setState({ kaptchaId: StringUtil.randomString() });
+  }
+
+  /**
+   * 检查当前状态是否需要验证码
+   */
+  async checkKaptchaFree() {
+    const { form, adminServices } = this.props;
+    const res = await adminServices.loginService.kaptchaFree(form.getFieldValue('username'));
+    if (!this.store.loginInfo.success) this.setState({ kaptchaFree: res.success });
+  }
+  get store() {
+    return this.props.adminServices.loginService.store;
+  }
   render() {
     const {
       form: { getFieldDecorator },
       adminServices: {
-        loginService: {
-          store: { casConfig, loginInfo },
-        },
+        loginService: { kaptchaRenderURL },
       },
-      title,
-      introRender,
-      backgroundImage,
-      demoUsers,
     } = this.props;
+    const { casConfig, loginInfo } = this.store;
+    const { title, introRender, backgroundImage, demoUsers } = this.props;
 
     if (loginInfo.success) return null;
 
     if (casConfig.clientEnabled) return <Spin />;
-
+    const css = { color: 'rgba(0,0,0,.25)' };
+    const { kaptchaId, kaptchaFree } = this.state;
     return (
       <LoginPage style={{ backgroundImage: backgroundImage }}>
         <LoginBox>
@@ -79,9 +102,10 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
                   rules: [{ required: true, message: '用户名不能为空!' }],
                 })(
                   <Input
-                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    prefix={<Icon type="user" style={css} />}
                     size="large"
                     autoComplete="username"
+                    onBlur={this.checkKaptchaFree.bind(this)}
                   />,
                 )}
               </Form.Item>
@@ -90,13 +114,30 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
                   rules: [{ required: true, message: '密码不能为空!' }],
                 })(
                   <Input
-                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    prefix={<Icon type="lock" style={css} />}
                     type="password"
                     size="large"
                     autoComplete="password"
                   />,
                 )}
               </Form.Item>
+              {!kaptchaFree && (
+                <Form.Item label="验证码">
+                  {getFieldDecorator('kaptchaCode', {
+                    rules: [commonRules.required],
+                  })(
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Input prefix={<Icon type="code" style={css} />} maxLength={4} size="large" />
+                      <img
+                        src={`${kaptchaRenderURL}/${kaptchaId}`}
+                        height={36}
+                        style={{ marginLeft: 5 }}
+                        onClick={this.refreshKaptchaId.bind(this)}
+                      />
+                    </div>,
+                  )}
+                </Form.Item>
+              )}
               <Form.Item>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                   {getFieldDecorator('remember', {

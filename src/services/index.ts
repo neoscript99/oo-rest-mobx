@@ -81,3 +81,8 @@ export interface Entity {
 
   [key: string]: any;
 }
+
+export interface ResBean {
+  success: boolean;
+  error?: string;
+}

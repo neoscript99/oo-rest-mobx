@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { AbstractClient, DeptEntity, UserEntity } from './index';
+import { AbstractClient, DeptEntity, ResBean, UserEntity } from './index';
 import { StringUtil } from '../utils';
 import { LoginStore } from '../stores/LoginStore';
 import { RestService } from './RestService';
@@ -15,6 +15,7 @@ export interface LoginInfo {
   account?: string;
   error?: string;
   roles?: string;
+  kaptchaFree?: boolean;
 }
 
 export interface CasConfig {
@@ -27,6 +28,13 @@ export interface AfterLogin {
   (loginInfo: LoginInfo): void;
 }
 
+export interface LoginEntity {
+  username: string;
+  password: string;
+  passwordHash?: string;
+  kaptchaCode?: string;
+  remember?: boolean;
+}
 const USERNAME_KEY = 'loginUsername';
 const PASSWORD_KEY = 'loginPassword';
 export class LoginService extends RestService {
@@ -45,20 +53,26 @@ export class LoginService extends RestService {
     return `/api/login/${operator}`;
   }
 
-  login(username: string, password: string, remember = false): Promise<LoginInfo> {
-    return this.loginHash(username, StringUtil.sha256(password), remember);
+  get kaptchaRenderURL() {
+    return this.restClient.fetchOptions.rootUrl + this.getApiUri('kaptcha');
+  }
+  kaptchaFree(username: string): Promise<ResBean> {
+    return this.postApi('kaptchaFree', { username });
+  }
+  login(loginEntity: LoginEntity): Promise<LoginInfo> {
+    return this.loginHash({ ...loginEntity, passwordHash: StringUtil.sha256(loginEntity.password) });
   }
 
-  loginHash(username: string, passwordHash: string, remember): Promise<LoginInfo> {
+  loginHash({ username, passwordHash, kaptchaCode, remember }: LoginEntity): Promise<LoginInfo> {
     this.clearLoginInfoLocal();
-    return this.postApi('login', { username, passwordHash }).then(loginInfo => {
+    return this.postApi('login', { username, passwordHash, kaptchaCode }).then(loginInfo => {
       if (loginInfo.success) {
         //如果密码等于初始密码，强制修改
         if (passwordHash === this.initPasswordHash) {
           this.store.forcePasswordChange = true;
           message.warn('请修改初始密码');
         }
-        if (remember) this.saveLoginInfoLocal(username, passwordHash);
+        if (remember) this.saveLoginInfoLocal(username, passwordHash!);
       } else message.error(loginInfo.error);
       this.doAfterLogin(loginInfo);
       return loginInfo;
@@ -66,8 +80,8 @@ export class LoginService extends RestService {
   }
 
   tryLocalLogin() {
-    const info = this.getLoginInfoLocal();
-    if (info.username && info.password) this.loginHash(info.username, info.password, true);
+    const { username, password } = this.getLoginInfoLocal();
+    if (username && password) this.loginHash({ username, password, passwordHash: password, remember: true });
   }
 
   saveLoginInfoLocal(username: string, password: string) {
