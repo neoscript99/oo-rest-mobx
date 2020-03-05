@@ -8,7 +8,7 @@ import { CheckboxChangeEvent, CheckboxProps } from 'antd/lib/checkbox';
 import { Entity, UserEntity } from '../../../services';
 import { InputField } from '../../../ant-design-field';
 
-const { required, email, cellPhone } = commonRules;
+const { required, email, cellPhone, password } = commonRules;
 
 interface S {
   showPassword: boolean;
@@ -75,7 +75,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
 
   render() {
     const { form, showPassword, onCheckboxChange, inputItem } = this.props;
-    const { getFieldDecorator } = form;
+    const firstPassword = form.getFieldValue('password');
     return (
       <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
         <InputField fieldId="dept.name" formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
@@ -114,15 +114,19 @@ class ProfileFrom extends Component<ProfileFormProps> {
             formUtils={form}
             formItemProps={{ label: '密码' }}
             maxLength={16}
-            decorator={{ rules: [genRules.minString(4)] }}
+            decorator={{ rules: [required, password] }}
           />
         )}
         {showPassword && (
-          <Form.Item label="密码确认">
-            {getFieldDecorator('passwordAgain', {
-              rules: [required],
-            })(<Input maxLength={16} type="password" allowClear={true} />)}
-          </Form.Item>
+          <InputField
+            fieldId="passwordAgain"
+            allowClear={true}
+            type="password"
+            formUtils={form}
+            formItemProps={{ label: '密码确认' }}
+            maxLength={16}
+            decorator={{ rules: [required, { type: 'enum', enum: [firstPassword], message: '密码不一致' }] }}
+          />
         )}
         <Form.Item wrapperCol={{ span: 16, offset: 8 }}>
           <Button type="primary" onClick={this.handleSubmit.bind(this)}>

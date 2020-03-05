@@ -20,7 +20,7 @@ export interface OperatorSwitch {
 export interface EntityListProps extends Partial<RouteChildrenProps> {
   name?: string;
   operatorVisible?: OperatorSwitch;
-  searchBarOnTop?: boolean;
+  // 自适应处理 searchBarOnTop?: boolean;
 }
 
 export interface EntityListState {
@@ -70,16 +70,17 @@ export abstract class EntityList<
   entityFormWrapper?: React.ComponentType<Omit<EntityFormProps, 'form'>>;
 
   render() {
-    const { searchBarOnTop } = this.props;
     const { dataList, formProps } = this.state;
+    const barCss: React.CSSProperties = {
+      display: 'flex',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+      marginBottom: 5,
+    };
     return (
       <div>
         {this.getEntityFormPop(formProps)}
-        {searchBarOnTop && this.getSearchFormBar()}
-        <div
-          style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', margin: '0.2rem 0' }}
-        >
-          {!searchBarOnTop && this.getSearchFormBar()}
+        <div style={barCss}>
           <OperatorBar
             onCreate={this.handleCreate.bind(this)}
             onUpdate={this.handleUpdate.bind(this)}
@@ -88,6 +89,7 @@ export abstract class EntityList<
             operatorVisible={this.getOperatorVisible()}
             operatorEnable={this.getOperatorEnable()}
           />
+          {this.getSearchFormBar()}
         </div>
         <Table dataSource={dataList} columns={this.columns} {...this.tableProps}></Table>
       </div>

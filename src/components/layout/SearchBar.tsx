@@ -21,7 +21,7 @@ class SearchFromBar extends Component<SearchFromBarProps> {
     const formNode = formRender({ form, onChange: this.handleSearch.bind(this) });
     return (
       formNode && (
-        <div style={{ display: 'flex', alignItems: 'center', ...style }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1, ...style }}>
           {formNode}
           <Button icon="search" type="primary" style={buttonCss} title="查询" onClick={this.handleSearch.bind(this)} />
           <Button icon="delete" style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />

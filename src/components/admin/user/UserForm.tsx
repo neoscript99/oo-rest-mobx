@@ -67,7 +67,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     const { hideEnabled, autoGenerateAccount } = this;
     const [min4, min2, req] = [
       { rules: [genRules.minString(4)] },
-      { rules: [genRules.minString(2)] },
+      { rules: [genRules.minString(2, false)] },
       { rules: [required] },
     ];
     const make = (fieldId: string, label: string) => ({
@@ -78,7 +78,13 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     return (
       <Form style={flexFormCss}>
         {(!autoGenerateAccount || readonly) && (
-          <InputField {...make('account', '帐号')} maxLength={16} decorator={min4} readonly={readonly} />
+          <InputField
+            {...make('account', '帐号')}
+            style={{ imeMode: 'disabled' }}
+            maxLength={16}
+            decorator={min4}
+            readonly={readonly}
+          />
         )}
         <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} readonly={readonly} />
         <DeptSelectField
