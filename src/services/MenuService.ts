@@ -7,7 +7,7 @@ export class MenuService extends DomainService<MenuStore> {
     super({ domain: 'menu', storeClass: MenuStore, restClient });
   }
 
-  getMenuTree(): void {
-    this.postApi('menuTree').then(data => (this.store.menuTree = data));
+  getMenuTree() {
+    return this.postApi('menuTree').then(data => (this.store.menuTree = data));
   }
 }

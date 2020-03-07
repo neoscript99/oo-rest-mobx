@@ -1,7 +1,7 @@
-import { Criteria, CriteriaOrder, Entity, ListOptions, ListResult, PageInfo } from './';
+import { Criteria, CriteriaOrder, Entity, ListOptions, ListResult, LoginInfo, PageInfo, AfterLogin } from './';
 import { MobxDomainStore } from '../stores';
 import { AbstractClient } from './rest/AbstractClient';
-import { ServiceUtil } from '../utils';
+import { ServiceUtil, StringUtil } from '../utils';
 import { RestService } from './RestService';
 
 export interface DomainServiceOptions<D extends MobxDomainStore = MobxDomainStore> {
@@ -11,10 +11,6 @@ export interface DomainServiceOptions<D extends MobxDomainStore = MobxDomainStor
   restClient: AbstractClient;
 }
 
-export interface DictInitService {
-  initDictList();
-}
-
 /**
  * Mobx Store基类
  * 内部的属性会被JSON.stringify序列化，如果是嵌套结构或大对象，可以用Promise包装，规避序列化
@@ -22,6 +18,7 @@ export interface DictInitService {
 export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends RestService {
   public store: D;
   domain: string;
+  afterLogin?: AfterLogin;
 
   /**
    *
@@ -155,5 +152,18 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
 
   syncPageInfo(newPageInfo: PageInfo) {
     Object.assign(this.store.pageInfo, newPageInfo);
+  }
+
+  get packageName() {
+    return '';
+  }
+  get readAuthorities() {
+    const name = StringUtil.capitalize(this.domain);
+    const pName = this.packageName;
+    return ['SysAdmin', 'SysRead', `${pName}All`, `${pName}Read`, `${name}All`, `${name}Read`];
+  }
+  readAuthorize(hasList?: string[]): boolean {
+    const needOneList = this.readAuthorities;
+    return !!hasList?.find(au => needOneList.includes(au));
   }
 }

@@ -10,6 +10,7 @@ import {
   AbstractClient,
   LoginService,
   AttachmentService,
+  LoginInfo,
 } from '../../services/';
 import { MobxDomainStore } from '../../stores';
 import { EntityListProps } from '../layout';
@@ -37,15 +38,18 @@ export class AdminServices {
     //deptService支持替换
     this.deptService = initServices.deptService || new DeptService(restClient);
     this.dictService = new DictService(restClient);
-    this.loginService = new LoginService(restClient, [this.afterLogin.bind(this), afterLogin]);
+    //外部设置的afterLogin必须首先执行，需要设置安全认证header
+    this.loginService = new LoginService(restClient, [afterLogin, this.afterLogin.bind(this)]);
     this.attachmentService = new AttachmentService(restClient);
   }
 
-  afterLogin() {
-    this.deptService.initDictList();
-    this.roleService.initDictList();
-    this.dictService.initDictList();
-    this.menuService.getMenuTree();
+  afterLogin(loginInfo: LoginInfo) {
+    const funs: Promise<any>[] = [];
+    for (const s of Object.values(this)) {
+      if (s instanceof DomainService && s.afterLogin) funs.push(s.afterLogin(loginInfo));
+    }
+    funs.push(this.menuService.getMenuTree());
+    return Promise.all(funs);
   }
 }
 

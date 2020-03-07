@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { sha256 } from 'js-sha256';
+import capitalize from 'lodash/capitalize';
 type HashMessage = string | number[] | ArrayBuffer | Uint8Array;
 
 export class StringUtil {
@@ -26,5 +27,9 @@ export class StringUtil {
 
   static sha256(message: HashMessage): string {
     return sha256(message);
+  }
+
+  static capitalize(str: string) {
+    return capitalize(str);
   }
 }

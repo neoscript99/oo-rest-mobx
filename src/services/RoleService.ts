@@ -1,6 +1,6 @@
 import { AbstractClient } from './rest';
 import { MobxDomainStore } from '../stores';
-import { DictInitService, DomainService, Entity } from './index';
+import { DomainService, Entity, LoginInfo } from './index';
 
 export interface RoleEntity extends Entity {
   roleName: string;
@@ -11,11 +11,16 @@ export interface RoleEntity extends Entity {
   lastUpdated: Date;
 }
 
-export class RoleService extends DomainService<MobxDomainStore> implements DictInitService {
+export class RoleService extends DomainService {
   constructor(restClient: AbstractClient) {
     super({ domain: 'role', storeClass: MobxDomainStore, restClient });
   }
-  initDictList() {
-    this.listAll({ orders: [['lastUpdated', 'desc']] });
+  afterLogin = (loginInfo: LoginInfo) => {
+    return this.readAuthorize(loginInfo.authorities)
+      ? this.listAll({ orders: [['lastUpdated', 'desc']] })
+      : Promise.resolve();
+  };
+  get packageName() {
+    return 'sys';
   }
 }

@@ -1,7 +1,7 @@
 import { AbstractClient } from './rest';
 import { DeptStore } from '../stores';
-import { DictInitService, DomainService } from './DomainService';
-import { Entity } from './index';
+import { DomainService } from './DomainService';
+import { Entity, LoginInfo } from './index';
 
 export interface DeptEntity extends Entity {
   name: string;
@@ -9,15 +9,19 @@ export interface DeptEntity extends Entity {
   enabled: boolean;
 }
 
-export class DeptService extends DomainService<DeptStore> implements DictInitService {
+export class DeptService extends DomainService<DeptStore> {
   constructor(restClient: AbstractClient, domain = 'department') {
     super({ domain, storeClass: DeptStore, restClient });
   }
-
-  initDictList() {
-    this.list({ orders: ['name'] }).then(res => {
-      this.store.completeList = res.results;
-      this.store.enabledList = res.results.filter(dept => dept.enabled);
-    });
+  get packageName() {
+    return 'sys';
   }
+  afterLogin = (loginInfo: LoginInfo) => {
+    if (this.readAuthorize(loginInfo.authorities))
+      return this.list({ orders: ['name'] }).then(res => {
+        this.store.completeList = res.results;
+        this.store.enabledList = res.results.filter(dept => dept.enabled);
+      });
+    return Promise.resolve();
+  };
 }

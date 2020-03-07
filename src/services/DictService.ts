@@ -1,7 +1,7 @@
 import { AbstractClient } from './rest';
 import { MobxDomainStore } from '../stores';
-import { DictInitService, DomainService } from './DomainService';
-import { Entity } from './index';
+import { DomainService } from './DomainService';
+import { Entity, LoginInfo } from './index';
 
 export interface DictType extends Entity {
   name: string;
@@ -14,7 +14,7 @@ export interface Dict extends Entity {
   seq: number;
 }
 
-export class DictService extends DomainService implements DictInitService {
+export class DictService extends DomainService {
   typeMap: { [key: string]: Dict[] } = {};
   constructor(restClient: AbstractClient) {
     super({ domain: 'dict', storeClass: MobxDomainStore, restClient });
@@ -31,7 +31,7 @@ export class DictService extends DomainService implements DictInitService {
     const dict = this.getDict(typeId).find(dict => dict.code === code);
     return dict ? dict.name : code;
   };
-  initDictList() {
-    this.listAll({ orders: ['type', 'seq'] });
-  }
+  afterLogin = (loginInfo: LoginInfo) => {
+    return this.listAll({ orders: ['type', 'seq'] });
+  };
 }

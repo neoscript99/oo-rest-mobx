@@ -14,7 +14,8 @@ export interface LoginInfo {
   user?: UserEntity;
   account?: string;
   error?: string;
-  roles?: string;
+  roles?: string[];
+  authorities?: string[];
   kaptchaFree?: boolean;
 }
 
@@ -24,8 +25,12 @@ export interface CasConfig {
   defaultRoles?: string;
 }
 
+/**
+ * 如果返回promise，在登录后将被await顺序执行
+ * 如不依赖其它数据，可不将promise返回
+ */
 export interface AfterLogin {
-  (loginInfo: LoginInfo): void;
+  (loginInfo: LoginInfo): Promise<any>;
 }
 
 export interface LoginEntity {
@@ -43,7 +48,7 @@ export class LoginService extends RestService {
   //如果用户密码登录初始密码，跳转到密码修改页面
   initPassword = 'abc000';
 
-  constructor(restClient: AbstractClient, private afterLogins?: AfterLogin[]) {
+  constructor(restClient: AbstractClient, private afterLogins: AfterLogin[]) {
     super(restClient);
     //cas默认为true，初始化时去获取服务端的配置信息，如果为false，再显示登录界面
     this.getCasConfig();
@@ -123,7 +128,7 @@ export class LoginService extends RestService {
 
   devLogin(account: string, token: string) {
     const dept: DeptEntity = { name: 'not important', seq: 1, enabled: true };
-    this.doAfterLogin({ user: { account, dept }, account, token, success: true, roles: 'Public' });
+    this.doAfterLogin({ user: { account, dept }, account, token, success: true, roles: ['Public'] });
   }
 
   async doAfterLogin(loginInfo: LoginInfo) {
@@ -131,7 +136,7 @@ export class LoginService extends RestService {
       //cas登录，可以不要求必须存在数据库user
       if (!loginInfo.user)
         loginInfo.user = { account: loginInfo.account || '', dept: { name: '外部临时用户', seq: 0, enabled: true } };
-      if (this.afterLogins) for (const afterLogin of this.afterLogins) await afterLogin(loginInfo);
+      for (const fun of this.afterLogins) await fun(loginInfo);
     } else {
       console.debug('LoginService.doAfterLogin: ', loginInfo.error);
     }
@@ -143,7 +148,7 @@ export class LoginService extends RestService {
 
   hasRole(role: string): boolean {
     const { loginInfo } = this.store;
-    if (loginInfo.roles) return loginInfo.roles.split(',').includes(role);
+    if (loginInfo.roles) return loginInfo.roles.includes(role);
     else return false;
   }
 
