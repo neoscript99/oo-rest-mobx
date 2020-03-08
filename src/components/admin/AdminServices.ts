@@ -7,10 +7,10 @@ import {
   UserService,
   DictService,
   DomainService,
-  AbstractClient,
   LoginService,
   AttachmentService,
   LoginInfo,
+  SpringBootClient,
 } from '../../services/';
 import { MobxDomainStore } from '../../stores';
 import { EntityListProps } from '../layout';
@@ -27,7 +27,7 @@ export class AdminServices {
   loginService: LoginService;
   attachmentService: AttachmentService;
 
-  constructor(restClient: AbstractClient, afterLogin: AfterLogin, initServices: Partial<AdminServices> = {}) {
+  constructor(restClient: SpringBootClient, afterLogin: AfterLogin, initServices: Partial<AdminServices> = {}) {
     this.paramService = new ParamService(restClient);
     this.noteService = new DomainService({ domain: 'note', storeClass: MobxDomainStore, restClient });
     this.userRoleService = new DomainService({ domain: 'userRole', storeClass: MobxDomainStore, restClient });

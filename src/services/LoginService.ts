@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { AbstractClient, DeptEntity, ResBean, UserEntity } from './index';
+import { DeptEntity, ResBean, SpringBootClient, SpringErrorHandler, UserEntity } from './index';
 import { StringUtil } from '../utils';
 import { LoginStore } from '../stores/LoginStore';
 import { RestService } from './RestService';
@@ -42,18 +42,22 @@ export interface LoginEntity {
 }
 const USERNAME_KEY = 'loginUsername';
 const PASSWORD_KEY = 'loginPassword';
+const LOGOUT_ERRORS = ['NoUser', 'NoToken'];
 export class LoginService extends RestService {
   store = new LoginStore();
   //用户的初始化密码，可在new LoginService的时候修改
   //如果用户密码登录初始密码，跳转到密码修改页面
   initPassword = 'abc000';
 
-  constructor(restClient: AbstractClient, private afterLogins: AfterLogin[]) {
+  constructor(restClient: SpringBootClient, private afterLogins: AfterLogin[]) {
     super(restClient);
+    restClient.registerErrorHandler(this.springErrorHandler);
     //cas默认为true，初始化时去获取服务端的配置信息，如果为false，再显示登录界面
     this.getCasConfig();
   }
-
+  springErrorHandler: SpringErrorHandler = e => {
+    if (e.errorCode && LOGOUT_ERRORS.includes(e.errorCode)) this.store.loginInfo = { success: false };
+  };
   getApiUri(operator: string) {
     return `/api/login/${operator}`;
   }
