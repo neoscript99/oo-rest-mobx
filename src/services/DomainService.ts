@@ -1,7 +1,7 @@
 import { Criteria, CriteriaOrder, Entity, ListOptions, ListResult, LoginInfo, PageInfo, AfterLogin } from './';
 import { MobxDomainStore } from '../stores';
 import { AbstractClient } from './rest/AbstractClient';
-import { ServiceUtil, StringUtil } from '../utils';
+import { LangUtil, ServiceUtil, StringUtil } from '../utils';
 import { RestService } from './RestService';
 
 export interface DomainServiceOptions<D extends MobxDomainStore = MobxDomainStore> {
@@ -160,10 +160,15 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
   get readAuthorities() {
     const name = StringUtil.capitalize(this.domain);
     const pName = this.packageName;
-    return ['SysAdmin', 'SysRead', `${pName}All`, `${pName}Read`, `${name}All`, `${name}Read`];
+    return ['SysAdmin', 'SysRead', `${pName}PackageAll`, `${pName}PackageRead`, `${name}All`, `${name}Read`];
   }
   readAuthorize(hasList?: string[]): boolean {
     const needOneList = this.readAuthorities;
-    return !!hasList?.find(au => needOneList.includes(au));
+    const has = !!hasList?.find(au => needOneList.includes(au));
+    if (!has)
+      console.log(
+        `${LangUtil.getClassName(this)}.readAuthorize不通过: 当前用户(${hasList})无其中任一权限${needOneList}`,
+      );
+    return has;
   }
 }

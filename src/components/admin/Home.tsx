@@ -8,23 +8,6 @@ import { MenuTree } from '../layout';
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const headCss: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  background: '#fff',
-  boxShadow: '0 2px 8px #f0f1f2',
-  fontWeight: 'bolder',
-  padding: '0 16px',
-};
-const contentCss: React.CSSProperties = {
-  margin: '0.8rem',
-  padding: '1rem',
-  background: '#fff',
-  height: '100%',
-  minHeight: 360,
-};
-
 export interface HomeProps extends RouteComponentProps {
   serverLogout: boolean;
   serverRoot: string;
@@ -34,6 +17,9 @@ export interface HomeProps extends RouteComponentProps {
   PageSwitch: ComponentType<PageSwitchProps>;
   loginPath: string;
   profilePath?: string;
+  headerCss?: React.CSSProperties;
+  contentCss?: React.CSSProperties;
+  siderCss?: React.CSSProperties;
 }
 
 export interface PageSwitchProps {
@@ -81,16 +67,9 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
     return false;
   }
   render() {
-    const {
-      adminServices: { menuService, loginService, paramService },
-      location,
-      match,
-      logoRender,
-      PageSwitch,
-      loginPath,
-      history,
-      footRender,
-    } = this.props;
+    const { adminServices, location, match, PageSwitch, loginPath, history } = this.props;
+    const { logoRender, footRender, headerCss, contentCss, siderCss } = this.props;
+    const { menuService, loginService, paramService } = adminServices;
     const pathPrefix = match.path;
     const { store: menuStore } = menuService;
     const { loginInfo } = loginService.store;
@@ -108,7 +87,18 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
     const buttonCss: React.CSSProperties = { padding: '3px' };
     return (
       <Layout style={{ minHeight: '100vh' }}>
-        <Header style={headCss}>
+        <Header
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: '#fff',
+            boxShadow: '0 2px 8px #f0f1f2',
+            fontWeight: 'bolder',
+            padding: '0 16px',
+            ...headerCss,
+          }}
+        >
           {logoRender}
           <div>
             <Avatar icon="user" style={{ backgroundColor: '#f56a00' }} />
@@ -131,12 +121,21 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
             collapsed={this.state.collapsed}
             onCollapse={this.onCollapse}
             theme="light"
-            style={{ borderTop: 'solid thin #f3f3f3', borderBottom: 'solid thin #f3f3f3' }}
+            style={{ borderTop: 'solid thin #f3f3f3', borderBottom: 'solid thin #f3f3f3', ...siderCss }}
           >
             <MenuTree rootMenu={menuStore.menuTree} menuClick={this.onMenuClick} />
           </Sider>
           <Layout>
-            <Content style={contentCss}>
+            <Content
+              style={{
+                margin: '0.8rem',
+                padding: '1rem',
+                background: '#fff',
+                height: '100%',
+                minHeight: 360,
+                ...contentCss,
+              }}
+            >
               <PageSwitch pathPrefix={pathPrefix} />
             </Content>
             <Footer style={{ textAlign: 'center' }}>{footRender}</Footer>

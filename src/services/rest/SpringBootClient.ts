@@ -17,6 +17,7 @@ export class SpringBootClient extends AbstractClient {
     const { reqInit } = fetchOptions;
     const headers = {
       'Content-Type': 'application/json',
+      Authorization: 'Bearer anonymous',
     };
     const req: RequestInit = {
       method: 'POST',
