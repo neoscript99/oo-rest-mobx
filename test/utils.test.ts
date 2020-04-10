@@ -5,6 +5,10 @@ import { LangUtil, StringUtil, ServiceUtil } from '../src/utils';
 describe('pureGraphqlObject', () => {
   it('string util', () => {
     for (let i = 0; i < 10; i++) console.log(StringUtil.randomString(128));
+    const str = '';
+    //会出现[ '' ]这样的数组，注意问题
+    console.log(str.split(','));
+    console.log([].join(','));
   });
 
   it('processCriteriaOrder test', () => {

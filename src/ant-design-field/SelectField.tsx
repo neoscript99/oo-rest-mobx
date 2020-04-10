@@ -4,7 +4,7 @@ import { SelectProps } from 'antd/lib/select';
 import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
-import { ObjectUtil } from '../utils';
+import { ObjectUtil, StringUtil } from '../utils';
 
 export interface SelectFieldProps extends SelectWrapProps, FieldProps {}
 
@@ -61,7 +61,7 @@ export class SelectWrap extends React.Component<SelectWrapProps> {
     } = this.props;
     let v = value;
     if (isMultipleMode(mode)) {
-      if (typeof multiValue === 'string') v = multiValue.split(',');
+      if (typeof multiValue === 'string') v = StringUtil.isBlank(multiValue) ? [] : multiValue.split(',');
       else if (multiValue === null) v = [];
       else if (multiValue) v = multiValue;
     }
