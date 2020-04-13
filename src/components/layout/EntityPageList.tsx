@@ -39,4 +39,13 @@ export abstract class EntityPageList<
     Object.assign(this.tableProps.pagination, TableUtil.fromPageInfo(pageInfo));
     this.setState({ dataList: pageList });
   }
+
+  handleExportAll() {
+    //剔除排序和分页参数，查询所有数据
+    const { criteria } = this.getQueryParam();
+    //用list方法，不改变store中的变量
+    this.domainService.list({ criteria }).then(res => {
+      this.setState({ exportList: res.results, showExportPop: true });
+    });
+  }
 }

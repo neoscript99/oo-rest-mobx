@@ -8,7 +8,7 @@ export interface UserEntity extends Entity {
 }
 
 export class UserService extends DomainService {
-  deptUserMap: Record<string, DeptEntity[]> = {};
+  deptUserMap: Record<string, UserEntity[]> = {};
   constructor(restClient: AbstractClient, domain = 'user') {
     super({ domain, storeClass: MobxDomainStore, restClient });
   }
@@ -25,7 +25,7 @@ export class UserService extends DomainService {
           },
           orders: ['name'],
         })
-      ).results as DeptEntity[];
+      ).results as UserEntity[];
 
     return this.deptUserMap[id];
   }

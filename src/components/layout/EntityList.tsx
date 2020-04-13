@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/lib/table';
-import { message, Table, Tag } from 'antd';
+import { Button, message, Modal, Result, Table, Tag } from 'antd';
 import { TableUtil, LangUtil } from '../../utils';
 import { EntityForm, EntityFormProps } from './EntityForm';
 import { OperatorBar } from './OperatorBar';
@@ -9,18 +9,22 @@ import { SearchForm, SearchFormProps } from './SearchForm';
 import { DomainService, Entity, ListOptions, ListResult } from '../../services';
 import { CheckboxField, InputField, SelectField } from '../../ant-design-field';
 import { RouteChildrenProps } from 'react-router';
+import { EntityExporter, EntityExporterProps } from './EntityExporter';
 
 export interface OperatorSwitch {
   update?: boolean;
   create?: boolean;
   delete?: boolean;
   view?: boolean;
+  exportSelected?: boolean;
+  exportAll?: boolean;
 }
 
 export interface EntityListProps extends Partial<RouteChildrenProps> {
   name?: string;
   operatorVisible?: OperatorSwitch;
   // 自适应处理 searchBarOnTop?: boolean;
+  extraOperators?: React.ReactNode;
 }
 
 export interface EntityListState {
@@ -28,6 +32,8 @@ export interface EntityListState {
   dataList: Entity[];
   formProps?: EntityFormProps;
   searchParam?: any;
+  exportList?: Entity[];
+  showExportPop?: boolean;
 }
 
 export interface EntityTableProps extends TableProps<Entity> {
@@ -37,6 +43,14 @@ export interface EntityTableProps extends TableProps<Entity> {
 export interface EntityColumnProps extends ColumnProps<Entity> {
   fieldType?: typeof InputField | typeof SelectField | typeof CheckboxField;
   valueTransfer?: (value: any) => any;
+  renderExport?: (text: any, record: Entity, index?: number) => React.ReactNode;
+  //导出到excel的宽度（英文字符数）
+  cellWidth?: number;
+  /**
+   * react-data-export/types/index.d.ts类型有问题，以文档为准
+   * https://www.npmjs.com/package/react-data-export
+   */
+  cellStyle?: any;
 }
 /**
  * EntityList不做分页，获取所有数据
@@ -77,17 +91,22 @@ export abstract class EntityList<
       flexWrap: 'wrap',
       marginBottom: 5,
     };
+    const { extraOperators } = this.props;
     return (
       <div>
         {this.getEntityFormPop(formProps)}
+        {this.getExportPop()}
         <div style={barCss}>
           <OperatorBar
             onCreate={this.handleCreate.bind(this)}
             onUpdate={this.handleUpdate.bind(this)}
             onDelete={this.handleDelete.bind(this)}
             onView={this.handleView.bind(this)}
+            onExportSelected={this.handleExportSelected.bind(this)}
+            onExportAll={this.handleExportAll.bind(this)}
             operatorVisible={this.getOperatorVisible()}
             operatorEnable={this.getOperatorEnable()}
+            extraOperators={extraOperators}
           />
           {this.getSearchFormBar()}
         </div>
@@ -99,6 +118,9 @@ export abstract class EntityList<
   abstract get domainService(): DomainService;
 
   abstract get columns(): EntityColumnProps[];
+  get exportColumns(): EntityColumnProps[] {
+    return this.columns;
+  }
 
   query(): Promise<ListResult> {
     console.debug(`${this.className}(${this.toString()}).query`);
@@ -286,7 +308,7 @@ export abstract class EntityList<
 
   genFormProps(action: string, item?: Entity, exProps?: Partial<EntityFormProps>): EntityFormProps {
     return {
-      modalProps: { title: `${action}${this.name}`, okText: action },
+      modalProps: { title: `${action}${this.props.name}`, okText: action },
       domainService: this.domainService,
       onSuccess: this.handleFormSuccess.bind(this),
       onCancel: this.handleFormCancel.bind(this),
@@ -333,7 +355,14 @@ export abstract class EntityList<
   getOperatorEnable(): OperatorSwitch {
     const { selectedRowKeys } = this.state;
     const selectedNum = selectedRowKeys ? selectedRowKeys.length : 0;
-    return { update: selectedNum === 1, view: selectedNum === 1, delete: selectedNum > 0 };
+    const total = this.tableProps.pagination.total;
+    return {
+      update: selectedNum === 1,
+      view: selectedNum === 1,
+      delete: selectedNum > 0,
+      exportSelected: selectedNum > 0,
+      exportAll: !!total && total > 0,
+    };
   }
 
   /**
@@ -343,10 +372,41 @@ export abstract class EntityList<
     return this.props.operatorVisible;
   }
 
-  get name(): string | undefined {
-    return this.props.name;
-  }
   get store() {
     return this.domainService.store;
+  }
+
+  handleExportSelected() {
+    this.setState({ exportList: this.getSelectItems(), showExportPop: true });
+  }
+
+  handleExportAll() {
+    this.setState({ exportList: this.state.dataList, showExportPop: true });
+  }
+
+  exportRender(exProps?: Partial<EntityExporterProps>): React.ReactNode {
+    const { exportList } = this.state;
+    return <EntityExporter dataSource={exportList} columns={this.exportColumns} name={this.props.name} {...exProps} />;
+  }
+  getExportPop() {
+    const { exportList, showExportPop } = this.state;
+    const cancel = () => this.setState({ exportList: undefined, showExportPop: false });
+    return (
+      <Modal title="导出完成" visible={showExportPop} footer={null} maskClosable={false} onCancel={cancel}>
+        <Result
+          status="success"
+          title="导出完成，请下载保存!"
+          subTitle={`记录数：${exportList?.length}`}
+          extra={
+            <div>
+              {this.exportRender()}{' '}
+              <Button icon="close" onClick={cancel}>
+                关闭
+              </Button>
+            </div>
+          }
+        />
+      </Modal>
+    );
   }
 }
