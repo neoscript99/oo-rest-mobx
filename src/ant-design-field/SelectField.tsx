@@ -65,8 +65,10 @@ export class SelectWrap extends React.Component<SelectWrapProps> {
       else if (multiValue === null) v = [];
       else if (multiValue) v = multiValue;
     }
-    // value: undefined如果传入，defaultValue不起作用
-    const values = v !== undefined ? { value: v } : { defaultValue: getFirstValue(this.props) };
+    // value: undefined如果传入，defaultValue不起作用，3.26.15版本无此问题
+    // undefined不传入，allowClear出现问题，要点击2次
+    // const values = v !== undefined ? { value: v } : { defaultValue: getFirstValue(this.props) };
+    const values = { value: v, defaultValue: getFirstValue(this.props) };
     return (
       <Select mode={mode} {...values} placeholder="---请选择---" optionFilterProp="children" {...selectProps}>
         {dataSource &&

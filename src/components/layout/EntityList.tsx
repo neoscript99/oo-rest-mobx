@@ -396,7 +396,7 @@ export abstract class EntityList<
         <Result
           status="success"
           title="导出完成，请下载保存!"
-          subTitle={`记录数：${exportList?.length}`}
+          subTitle={exportList && `记录数：${exportList.length}`}
           extra={
             <div>
               {this.exportRender()}{' '}
