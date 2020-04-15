@@ -77,7 +77,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     });
     return (
       <Form style={flexFormCss}>
-        {(!autoGenerateAccount || readonly) && (
+        {!autoGenerateAccount && (
           <InputField
             {...make('account', '帐号')}
             style={{ imeMode: 'disabled' }}

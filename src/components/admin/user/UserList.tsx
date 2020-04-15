@@ -1,6 +1,6 @@
 import React from 'react';
 import { AdminPageProps } from '../AdminServices';
-import { StringUtil, TableUtil } from '../../../utils';
+import { Consts, StringUtil, TableUtil } from '../../../utils';
 import { EntityPageList, EntityColumnProps, EntityListState, EntityFormProps, SearchFormProps } from '../../layout';
 import { Criteria, ListOptions, UserService } from '../../../services';
 import { UserForm, UserFormProps } from './UserForm';
@@ -13,31 +13,25 @@ export class UserList<
   P extends AdminPageProps = AdminPageProps,
   S extends EntityListState = EntityListState
 > extends EntityPageList<P, S> {
+  static defaultProps = { name: '用户' };
   get domainService(): UserService {
     return this.props.services.userService;
   }
 
   get columns(): EntityColumnProps[] {
-    const { initPassword } = this.props.services.loginService;
-    const opCol = (text: string, record: any) => {
-      return (
-        <Popconfirm
-          title={`确定重置? (${initPassword})`}
-          onConfirm={this.resetPassword.bind(this, record)}
-          okText="确定"
-          cancelText="取消"
-        >
-          <Button type="link">重置密码</Button>
-        </Popconfirm>
-      );
-    };
+    return this.getUserColumns();
+  }
+  getUserColumns(): EntityColumnProps[] {
+    const { dictService } = this.props.services;
     const columns: EntityColumnProps[] = [
       { title: '姓名', dataIndex: 'name' },
       { title: '帐号', dataIndex: 'account' },
       { title: '所属机构', dataIndex: 'dept.name' },
+      dictService.dictColumn('性别', 'sexCode', 'pub_sex'),
+      { title: '手机号码', dataIndex: 'cellPhone' },
       ...this.getExtraColumns(),
       commonColumns.lastUpdated,
-      { title: '操作', render: opCol },
+      { title: '操作', key: 'operator', render: this.opCol.bind(this) },
     ];
 
     return columns;
@@ -46,11 +40,23 @@ export class UserList<
   getExtraColumns(): EntityColumnProps[] {
     return [commonColumns.enabled, commonColumns.editable];
   }
+  opCol(text: string, record: any) {
+    return (
+      <Popconfirm
+        title={`确定重置? (${this.props.services.loginService.initPassword})`}
+        onConfirm={this.resetPassword.bind(this, record)}
+        okText="确定"
+        cancelText="取消"
+      >
+        <Button type="link">重置密码</Button>
+      </Popconfirm>
+    );
+  }
 
   genFormProps(action: string, item?: Entity, exProps?: Partial<EntityFormProps>): UserFormProps {
     const props = super.genFormProps(action, item, exProps);
     const { services } = this.props;
-    return { ...props, modalProps: { width: '50em' }, services };
+    return { ...props, modalProps: { ...props.modalProps, ...Consts.commonProps.twoColModalProps }, services };
   }
   getInitItem(): Entity {
     const password = this.props.services.loginService.initPasswordHash;

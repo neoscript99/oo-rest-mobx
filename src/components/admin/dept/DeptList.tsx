@@ -7,6 +7,7 @@ import { DeptForm } from './DeptForm';
 
 const { commonColumns } = TableUtil;
 export class DeptList extends EntityList<AdminPageProps> {
+  static defaultProps = { name: '机构' };
   constructor(props: AdminPageProps) {
     super(props);
   }
