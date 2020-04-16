@@ -144,7 +144,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
 
   saveEntity(saveItem: Entity) {
     const { inputItem } = this.props;
-    if (this.autoGenerateAccount) {
+    //第一次保存时生成account
+    if (this.autoGenerateAccount && !inputItem?.id) {
       const { deptList } = this.state;
       const dept = deptList.find(d => d.id === saveItem.dept.id);
       saveItem.account = `${dept!.name}-${saveItem.name}-${StringUtil.randomString()}`;
