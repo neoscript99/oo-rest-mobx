@@ -10,7 +10,7 @@ export interface SearchFormProps extends FormComponentProps {
 /**
  * 接收一个form属性
  */
-export abstract class SearchForm<P extends SearchFormProps = SearchFormProps> extends Component<P> {
+export abstract class SearchForm<P extends SearchFormProps = SearchFormProps, S = any> extends Component<P, S> {
   searchOnEnter(e: KeyboardEvent<any>) {
     const { onChange } = this.props;
     if (e.keyCode === 13) {

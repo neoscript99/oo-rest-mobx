@@ -39,7 +39,7 @@ export class DeptList extends EntityList<AdminPageProps> {
     };
     const { searchParam } = this.domainService.store;
     if (searchParam && StringUtil.isNotBlank(searchParam.searchKey)) {
-      const key = `${searchParam.searchKey}%`;
+      const key = `%${searchParam.searchKey}%`;
       param.criteria = { like: [['name', key]] };
     }
     return param;
@@ -47,5 +47,5 @@ export class DeptList extends EntityList<AdminPageProps> {
 }
 
 export class DeptSearchForm extends SimpleSearchForm {
-  placeholder = '机构名';
+  placeholder = '机构名(*..*)';
 }

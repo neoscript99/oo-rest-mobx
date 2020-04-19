@@ -132,9 +132,10 @@ export abstract class EntityList<
   /**
    * EntityList切换页面到第一页时不会触发查询，所以需要手工调用query
    * EntityPageList切换页面后会触发查询
+   * @param toPageOne 是否回到首页
    */
-  refresh() {
-    this.pageChange(1);
+  refresh(toPageOne?: boolean) {
+    if (toPageOne) this.pageChange(1);
     this.query();
   }
 
@@ -187,7 +188,7 @@ export abstract class EntityList<
   getQueryParam(): ListOptions {
     return {
       criteria: {},
-      orders: [['lastUpdated', 'desc']],
+      orders: [['dateCreated', 'desc']],
     };
   }
 
