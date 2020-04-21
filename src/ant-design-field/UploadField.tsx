@@ -13,7 +13,7 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
     return <UploadWrap {...this.getInputProps()} />;
   }
   get defaultDecorator(): GetFieldDecoratorOptions {
-    const { maxNumber, required } = this.props;
+    const { maxNumber, required, stringValue } = this.props;
     const single = maxNumber === 1;
     return {
       rules: required ? [{ required: true, type: single ? 'object' : 'array', message: '不能为空' }] : undefined,
@@ -22,14 +22,19 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
 
         //发送到后台的数据只需要id属性，而且UploadWrap的fileList通过state管理，不需要这里的value回传
         const all = info.fileList.filter(file => file.status === 'done').map(file => ({ id: file.response.id }));
-        return single ? (all.length > 0 ? all[0] : undefined) : all;
+        if (stringValue) return all.map(f => f.id).join(',');
+        else return single ? (all.length > 0 ? all[0] : undefined) : all;
       },
       trigger: 'onValueChange',
     };
   }
 }
 export interface UploadWrapProps extends UploadProps {
-  value?: AttachmentEntity | AttachmentEntity[];
+  value?: AttachmentEntity | AttachmentEntity[] | string;
+  /**
+   * 逗号分隔id的列表，通过查询获得附件详情
+   */
+  stringValue?: boolean;
   /**
    * 当为1时，返回值传入值都是UploadResponse
    */
@@ -43,22 +48,26 @@ interface UploadWrapState {
   fileList?: Array<UploadFile>;
 }
 export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
-  constructor(props: UploadWrapProps) {
-    super(props);
-    const { value, maxNumber, attachmentService } = props;
+  async componentDidMount() {
+    const { value, stringValue, maxNumber, attachmentService } = this.props;
     //在初始化的时候，后台AttachmentInfo转为fileList
     //fileList如果出现在props中，就算是undefined，defaultFileList将不起作用
-    if (!this.state?.fileList && value) {
+    if (value) {
+      let attList;
+      if (stringValue && typeof value === 'string') {
+        const param = { criteria: { inList: [['id', value.split(',')]] }, order: ['dateCreated'] };
+        attList = (await attachmentService.list(param)).results;
+      } else attList = maxNumber === 1 ? [value] : value;
       //服务端domain转换为文件列表
-      this.state = {
-        fileList: (maxNumber === 1 ? [value] : value).map(res => ({
+      this.setState({
+        fileList: attList.map(res => ({
           uid: res.id,
           name: res.name,
           status: 'done',
           response: res,
           url: `${attachmentService.downloadUrl}/${res.id}`,
         })),
-      };
+      });
     }
   }
 
@@ -92,7 +101,7 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
     if (beforeUpload) {
       if (!beforeUpload(file, fileList)) return false;
     }
-    let size = maxSizeMB || 20; //默认20M
+    let size = maxSizeMB || 10; //默认10M
     //不能超过服务端最大文件限制
     if (size > attachmentService.maxSizeMB) size = attachmentService.maxSizeMB;
     if (file.size / 1024 / 1024 > size) {
