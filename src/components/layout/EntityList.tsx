@@ -3,7 +3,7 @@ import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'an
 import { Button, message, Modal, Result, Table, Tag } from 'antd';
 import { TableUtil, LangUtil } from '../../utils';
 import { EntityForm, EntityFormProps } from './EntityForm';
-import { OperatorBar } from './OperatorBar';
+import { OperatorBar, OperatorBarProps } from './OperatorBar';
 import { SearchBar, SearchFromBarProps } from './SearchBar';
 import { SearchForm, SearchFormProps } from './SearchForm';
 import { DomainService, Entity, ListOptions, ListResult } from '../../services';
@@ -24,7 +24,6 @@ export interface EntityListProps extends Partial<RouteChildrenProps> {
   name?: string;
   operatorVisible?: OperatorSwitch;
   // 自适应处理 searchBarOnTop?: boolean;
-  extraOperators?: React.ReactNode;
 }
 
 export interface EntityListState {
@@ -91,7 +90,6 @@ export abstract class EntityList<
       flexWrap: 'wrap',
       marginBottom: 5,
     };
-    const { extraOperators } = this.props;
     return (
       <div>
         {this.getEntityFormPop(formProps)}
@@ -106,7 +104,7 @@ export abstract class EntityList<
             onExportAll={this.handleExportAll.bind(this)}
             operatorVisible={this.getOperatorVisible()}
             operatorEnable={this.getOperatorEnable()}
-            extraOperators={extraOperators}
+            {...this.getOperatorProps()}
           />
           {this.getSearchFormBar()}
         </div>
@@ -371,6 +369,9 @@ export abstract class EntityList<
    */
   getOperatorVisible(): OperatorSwitch | undefined {
     return this.props.operatorVisible;
+  }
+  getOperatorProps(): Partial<OperatorBarProps> | undefined {
+    return undefined;
   }
 
   get store() {

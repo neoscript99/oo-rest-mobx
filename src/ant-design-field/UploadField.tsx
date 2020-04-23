@@ -13,7 +13,7 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
     return <UploadWrap {...this.getInputProps()} />;
   }
   get defaultDecorator(): GetFieldDecoratorOptions {
-    const { maxNumber, required, stringValue } = this.props;
+    const { maxNumber, required, valueType } = this.props;
     const single = maxNumber === 1;
     return {
       rules: required ? [{ required: true, type: single ? 'object' : 'array', message: '不能为空' }] : undefined,
@@ -21,8 +21,11 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
         console.debug('UploadField.getValueFromEvent: ', info);
 
         //发送到后台的数据只需要id属性，而且UploadWrap的fileList通过state管理，不需要这里的value回传
-        const all = info.fileList.filter(file => file.status === 'done').map(file => ({ id: file.response.id }));
-        if (stringValue) return all.map(f => f.id).join(',');
+        const all = info.fileList
+          .filter(file => file.status === 'done')
+          .map(file => ({ id: file.response.id, name: file.response.name }));
+        if (valueType === 'string') return all.map(f => f.id).join(',');
+        if (valueType === 'json') return JSON.stringify(all);
         else return single ? (all.length > 0 ? all[0] : undefined) : all;
       },
       trigger: 'onValueChange',
@@ -32,9 +35,11 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
 export interface UploadWrapProps extends UploadProps {
   value?: AttachmentEntity | AttachmentEntity[] | string;
   /**
-   * 逗号分隔id的列表，通过查询获得附件详情
+   * array 默认模式
+   * string 逗号分隔的id字符串，通过查询获得附件详情
+   * json 加入name信息
    */
-  stringValue?: boolean;
+  valueType?: 'array' | 'string' | 'json';
   /**
    * 当为1时，返回值传入值都是UploadResponse
    */
@@ -48,15 +53,19 @@ interface UploadWrapState {
   fileList?: Array<UploadFile>;
 }
 export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
+  static defaultProps = { valueType: 'array', maxSizeMB: 20, maxNumber: 10 };
   async componentDidMount() {
-    const { value, stringValue, maxNumber, attachmentService } = this.props;
+    const { value, valueType, maxNumber, attachmentService } = this.props;
     //在初始化的时候，后台AttachmentInfo转为fileList
     //fileList如果出现在props中，就算是undefined，defaultFileList将不起作用
     if (value) {
       let attList;
-      if (stringValue && typeof value === 'string') {
+      if (valueType === 'string' && typeof value === 'string') {
         const param = { criteria: { inList: [['id', value.split(',')]] }, order: ['dateCreated'] };
         attList = (await attachmentService.list(param)).results;
+      }
+      if (valueType === 'json' && typeof value === 'string') {
+        attList = JSON.parse(value);
       } else attList = maxNumber === 1 ? [value] : value;
       //服务端domain转换为文件列表
       this.setState({
@@ -101,7 +110,7 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
     if (beforeUpload) {
       if (!beforeUpload(file, fileList)) return false;
     }
-    let size = maxSizeMB || 10; //默认10M
+    let size = maxSizeMB || UploadWrap.defaultProps.maxSizeMB;
     //不能超过服务端最大文件限制
     if (size > attachmentService.maxSizeMB) size = attachmentService.maxSizeMB;
     if (file.size / 1024 / 1024 > size) {
@@ -113,7 +122,7 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
   render() {
     const { disabled, maxNumber, attachmentService, showUploadList, ...uploadProps } = this.props;
 
-    const underLimit = (this.state?.fileList?.length || 0) < (maxNumber || 10);
+    const underLimit = (this.state?.fileList?.length || 0) < (maxNumber || UploadWrap.defaultProps.maxNumber);
     let listSwitch: boolean | ShowUploadListInterface = { showRemoveIcon: !disabled };
     if (isObject(showUploadList)) listSwitch = { ...(showUploadList as ShowUploadListInterface), ...listSwitch };
     else if (showUploadList === false) listSwitch = false;

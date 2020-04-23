@@ -13,6 +13,7 @@ export interface OperatorBarProps {
   operatorVisible?: OperatorSwitch;
   operatorEnable: OperatorSwitch;
   extraOperators?: React.ReactNode;
+  deleteConfirm?: React.ReactNode;
 }
 
 const buttonCss: CSSProperties = {
@@ -20,6 +21,7 @@ const buttonCss: CSSProperties = {
 };
 
 export class OperatorBar extends Component<OperatorBarProps> {
+  static defaultProps = { deleteConfirm: '确定删除所选记录吗?' };
   render() {
     const {
       onCreate,
@@ -31,6 +33,7 @@ export class OperatorBar extends Component<OperatorBarProps> {
       onExportSelected,
       onExportAll,
       extraOperators,
+      deleteConfirm,
     } = this.props;
     if (!operatorVisible) return null;
     const btProps: ButtonProps = { type: 'primary', style: buttonCss };
@@ -53,7 +56,7 @@ export class OperatorBar extends Component<OperatorBarProps> {
         )}
         {operatorVisible.delete && (
           <Popconfirm
-            title="确定删除所选记录吗?"
+            title={deleteConfirm}
             onConfirm={onDelete}
             okText="确定"
             cancelText="取消"
