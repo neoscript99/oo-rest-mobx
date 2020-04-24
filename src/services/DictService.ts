@@ -3,8 +3,6 @@ import { MobxDomainStore } from '../stores';
 import { DomainService } from './DomainService';
 import { Entity, LoginInfo } from './index';
 import { EntityColumnProps } from '../components/layout';
-import { Tag } from 'antd';
-import React from 'react';
 import { DictView } from '../components/common';
 
 export interface DictType extends Entity {

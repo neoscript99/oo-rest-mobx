@@ -11,7 +11,8 @@ export interface DictSelectFieldProps extends Omit<SelectFieldProps, 'dataSource
 export class DictSelectField extends React.Component<DictSelectFieldProps> {
   render() {
     const { dictService, dictType, parentDictCode, ...fieldProps } = this.props;
-    const dictList = dictService.getDict(dictType);
+    //作为选择框展示时，只显示生效的字典项
+    const dictList = dictService.getDict(dictType).filter(dict => !!dict.enabled);
     const dataSource = parentDictCode ? dictList.filter(dict => dict.parentCode === parentDictCode) : dictList;
     return <SelectField dataSource={dataSource} valueProp="code" labelProp="name" {...fieldProps} />;
   }
