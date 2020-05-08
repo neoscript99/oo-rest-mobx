@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { AdminPageProps } from '../AdminServices';
-import { Button, Card, Checkbox, Form, Input, message, Tag } from 'antd';
+import { Button, Card, Checkbox, Form, message } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import { commonRules, genRules, StringUtil } from '../../../utils';
+import { commonRules, StringUtil } from '../../../utils';
 import { EntityForm } from '../../layout';
 import { CheckboxChangeEvent, CheckboxProps } from 'antd/lib/checkbox';
 import { Entity, UserEntity } from '../../../services';
 import { InputField } from '../../../ant-design-field';
+import { observer } from 'mobx-react';
 
 const { required, email, cellPhone, password } = commonRules;
 
@@ -14,6 +15,7 @@ interface S {
   showPassword: boolean;
 }
 
+@observer
 export class UserProfile extends Component<AdminPageProps, S> {
   handleCheckboxChange(e: CheckboxChangeEvent) {
     this.setState({ showPassword: e.target.checked });
