@@ -60,18 +60,22 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
 
   /**
    * 不改变类成员变量
-   * @param criteria
+   * @param criteria,如果要保证order顺序，criteria中应该预先占位，例如：
+   * const orders: CriteriaOrder[] = [['plan.planBeginDay', 'desc'], 'topicCateCode', 'initialCode', 'dept.seq'];
+   * const criteria: Criteria = { plan: {}, order: [], dept: {} };
+   * 如果要保证orders中的顺序，criteria需要plan、order和dept预先占位
    * @param pageInfo
    * @param orders
    * @returns {Promise<{client: *, fields?: *}>}
    */
   list({ criteria = {}, pageInfo, orders }: ListOptions): Promise<ListResult> {
     const { maxResults, firstResult, order, ...countCriteria } = criteria;
+    //先调用count，防止countCriteria被后面的步骤污染
+    const countPromise = pageInfo ? (this.postApi('count', countCriteria) as Promise<number>) : Promise.resolve(0);
     if (orders && orders.length > 0) ServiceUtil.processCriteriaOrder(criteria, orders);
     if (pageInfo) ServiceUtil.processCriteriaPage(criteria, pageInfo);
     const listPromise = this.postApi('list', criteria) as Promise<Entity[]>;
     if (pageInfo) {
-      const countPromise = this.postApi('count', countCriteria) as Promise<number>;
       return Promise.all([listPromise, countPromise]).then(([results, totalCount]) => ({
         results,
         totalCount,
