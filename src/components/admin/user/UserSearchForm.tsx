@@ -19,6 +19,7 @@ export class UserSearchForm extends SearchForm<UserSearchFormProps> {
             formUtils={form}
             style={{ width: '15em' }}
             placeholder="选择单位"
+            allowClear
           />
         )}
         <InputField
