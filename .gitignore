@@ -2,7 +2,6 @@ dist/
 .temp/
 node_modules/
 yarn.lock
-package-lock.json
 .history/
 .idea
 .rn_temp/
