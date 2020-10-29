@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Menu, Icon } from 'antd';
+import { Icon as LegacyIcon } from 'antd';
+import { Menu } from 'antd';
 import { MenuEntity, MenuNode } from '../../stores/MenuStore';
 
 const SubMenu = Menu.SubMenu;
@@ -27,7 +28,7 @@ export class MenuTree extends Component<P> {
 function getTree(menuNode: MenuNode, clickHandle: MenuClickHandler) {
   return menuNode.menu.app ? (
     <Menu.Item key={menuNode.menu.id} onClick={clickHandle.bind(null, menuNode.menu)}>
-      <Icon type={menuNode.menu.icon || 'file'} />
+      <LegacyIcon type={menuNode.menu.icon || 'file'} />
       <span>{menuNode.menu.label}</span>
     </Menu.Item>
   ) : (
@@ -35,7 +36,7 @@ function getTree(menuNode: MenuNode, clickHandle: MenuClickHandler) {
       key={menuNode.menu.id}
       title={
         <span>
-          <Icon type={menuNode.menu.icon || 'folder'} />
+          <LegacyIcon type={menuNode.menu.icon || 'folder'} />
           <span>{menuNode.menu.label}</span>
         </span>
       }

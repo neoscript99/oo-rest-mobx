@@ -1,8 +1,7 @@
-import { ValidationRule } from 'antd/lib/form';
 import moment, { unitOfTime } from 'moment';
-
+import { Rule } from 'rc-field-form/lib/interface';
 /** built-in validation type, available options: https://github.com/yiminghe/async-validator#type */
-export const commonRules: Readonly<{ [key: string]: ValidationRule }> = {
+export const commonRules: Readonly<{ [key: string]: Rule }> = {
   required: { required: true, whitespace: true, message: '不能为空!' },
   json: { pattern: /^\{(\".+\":.+\,?)*\}$/, message: '请输入Json格式的字符串，例如：{"user":"one","on":true}' },
   email: { type: 'email', message: '邮箱格式错误' },
@@ -18,7 +17,7 @@ export const commonRules: Readonly<{ [key: string]: ValidationRule }> = {
     message: '手机号码不规范',
   },
   idCard: {
-    validator: async (rule: ValidationRule, value: string) => {
+    validator: async (rule: Rule, value: string) => {
       //空值校验有required处理
       if (!value) return;
       let result;
@@ -38,11 +37,11 @@ export const commonRules: Readonly<{ [key: string]: ValidationRule }> = {
 };
 
 export const genRules = {
-  minString(min: number, noSpace = true): ValidationRule {
+  minString(min: number, noSpace = true): Rule {
     const rule = { required: true, whitespace: true, min, message: `长度不小于${min}` };
     return noSpace ? { ...rule, pattern: /^\S+$/, message: `${rule.message}， 不能输入空格` } : rule;
   },
-  momentDay(required = true): ValidationRule {
+  momentDay(required = true): Rule {
     return {
       ...(required && commonRules.required),
       type: 'object',

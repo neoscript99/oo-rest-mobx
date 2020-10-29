@@ -1,10 +1,11 @@
 import React, { Component, KeyboardEvent } from 'react';
 import { Form } from 'antd';
-import { FormComponentProps } from 'antd/lib/form/Form';
+
 import { InputField } from '../../ant-design-field';
+import { FormComponentProps } from '../../utils';
 
 export interface SearchFormProps extends FormComponentProps {
-  onChange: () => void;
+  onChange: (values) => void;
 }
 
 /**
@@ -27,7 +28,7 @@ export class SimpleSearchForm extends SearchForm {
   render() {
     const { form } = this.props;
     return (
-      <Form layout="inline">
+      <Form layout="inline" form={form}>
         <InputField
           fieldId="searchKey"
           style={{ width: this.width }}

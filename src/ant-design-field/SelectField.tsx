@@ -1,9 +1,8 @@
 import React from 'react';
 import { Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
-import { FieldProps } from './FieldProps';
+import { FieldProps, GetFieldDecoratorOptions } from './FieldProps';
 import { AbstractField } from './AbstractField';
-import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
 import { ObjectUtil, StringUtil } from '../utils';
 
 export interface SelectFieldProps extends SelectWrapProps, FieldProps {}
@@ -15,7 +14,7 @@ export class SelectField extends AbstractField<SelectFieldProps> {
     newDecorator.initialValue = getFirstValue(this.props);
     //如果是多值方式，将选择项的value转为为逗号分隔的字符串
     if (isMultipleMode(mode)) {
-      newDecorator.getValueFromEvent = array => (multiValueType === 'array' ? array : (array as string[]).join(','));
+      newDecorator.getValueFromEvent = (array) => (multiValueType === 'array' ? array : (array as string[]).join(','));
 
       newDecorator.valuePropName = 'multiValue';
     }
@@ -27,7 +26,7 @@ export class SelectField extends AbstractField<SelectFieldProps> {
     return <SelectWrap {...this.getInputProps()} />;
   }
 }
-export interface SelectWrapProps extends SelectProps {
+export interface SelectWrapProps extends SelectProps<any> {
   dataSource?: any[];
   keyProp?: string;
   valueProp: string;
@@ -72,7 +71,7 @@ export class SelectWrap extends React.Component<SelectWrapProps> {
     return (
       <Select mode={mode} {...values} placeholder="---请选择---" optionFilterProp="children" {...selectProps}>
         {dataSource &&
-          dataSource.map(item => (
+          dataSource.map((item) => (
             <Select.Option key={ObjectUtil.get(item, keyProp || valueProp)} value={ObjectUtil.get(item, valueProp)}>
               {labelRender
                 ? labelRender(item)

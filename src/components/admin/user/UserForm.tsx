@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
-import { Form } from 'antd';
 import { EntityForm, EntityFormProps } from '../../layout';
 import { commonRules, genRules, StringUtil, StyleUtil } from '../../../utils';
 import { DeptEntity } from '../../../services/DeptService';
 import { Entity, UserService } from '../../../services';
+import { Form } from 'antd';
 import { CheckboxOptionType } from 'antd/lib/checkbox/Group';
 import { AdminServices } from '../AdminServices';
 import { SelectField, InputField, CheckboxField } from '../../../ant-design-field';
@@ -38,8 +38,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     const allRoles =
       this.hideRoles ||
       roleService.store.allList
-        .filter(role => role.enabled)
-        .map(role => ({ label: role.roleName as string, value: role.id as string }));
+        .filter((role) => role.enabled)
+        .map((role) => ({ label: role.roleName as string, value: role.id as string }));
     const state: any = {
       allRoles,
       deptList,
@@ -47,8 +47,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     if (inputItem && inputItem.id && !this.hideRoles) {
       const userRoleIds: string[] = await userRoleService
         .list({ criteria: { eq: [['user.id', inputItem.id]] } })
-        .then(res => {
-          return res.results.map(ur => ur.role.id);
+        .then((res) => {
+          return res.results.map((ur) => ur.role.id);
         });
       this.roleIds = userRoleIds;
       state.userRoleIds = userRoleIds;
@@ -147,7 +147,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     //第一次保存时生成account
     if (this.autoGenerateAccount && !inputItem?.id) {
       const { deptList } = this.state;
-      const dept = deptList.find(d => d.id === saveItem.dept.id);
+      const dept = deptList.find((d) => d.id === saveItem.dept.id);
       saveItem.account = `${dept!.name}-${saveItem.name}-${StringUtil.randomString()}`;
     }
     if (this.hideRoles) return super.saveEntity(saveItem);

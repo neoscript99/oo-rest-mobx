@@ -1,6 +1,7 @@
 import React from 'react';
 import { SearchForm, SearchFormProps } from '../../layout';
 import { Form } from 'antd';
+
 import { DeptSelectField } from '../../common';
 import { InputField } from '../../../ant-design-field';
 export interface UserSearchFormProps extends SearchFormProps {

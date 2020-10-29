@@ -8,7 +8,6 @@ export class DeptSelectField extends React.Component<PickPartial<SelectFieldProp
     const fiProps = { label: '单位', ...formItemProps };
     return (
       <SelectField
-        fieldId="dept.id"
         formItemProps={fiProps}
         valueProp="id"
         labelProp="name"

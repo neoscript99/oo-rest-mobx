@@ -1,4 +1,4 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { InfoCircleTwoTone } from '@ant-design/icons';
 
-export const InfoIcon = () => <Icon type="info-circle" style={{ margin: 2 }} theme="twoTone" twoToneColor="#E64A19" />;
+export const InfoIcon = () => <InfoCircleTwoTone style={{ margin: 2 }} twoToneColor="#E64A19" />;

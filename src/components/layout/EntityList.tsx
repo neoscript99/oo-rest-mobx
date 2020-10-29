@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/lib/table';
+import { CloseOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Result, Table, Tag } from 'antd';
 import { TableUtil, LangUtil } from '../../utils';
 import { EntityForm, EntityFormProps } from './EntityForm';
@@ -402,7 +403,7 @@ export abstract class EntityList<
           extra={
             <div>
               {this.exportRender()}{' '}
-              <Button icon="close" onClick={cancel}>
+              <Button icon={<CloseOutlined />} onClick={cancel}>
                 关闭
               </Button>
             </div>

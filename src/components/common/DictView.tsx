@@ -18,7 +18,7 @@ export class DictView extends React.Component<DictViewProps> {
     const codes = dictCode.split(',');
     return (
       <div>
-        {codes.map(code => (
+        {codes.map((code) => (
           <Tag key={code}>{dictService.dictRender(dictType, code)}</Tag>
         ))}
       </div>

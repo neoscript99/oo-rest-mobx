@@ -1,5 +1,6 @@
 import React from 'react';
-import { Badge, Calendar, Card, Popover, List, Icon, Divider } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
+import { Badge, Calendar, Card, Popover, List, Divider } from 'antd';
 import urlTemplate from 'url-template';
 import moment, { Moment } from 'moment';
 import 'moment/locale/zh-cn';
@@ -41,7 +42,7 @@ export class PortletCalendar extends Portlet {
     const { portlet, dataList } = this.state;
     if (!dataList) return null;
 
-    const matchData = dataList.filter(item =>
+    const matchData = dataList.filter((item) =>
       date.isBetween(
         moment(item[portlet.beginTimeField], portlet.timeFormat),
         moment(item[portlet.endTimeField], portlet.timeFormat),
@@ -57,9 +58,9 @@ export class PortletCalendar extends Portlet {
         content={
           <List
             dataSource={matchData}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item>
-                <Icon type="calendar" />
+                <CalendarOutlined />
                 <Divider type="vertical" />
                 <a href={linkTemplate.expand(item)} target="_blank">
                   {item[portlet.titleField]}

@@ -1,4 +1,5 @@
 import React, { Component, ComponentType, ReactNode } from 'react';
+import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Layout, Popover } from 'antd';
 import { observer } from 'mobx-react';
 import { RouteComponentProps } from 'react-router';
@@ -101,7 +102,7 @@ export class Home extends Component<HomeProps, { collapsed: boolean }> {
         >
           {logoRender}
           <div>
-            <Avatar icon="user" style={{ backgroundColor: '#f56a00' }} />
+            <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#f56a00' }} />
             <div style={{ display: 'inline-block' }}>
               <span style={{ marginLeft: '0.5rem', lineHeight: '1.2rem' }}>{loginInfo.account}(</span>
               <Button type="link" onClick={this.goProfile.bind(this)} style={buttonCss}>

@@ -1,4 +1,13 @@
 import React, { Component, CSSProperties } from 'react';
+
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  PlusCircleOutlined,
+  ReadOutlined,
+} from '@ant-design/icons';
+
 import { Button, Popconfirm } from 'antd';
 import { OperatorSwitch } from './EntityList';
 import { ButtonProps } from 'antd/lib/button';
@@ -40,17 +49,17 @@ export class OperatorBar extends Component<OperatorBarProps> {
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {operatorVisible.create && (
-          <Button {...btProps} icon="plus-circle" onClick={onCreate}>
+          <Button {...btProps} icon={<PlusCircleOutlined />} onClick={onCreate}>
             新增
           </Button>
         )}
         {operatorVisible.update && (
-          <Button {...btProps} disabled={!operatorEnable.update} icon="edit" onClick={onUpdate}>
+          <Button {...btProps} disabled={!operatorEnable.update} icon={<EditOutlined />} onClick={onUpdate}>
             修改
           </Button>
         )}
         {operatorVisible.view && (
-          <Button {...btProps} disabled={!operatorEnable.view} icon="read" onClick={onView}>
+          <Button {...btProps} disabled={!operatorEnable.view} icon={<ReadOutlined />} onClick={onView}>
             查看
           </Button>
         )}
@@ -62,18 +71,18 @@ export class OperatorBar extends Component<OperatorBarProps> {
             cancelText="取消"
             disabled={!operatorEnable.delete}
           >
-            <Button {...btProps} disabled={!operatorEnable.delete} icon="delete">
+            <Button {...btProps} disabled={!operatorEnable.delete} icon={<DeleteOutlined />}>
               删除
             </Button>
           </Popconfirm>
         )}
         {operatorVisible.exportSelected && (
-          <Button {...btProps} disabled={!operatorEnable.exportSelected} icon="download" onClick={onExportSelected}>
+          <Button {...btProps} disabled={!operatorEnable.exportSelected} icon={<DownloadOutlined />} onClick={onExportSelected}>
             导出选择项
           </Button>
         )}
         {operatorVisible.exportAll && (
-          <Button {...btProps} disabled={!operatorEnable.exportAll} icon="download" onClick={onExportAll}>
+          <Button {...btProps} disabled={!operatorEnable.exportAll} icon={<DownloadOutlined />} onClick={onExportAll}>
             导出所有
           </Button>
         )}

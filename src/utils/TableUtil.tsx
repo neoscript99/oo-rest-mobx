@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
 import moment from 'moment';
 import numeral from 'numeral';
-import { PaginationConfig } from 'antd/lib/table';
 import { EntityColumnProps } from '../components/layout';
 import { PageInfo } from '../services';
+import { PaginationConfig } from 'antd/lib/pagination';
 export class TableUtil {
   static commonColumnRenders = {
     booleanLabel: TableUtil.booleanLabel,

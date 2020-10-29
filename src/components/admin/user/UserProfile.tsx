@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { AdminPageProps } from '../AdminServices';
-import { Button, Card, Checkbox, Form, message } from 'antd';
-import { FormComponentProps } from 'antd/lib/form';
-import { commonRules, StringUtil } from '../../../utils';
+import { Form } from 'antd';
+import { Button, Card, Checkbox, message } from 'antd';
+import { commonRules, FormComponentProps, StringUtil } from '../../../utils';
 import { EntityForm } from '../../layout';
 import { CheckboxChangeEvent, CheckboxProps } from 'antd/lib/checkbox';
 import { Entity, UserEntity } from '../../../services';
@@ -25,7 +25,7 @@ export class UserProfile extends Component<AdminPageProps, S> {
     const { services } = this.props;
     if (item.password === services.loginService.initPasswordHash) message.error('新密码不能和初始密码相同');
     else
-      services.userService.save(item).then(item => {
+      services.userService.save(item).then((item) => {
         services.loginService.store.forcePasswordChange = false;
         services.loginService.store.loginInfo.user = item as UserEntity;
         message.success('保存成功');
@@ -62,24 +62,20 @@ interface ProfileFormProps extends FormComponentProps {
 }
 
 class ProfileFrom extends Component<ProfileFormProps> {
-  handleSubmit() {
-    const { form, onSave, showPassword, inputItem } = this.props;
-    form.validateFields((err, saveItem) => {
-      if (!err) {
-        if (showPassword) {
-          if (saveItem.password === saveItem.passwordAgain)
-            onSave({ id: inputItem.id, ...saveItem, password: StringUtil.sha256(saveItem.password) });
-          else message.error('两次输入的密码不一致');
-        } else onSave({ id: inputItem.id, ...saveItem });
-      }
-    });
+  handleSubmit(saveItem) {
+    const { onSave, showPassword, inputItem } = this.props;
+    if (showPassword) {
+      if (saveItem.password === saveItem.passwordAgain)
+        onSave({ id: inputItem.id, ...saveItem, password: StringUtil.sha256(saveItem.password) });
+      else message.error('两次输入的密码不一致');
+    } else onSave({ id: inputItem.id, ...saveItem });
   }
 
   render() {
     const { form, showPassword, onCheckboxChange, inputItem } = this.props;
     const firstPassword = form.getFieldValue('password');
     return (
-      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={this.handleSubmit.bind(this)}>
         <InputField fieldId="dept.name" formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
         <InputField
           fieldId="name"
@@ -131,7 +127,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
           />
         )}
         <Form.Item wrapperCol={{ span: 16, offset: 8 }}>
-          <Button type="primary" onClick={this.handleSubmit.bind(this)}>
+          <Button type="primary" htmlType="submit">
             提交
           </Button>
         </Form.Item>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, Icon } from 'antd';
+import { CloseOutlined, EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
+import { Card } from 'antd';
 import { PortletListView } from './PortletListView';
 import { PortletLink } from './PortletLink';
 import { PortletTable } from './PortletTable';
@@ -37,9 +38,9 @@ const PortletMapping = ({ portlet, portletMap, inTab, services }: PortletSwitchP
 };
 
 const NotExists = ({ portlet }: PortletProps) => (
-  <Card title={portlet.portletName} actions={[<Icon type="setting" />, <Icon type="edit" />, <Icon type="ellipsis" />]}>
+  <Card title={portlet.portletName} actions={[<SettingOutlined />, <EditOutlined />, <EllipsisOutlined />]}>
     <Card.Meta
-      avatar={<Icon type="close" style={{ color: 'red', fontSize: '2rem' }} />}
+      avatar={<CloseOutlined style={{ color: 'red', fontSize: '2rem' }} />}
       title="控件不存在，请联系管理员"
       description={portlet.type}
     />

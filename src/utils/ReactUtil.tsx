@@ -1,9 +1,31 @@
-import { LangUtil } from './LangUtil';
-import { Form } from 'antd';
 import React from 'react';
 import { StyleUtil } from './StyleUtil';
+import { Form } from 'antd';
+import { FormInstance } from 'antd/lib/form';
 
+export interface FormComponentProps {
+  form: FormInstance;
+}
 export class ReactUtil {
+  static formWrapper<PP extends FormComponentProps>(
+    component: React.ComponentType<PP>,
+    mapPropName = 'inputItem',
+  ): React.FC<Omit<PP, 'form'>> {
+    // eslint-disable-next-line react/display-name
+    return (props) => {
+      const [form] = Form.useForm();
+
+      React.useEffect(() => {
+        const inputItem = props[mapPropName];
+        form.setFieldsValue(props[mapPropName]);
+      }, [props[mapPropName]]);
+      const Comp = component;
+      const pp = { ...props, form } as PP;
+      return <Comp {...pp} />;
+    };
+  }
+  /*
+   * antd4的form不再使用包装，改用Form.useForm获得实例
   static formWrapper<PP>(
     component: React.ComponentType<PP>,
     mapPropName = 'inputItem',
@@ -24,7 +46,7 @@ export class ReactUtil {
       }
       return flat;
     } else return;
-  }
+  }*/
 
   static hiddenTextRender(maxSize: number, value: React.ReactNode) {
     const HiddenText = StyleUtil.hiddenText(maxSize);

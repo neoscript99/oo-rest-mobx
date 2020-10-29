@@ -1,11 +1,11 @@
 import React from 'react';
+import { UploadOutlined } from '@ant-design/icons';
 import { Upload, Button, message } from 'antd';
-import { FieldProps } from './FieldProps';
+import { FieldProps, GetFieldDecoratorOptions } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { RcFile, UploadChangeParam, UploadProps } from 'antd/lib/upload';
 import { ShowUploadListInterface, UploadFile } from 'antd/lib/upload/interface';
 import { AttachmentEntity, AttachmentService } from '../services';
-import { GetFieldDecoratorOptions } from 'antd/lib/form/Form';
 import isObject from 'lodash/isObject';
 
 export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
@@ -22,9 +22,9 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
 
         //发送到后台的数据只需要id属性，而且UploadWrap的fileList通过state管理，不需要这里的value回传
         const all = info.fileList
-          .filter(file => file.status === 'done')
-          .map(file => ({ id: file.response.id, name: file.response.name }));
-        if (valueType === 'string') return all.map(f => f.id).join(',');
+          .filter((file) => file.status === 'done')
+          .map((file) => ({ id: file.response.id, name: file.response.name }));
+        if (valueType === 'string') return all.map((f) => f.id).join(',');
         if (valueType === 'json') return JSON.stringify(all);
         else return single ? (all.length > 0 ? all[0] : undefined) : all;
       },
@@ -69,7 +69,7 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
       } else attList = maxNumber === 1 ? [value] : value;
       //服务端domain转换为文件列表
       this.setState({
-        fileList: attList.map(res => ({
+        fileList: attList.map((res) => ({
           uid: res.id,
           name: res.name,
           status: 'done',
@@ -87,7 +87,7 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
     onValueChange && ['done', 'removed'].includes(info.file.status || '') && onValueChange(info);
     console.debug('UploadWrap.handleChange: ', info);
     //去除beforeUpload校验不通过的附件，目前观察status为空
-    const fileList = info.fileList.filter(file => {
+    const fileList = info.fileList.filter((file) => {
       if (file.response) file.url = `${attachmentService.downloadUrl}/${file.response.id}`;
       return !!file.status;
     });
@@ -137,7 +137,7 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
         onChange={this.handleChange.bind(this)}
         beforeUpload={this.beforeUpload.bind(this)}
       >
-        {!disabled && underLimit && <Button icon="upload">选择文件</Button>}
+        {!disabled && underLimit && <Button icon={<UploadOutlined />}>选择文件</Button>}
       </Upload>
     );
   }

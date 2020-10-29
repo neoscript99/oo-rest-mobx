@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { LinkOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { DomainService } from '../../services';
 import { MobxDomainStore } from '../../stores';
@@ -11,7 +12,7 @@ export class PortletLink extends Portlet {
     return (
       <Button
         type="primary"
-        icon="link"
+        icon={<LinkOutlined />}
         size="large"
         style={{ height: '6rem' }}
         onClick={() => window.open(linkUrl, '_blank')}

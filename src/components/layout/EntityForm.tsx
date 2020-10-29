@@ -79,13 +79,13 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
 
   handleSave(saveItem: Entity) {
     this.saveEntity(saveItem)
-      .then(v => {
+      .then((v) => {
         message.success('保存成功');
         const { onSuccess } = this.props;
         if (onSuccess) onSuccess(v);
         return v;
       })
-      .catch(reason => {
+      .catch((reason) => {
         console.error(reason);
         message.error(`保存失败：${reason}`);
       });

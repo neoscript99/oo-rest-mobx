@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactExport from 'react-data-export';
 import { EntityColumnProps } from './EntityList';
+import { DownloadOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { ObjectUtil } from '../../utils';
 
@@ -24,7 +25,7 @@ export class EntityExporter extends React.Component<EntityExporterProps> {
   render() {
     const { dataSource, columns, name, actionText, filename } = this.props;
     const element = (
-      <Button icon="download" type="primary">
+      <Button icon={<DownloadOutlined />} type="primary">
         {actionText}
       </Button>
     );

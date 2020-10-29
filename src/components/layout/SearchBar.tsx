@@ -1,4 +1,5 @@
 import React, { Component, CSSProperties } from 'react';
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { SearchForm, SearchFormProps } from './SearchForm';
 import { FormComponentProps } from 'antd/lib/form';
@@ -19,14 +20,12 @@ class SearchFromBar extends Component<SearchFromBarProps> {
   render() {
     const { formRender, form, style } = this.props;
     const formNode = formRender({ form, onChange: this.handleSearch.bind(this) });
-    return (
-      formNode && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1, ...style }}>
-          {formNode}
-          <Button icon="search" type="primary" style={buttonCss} title="查询" onClick={this.handleSearch.bind(this)} />
-          <Button icon="delete" style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
-        </div>
-      )
+    return formNode && (
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1, ...style }}>
+        {formNode}
+        <Button icon={<SearchOutlined />} type="primary" style={buttonCss} title="查询" onClick={this.handleSearch.bind(this)} />
+        <Button icon={<DeleteOutlined />} style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
+      </div>
     );
   }
 

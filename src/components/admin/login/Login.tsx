@@ -1,13 +1,15 @@
 import React, { Component, FormEvent, ReactNode } from 'react';
-import { Form, Icon, Input, Button, Checkbox, Spin, Dropdown, Menu } from 'antd';
+import { CodeOutlined, DownOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Form } from 'antd';
+import { Input, Button, Checkbox, Spin, Dropdown, Menu } from 'antd';
 import { observer } from 'mobx-react';
-import { FormComponentProps } from 'antd/lib/form';
 import { AdminServices } from '../AdminServices';
 import { LoginPage, LoginBox, LoginBoxTitle, LoginBoxItem } from './LoginStyled';
 import { RouteComponentProps } from 'react-router';
-import { ClickParam } from 'antd/lib/menu';
 import { ReactUtil } from '../../../utils/ReactUtil';
 import { commonRules, StringUtil } from '../../../utils';
+import { FormInstance } from 'antd/lib/form/hooks/useForm';
+import { MenuInfo } from 'rc-menu/lib/interface';
 
 export interface LoginFormProps {
   adminServices: AdminServices;
@@ -26,7 +28,7 @@ interface S {
  * 如果需要，客户端要展示验证码，输入后传给后台
  */
 @observer
-class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteComponentProps, S> {
+class LoginForm extends Component<LoginFormProps & { form: FormInstance } & RouteComponentProps, S> {
   state = { kaptchaId: 'none', kaptchaFree: true };
   componentDidMount(): void {
     this.checkKaptchaFree();
@@ -38,13 +40,12 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
     if (loginInfo.success) history.push(lastRoutePath);
   }
 
-  handleSubmit(e?: FormEvent) {
-    e && e.preventDefault();
-    const { form, adminServices } = this.props;
-    //登录前再检查是否需要验证码
-    form.validateFields(async (err, values) => {
-      if (err) return;
-      const loginInfo = await adminServices.loginService.login(values);
+  /**
+   * 升级antd4之后代码调整，之前再提交前再次调用form.validateFields进行验证
+   */
+  handleSubmit(values) {
+    const { adminServices } = this.props;
+    adminServices.loginService.login(values).then((loginInfo) => {
       if (!loginInfo.success) {
         this.setState({ kaptchaFree: !!loginInfo.kaptchaFree });
         this.refreshKaptchaId();
@@ -52,9 +53,9 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
     });
   }
 
-  demoUserClick = ({ key }: ClickParam) => {
+  demoUserClick = ({ key }: MenuInfo) => {
     const { adminServices, demoUsers } = this.props;
-    const item = demoUsers!.find(user => user.username === key);
+    const item = demoUsers!.find((user) => user.username === key);
     adminServices.loginService.loginHash(item);
   };
 
@@ -75,7 +76,6 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
   }
   render() {
     const {
-      form: { getFieldDecorator },
       adminServices: {
         loginService: { kaptchaRenderURL },
       },
@@ -96,54 +96,35 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
             {introRender}
           </LoginBoxItem>
           <LoginBoxItem>
-            <Form onSubmit={this.handleSubmit.bind(this)} style={{ maxWidth: '300px' }}>
-              <Form.Item label="用户名">
-                {getFieldDecorator('username', {
-                  rules: [{ required: true, message: '用户名不能为空!' }],
-                })(
-                  <Input
-                    prefix={<Icon type="user" style={css} />}
-                    size="large"
-                    autoComplete="username"
-                    onBlur={this.checkKaptchaFree.bind(this)}
-                  />,
-                )}
+            <Form onFinish={this.handleSubmit.bind(this)} style={{ maxWidth: '300px' }}>
+              <Form.Item label="用户名" name="username" rules={[{ required: true, message: '用户名不能为空!' }]}>
+                <Input
+                  prefix={<UserOutlined style={css} />}
+                  size="large"
+                  autoComplete="username"
+                  onBlur={this.checkKaptchaFree.bind(this)}
+                />
               </Form.Item>
-              <Form.Item label="密码">
-                {getFieldDecorator('password', {
-                  rules: [{ required: true, message: '密码不能为空!' }],
-                })(
-                  <Input
-                    prefix={<Icon type="lock" style={css} />}
-                    type="password"
-                    size="large"
-                    autoComplete="password"
-                  />,
-                )}
+              <Form.Item label="密码" name="password" rules={[{ required: true, message: '密码不能为空!' }]}>
+                <Input prefix={<LockOutlined style={css} />} type="password" size="large" autoComplete="password" />,
               </Form.Item>
               {!kaptchaFree && (
-                <Form.Item label="验证码">
-                  {getFieldDecorator('kaptchaCode', {
-                    rules: [commonRules.required],
-                  })(
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Input prefix={<Icon type="code" style={css} />} maxLength={4} size="large" />
-                      <img
-                        src={`${kaptchaRenderURL}/${kaptchaId}`}
-                        height={36}
-                        style={{ marginLeft: 5 }}
-                        onClick={this.refreshKaptchaId.bind(this)}
-                      />
-                    </div>,
-                  )}
+                <Form.Item label="验证码" name="kaptchaCode" rules={[commonRules.required]}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Input prefix={<CodeOutlined style={css} />} maxLength={4} size="large" />
+                    <img
+                      src={`${kaptchaRenderURL}/${kaptchaId}`}
+                      height={36}
+                      style={{ marginLeft: 5 }}
+                      onClick={this.refreshKaptchaId.bind(this)}
+                    />
+                  </div>
+                  ,
                 </Form.Item>
               )}
-              <Form.Item>
+              <Form.Item name="remember" valuePropName="checked" initialValue={true}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                  {getFieldDecorator('remember', {
-                    valuePropName: 'checked',
-                    initialValue: true,
-                  })(<Checkbox>自动登录</Checkbox>)}
+                  <Checkbox>自动登录</Checkbox>
                   {demoUsers && <DemoUserDropdown demoUsers={demoUsers} demoUserClick={this.demoUserClick} />}
                 </div>
                 <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 10 }}>
@@ -161,7 +142,7 @@ class LoginForm extends Component<LoginFormProps & FormComponentProps & RouteCom
 export const Login = ReactUtil.formWrapper(LoginForm);
 interface DemoUserDropdownProps {
   demoUsers: any[];
-  demoUserClick: (param: ClickParam) => void;
+  demoUserClick: (param: MenuInfo) => void;
 }
 
 const DemoUserDropdown = (props: DemoUserDropdownProps) => {
@@ -171,7 +152,7 @@ const DemoUserDropdown = (props: DemoUserDropdownProps) => {
       trigger={['click']}
       overlay={
         <Menu onClick={demoUserClick}>
-          {demoUsers.map(user => (
+          {demoUsers.map((user) => (
             <Menu.Item key={user.username}>
               {user.name}({user.username})
             </Menu.Item>
@@ -180,7 +161,7 @@ const DemoUserDropdown = (props: DemoUserDropdownProps) => {
       }
     >
       <Button size="small">
-        演示登录 <Icon type="down" />
+        演示登录 <DownOutlined />
       </Button>
     </Dropdown>
   );
