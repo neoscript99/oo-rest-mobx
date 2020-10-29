@@ -2,6 +2,7 @@ import React from 'react';
 import { AdminPageProps } from '../AdminServices';
 import { TableUtil } from '../../../utils';
 import { EntityColumnProps, EntityPageList } from '../../layout';
+import { ListOptions } from '../../../services';
 
 const { commonColumns } = TableUtil;
 const columns: EntityColumnProps[] = [
@@ -20,5 +21,12 @@ export class ParamList extends EntityPageList<AdminPageProps> {
 
   get domainService() {
     return this.props.services.paramService;
+  }
+
+  getQueryParam(): ListOptions {
+    return {
+      criteria: {},
+      orders: ['code'],
+    };
   }
 }
