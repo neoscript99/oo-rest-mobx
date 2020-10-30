@@ -2,21 +2,19 @@ import React, { Component, KeyboardEvent } from 'react';
 import { Form } from 'antd';
 
 import { InputField } from '../../ant-design-field';
-import { FormComponentProps } from '../../utils';
+import { FormProps } from 'antd/lib/form';
 
-export interface SearchFormProps extends FormComponentProps {
-  onChange: (values) => void;
-}
+export type SearchFormProps = Partial<FormProps>;
 
 /**
  * 接收一个form属性
  */
 export abstract class SearchForm<P extends SearchFormProps = SearchFormProps, S = any> extends Component<P, S> {
   searchOnEnter(e: KeyboardEvent<any>) {
-    const { onChange } = this.props;
-    if (e.keyCode === 13) {
+    const { form } = this.props;
+    if (form && e.keyCode === 13) {
       e.stopPropagation();
-      onChange();
+      form.submit;
     }
   }
 }
@@ -28,7 +26,7 @@ export class SimpleSearchForm extends SearchForm {
   render() {
     const { form } = this.props;
     return (
-      <Form layout="inline" form={form}>
+      <Form layout="inline" {...this.props}>
         <InputField
           fieldId="searchKey"
           style={{ width: this.width }}

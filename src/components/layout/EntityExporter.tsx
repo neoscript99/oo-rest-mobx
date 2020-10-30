@@ -35,13 +35,13 @@ export class EntityExporter extends React.Component<EntityExporterProps> {
     const bs = { style: 'thin', color: { rgb: 'black' } };
     const excelStyle = { border: { top: bs, bottom: bs, left: bs, right: bs } };
     const dataSet = {
-      columns: columns.map(col => ({
+      columns: columns.map((col) => ({
         title: col.title,
         width: { wch: col.cellWidth || 12 },
       })),
       data: (dataSource || []).map((item, itemIdx) =>
-        columns.map(col => {
-          let value = col.dataIndex && ObjectUtil.get(item, col.dataIndex);
+        columns.map((col) => {
+          let value = col.dataIndex && ObjectUtil.get(item, col.dataIndex as string);
           if (col.renderExport) value = col.renderExport(value, item, itemIdx);
           else if (col.render) value = col.render(value, item, itemIdx);
           return { value: value || '', style: { ...excelStyle, ...col.cellStyle } };

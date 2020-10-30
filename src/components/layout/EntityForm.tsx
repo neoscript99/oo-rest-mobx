@@ -6,8 +6,8 @@ import { EntityColumnProps } from './EntityList';
 import { ModalProps } from 'antd/lib/modal';
 import { CardProps } from 'antd/lib/card';
 import { CollapsePanelProps } from 'antd/lib/collapse';
-import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { ReactUtil } from '../../utils/ReactUtil';
+import { FormInstance } from 'antd/lib/form';
 
 export interface EntityFormProps {
   domainService: DomainService;
@@ -21,9 +21,8 @@ export interface EntityFormProps {
   cardProps?: CardProps;
   collapseProps?: CollapsePanelProps;
   readonly?: boolean;
-  form?: WrappedFormUtils;
+  form?: FormInstance;
 }
-
 export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> extends Component<P, S> {
   render() {
     const { containerType, title, modalProps, cardProps, collapseProps, readonly } = this.getContainerProps();
@@ -73,7 +72,7 @@ export class EntityForm<P extends EntityFormProps = EntityFormProps, S = any> ex
 
   handleOK() {
     const { form } = this.props;
-    if (form) form.validateFields((err, saveItem) => (err ? console.error(err) : this.handleSave(saveItem)));
+    if (form) form.validateFields().then((saveItem) => this.handleSave(saveItem));
     else console.error('未通过Form.create进行包装，没有form属性');
   }
 

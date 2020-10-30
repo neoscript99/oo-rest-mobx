@@ -3,7 +3,7 @@ import moment from 'moment';
 import numeral from 'numeral';
 import { EntityColumnProps } from '../components/layout';
 import { PageInfo } from '../services';
-import { PaginationConfig } from 'antd/lib/pagination';
+import { TablePaginationConfig } from 'antd/lib/table/interface';
 export class TableUtil {
   static commonColumnRenders = {
     booleanLabel: TableUtil.booleanLabel,
@@ -46,7 +46,7 @@ export class TableUtil {
     } else return null;
   }
 
-  static toPageInfo(pagination: PaginationConfig): PageInfo {
+  static toPageInfo(pagination: TablePaginationConfig): PageInfo {
     return {
       currentPage: pagination.current || 1,
       pageSize: pagination.pageSize || 10,
@@ -54,7 +54,7 @@ export class TableUtil {
     };
   }
 
-  static fromPageInfo(pageInfo: PageInfo): PaginationConfig {
+  static fromPageInfo(pageInfo: PageInfo): TablePaginationConfig {
     return {
       current: pageInfo.currentPage || 1,
       pageSize: pageInfo.pageSize || 10,

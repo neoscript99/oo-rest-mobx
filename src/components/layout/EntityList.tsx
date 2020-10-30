@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/lib/table';
+import { ColumnProps, TableProps } from 'antd/lib/table';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Result, Table, Tag } from 'antd';
 import { TableUtil, LangUtil } from '../../utils';
@@ -11,6 +11,7 @@ import { DomainService, Entity, ListOptions, ListResult } from '../../services';
 import { CheckboxField, InputField, SelectField } from '../../ant-design-field';
 import { RouteChildrenProps } from 'react-router';
 import { EntityExporter, EntityExporterProps } from './EntityExporter';
+import { TablePaginationConfig } from 'antd/lib/table/interface';
 
 export interface OperatorSwitch {
   update?: boolean;
@@ -37,7 +38,7 @@ export interface EntityListState {
 }
 
 export interface EntityTableProps extends TableProps<Entity> {
-  pagination: PaginationConfig;
+  pagination: TablePaginationConfig;
 }
 
 export interface EntityColumnProps extends ColumnProps<Entity> {
@@ -67,7 +68,7 @@ export abstract class EntityList<
     rowKey: 'id',
     rowSelection: {
       onChange: this.changeSelectRows.bind(this),
-      hideDefaultSelections: true,
+      //hideDefaultSelections: true,
     },
     bordered: true,
     pagination: {
@@ -75,7 +76,7 @@ export abstract class EntityList<
       current: 1,
       showSizeChanger: true,
       showQuickJumper: true,
-      showTotal: total => <Tag color="blue">总记录数：{total}</Tag>,
+      showTotal: (total) => <Tag color="blue">总记录数：{total}</Tag>,
       onChange: this.pageChange.bind(this),
       onShowSizeChange: this.pageSizeChange.bind(this),
     },
@@ -149,7 +150,7 @@ export abstract class EntityList<
         this.setState({ dataList: data.results });
         return data;
       })
-      .catch(e => {
+      .catch((e) => {
         this.tableProps.loading = false;
         this.forceUpdate();
         message.info(`查询出错：${e}`);
@@ -213,10 +214,10 @@ export abstract class EntityList<
   updateStorePageInfo() {
     this.domainService.syncPageInfo(TableUtil.toPageInfo(this.tableProps.pagination));
     //目前几种情况下，更新store.pageInfo后，当前页面的选择记录j 都应该清空
-    this.changeSelectRows(undefined);
+    this.changeSelectRows([], []);
   }
 
-  changeSelectRows(selectedRowKeys?: string[] | number[]) {
+  changeSelectRows(selectedRowKeys: React.Key[], selectedRows: Entity[]) {
     if (this.tableProps.rowSelection) this.tableProps.rowSelection.selectedRowKeys = selectedRowKeys;
     this.setState({ selectedRowKeys });
   }
@@ -267,7 +268,7 @@ export abstract class EntityList<
           message.success('删除成功');
           this.query();
         })
-        .catch(err => this.handleDeleteError(err));
+        .catch((err) => this.handleDeleteError(err));
     else return Promise.reject('请选择记录');
   }
   handleDeleteError(err, msg?: string) {
@@ -288,13 +289,13 @@ export abstract class EntityList<
     const { selectedRowKeys, dataList } = this.state;
     if (!selectedRowKeys || !dataList) return undefined;
     const id = selectedRowKeys[0];
-    return dataList.find(v => v.id === id);
+    return dataList.find((v) => v.id === id);
   }
 
   getSelectItems() {
     const { selectedRowKeys, dataList } = this.state;
     if (!selectedRowKeys || !dataList) return [];
-    return dataList.filter(v => selectedRowKeys.includes(v.id));
+    return dataList.filter((v) => selectedRowKeys.includes(v.id));
   }
 
   handleFormSuccess(item: Entity) {
@@ -324,7 +325,7 @@ export abstract class EntityList<
     this.updateStorePageInfo();
     this.query();
   }
-  getEntityForm(): typeof EntityForm {
+  getEntityForm(): React.ComponentType<any> {
     return EntityForm;
   }
   getEntityFormPop(formProps?: EntityFormProps) {

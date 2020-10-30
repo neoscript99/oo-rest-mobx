@@ -7,10 +7,7 @@ export interface FormComponentProps {
   form: FormInstance;
 }
 export class ReactUtil {
-  static formWrapper<PP extends FormComponentProps>(
-    component: React.ComponentType<PP>,
-    mapPropName = 'inputItem',
-  ): React.FC<Omit<PP, 'form'>> {
+  static formWrapper<PP>(Comp: React.ComponentType<PP>, mapPropName = 'inputItem'): React.FC<Omit<PP, 'form'>> {
     // eslint-disable-next-line react/display-name
     return (props) => {
       const [form] = Form.useForm();
@@ -19,8 +16,8 @@ export class ReactUtil {
         const inputItem = props[mapPropName];
         form.setFieldsValue(props[mapPropName]);
       }, [props[mapPropName]]);
-      const Comp = component;
-      const pp = { ...props, form } as PP;
+
+      const pp = ({ ...props, form } as unknown) as PP;
       return <Comp {...pp} />;
     };
   }
