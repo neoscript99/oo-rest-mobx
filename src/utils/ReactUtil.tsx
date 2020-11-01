@@ -7,19 +7,18 @@ export interface FormComponentProps {
   form: FormInstance;
 }
 export class ReactUtil {
-  static formWrapper<PP>(Comp: React.ComponentType<PP>, mapPropName = 'inputItem'): React.FC<Omit<PP, 'form'>> {
-    // eslint-disable-next-line react/display-name
-    return (props) => {
+  static formWrapper<PP>(comp: React.ComponentType<PP>, mapPropName = 'inputItem'): React.FC<Omit<PP, 'form'>> {
+    const formWrapper = (props) => {
       const [form] = Form.useForm();
-
+      const inputItem = props[mapPropName];
       React.useEffect(() => {
-        const inputItem = props[mapPropName];
-        form.setFieldsValue(props[mapPropName]);
-      }, [props[mapPropName]]);
+        form.setFieldsValue(inputItem);
+      }, [inputItem]);
 
       const pp = ({ ...props, form } as unknown) as PP;
-      return <Comp {...pp} />;
+      return React.createElement(comp, pp);
     };
+    return formWrapper;
   }
   /*
    * antd4的form不再使用包装，改用Form.useForm获得实例

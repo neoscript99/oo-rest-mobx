@@ -26,7 +26,9 @@ export interface GetFieldDecoratorOptions {
   preserve?: boolean;
 }
 export interface FieldProps {
-  fieldId: string;
+  //antd4可改用formItemProps.name
+  fieldId?: string;
+  //antd4可改用formItemProps
   decorator?: Readonly<GetFieldDecoratorOptions>;
   /**
    * 如果未传入初步表现会导致校验规则无效，比如不会显示必输项的红色星号

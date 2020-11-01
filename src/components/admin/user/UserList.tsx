@@ -26,7 +26,7 @@ export class UserList<
     const columns: EntityColumnProps[] = [
       { title: '姓名', dataIndex: 'name' },
       { title: '帐号', dataIndex: 'account' },
-      { title: '所属机构', dataIndex: 'dept.name' },
+      { title: '所属机构', dataIndex: ['dept', 'name'] },
       dictService.dictColumn('性别', 'sexCode', 'pub_sex'),
       { title: '手机号码', dataIndex: 'cellPhone' },
       ...this.getExtraColumns(),

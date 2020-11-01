@@ -76,7 +76,7 @@ export class UserForm extends EntityForm<UserFormProps, S> {
       formUtils: form,
     });
     return (
-      <Form style={flexFormCss}>
+      <Form form={form} layout="vertical" style={flexFormCss}>
         {!autoGenerateAccount && (
           <InputField
             {...make('account', '帐号')}
@@ -88,7 +88,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
         )}
         <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} readonly={readonly} />
         <DeptSelectField
-          {...make('dept.id', '机构')}
+          formItemProps={{ name: ['dept', 'id'], label: '机构', style: oneSpanFormItemCss }}
+          formUtils={form}
           dataSource={deptList}
           decorator={req}
           defaultSelectFirst={this.justSameDept}

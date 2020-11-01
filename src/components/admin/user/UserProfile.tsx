@@ -75,7 +75,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
     const { form, showPassword, onCheckboxChange, inputItem } = this.props;
     const firstPassword = form.getFieldValue('password');
     return (
-      <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={this.handleSubmit.bind(this)}>
+      <Form  form={form} layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={this.handleSubmit.bind(this)}>
         <InputField fieldId="dept.name" formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
         <InputField
           fieldId="name"

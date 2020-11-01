@@ -11,7 +11,7 @@ export class UserSearchForm extends SearchForm<UserSearchFormProps> {
   render() {
     const { form, deptList } = this.props;
     return (
-      <Form layout="inline" style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+      <Form {...this.props} layout="inline" style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
         {deptList && deptList.length > 0 && (
           <DeptSelectField
             fieldId="deptId"
@@ -23,20 +23,8 @@ export class UserSearchForm extends SearchForm<UserSearchFormProps> {
             allowClear
           />
         )}
-        <InputField
-          fieldId="account"
-          style={{ width: '8em' }}
-          placeholder="帐号(..*)"
-          onKeyDown={this.searchOnEnter.bind(this)}
-          formUtils={form}
-        />
-        <InputField
-          fieldId="name"
-          style={{ width: '8em' }}
-          placeholder="姓名(*..*)"
-          onKeyDown={this.searchOnEnter.bind(this)}
-          formUtils={form}
-        />
+        <InputField fieldId="account" style={{ width: '8em' }} placeholder="帐号(..*)" formUtils={form} />
+        <InputField fieldId="name" style={{ width: '8em' }} placeholder="姓名(*..*)" formUtils={form} />
       </Form>
     );
   }

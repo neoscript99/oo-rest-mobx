@@ -7,7 +7,7 @@ import { PortletSwitch } from './PortletSwitch';
 import { CardTabListType } from 'antd/lib/card';
 
 const { TabPane } = Tabs;
-const defaultState = { portletList: [] };
+const defaultState = { portletList: [] } as S;
 
 interface S extends PortletState {
   portletList: Entity[];
@@ -22,9 +22,9 @@ export class PortletTab extends Portlet<PortletProps, S> {
         criteria: { eq: [['tab.id', this.props.portlet.id]] },
         orders: ['portletOrder'],
       })
-      .then(res => {
-        const portletList = res.results.map(rel => rel.portlet);
-        const tabList = portletList.map(p => ({ key: p.id, tab: p.portletName }));
+      .then((res) => {
+        const portletList = res.results.map((rel) => rel.portlet);
+        const tabList = portletList.map((p) => ({ key: p.id, tab: p.portletName }));
         const activePortlet = portletList.length > 0 && portletList[0];
         this.setState({ portletList, tabList, activePortlet });
       });
@@ -32,7 +32,7 @@ export class PortletTab extends Portlet<PortletProps, S> {
 
   handleTabChange = (key: string) => {
     const { portletList } = this.state;
-    const activePortlet = portletList.find(p => p.id === key);
+    const activePortlet = portletList.find((p) => p.id === key);
     this.setState({ activePortlet });
   };
 

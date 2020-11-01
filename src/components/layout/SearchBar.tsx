@@ -24,7 +24,13 @@ class SearchFromBar extends Component<SearchFromBarProps> {
       formNode && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1, ...style }}>
           {formNode}
-          <Button icon={<SearchOutlined />} type="primary" style={buttonCss} title="查询" onClick={() => form.submit} />
+          <Button
+            icon={<SearchOutlined />}
+            type="primary"
+            style={buttonCss}
+            title="查询"
+            onClick={() => form.submit()}
+          />
           <Button icon={<DeleteOutlined />} style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
         </div>
       )

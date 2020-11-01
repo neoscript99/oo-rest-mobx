@@ -22,6 +22,8 @@ export class DatePickerField extends AbstractField<DatePickerFieldProps> {
   static DEFAULT_DATE_FORMAT = 'YYYY-MM-DD';
   getField() {
     const { required, defaultDiffDays, originValue, ...pureProps } = this.getInputProps();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return <DatePickerWrap {...pureProps} />;
   }
   get defaultDecorator() {

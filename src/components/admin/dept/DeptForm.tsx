@@ -9,7 +9,7 @@ export class DeptForm extends EntityForm {
     const { form, readonly } = this.props;
     const req = { rules: [commonRules.required] };
     return (
-      <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+      <Form form={form} layout="vertical" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
         <InputNumberField
           fieldId="seq"
           formItemProps={{ label: '序号' }}

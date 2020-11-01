@@ -96,7 +96,12 @@ class LoginForm extends Component<LoginFormProps & { form: FormInstance } & Rout
             {introRender}
           </LoginBoxItem>
           <LoginBoxItem>
-            <Form onFinish={this.handleSubmit.bind(this)} style={{ maxWidth: '300px' }}>
+            <Form
+              onFinish={this.handleSubmit.bind(this)}
+              style={{ maxWidth: '300px' }}
+              layout="vertical"
+              form={this.props.form}
+            >
               <Form.Item label="用户名" name="username" rules={[{ required: true, message: '用户名不能为空!' }]}>
                 <Input
                   prefix={<UserOutlined style={css} />}
@@ -106,7 +111,7 @@ class LoginForm extends Component<LoginFormProps & { form: FormInstance } & Rout
                 />
               </Form.Item>
               <Form.Item label="密码" name="password" rules={[{ required: true, message: '密码不能为空!' }]}>
-                <Input prefix={<LockOutlined style={css} />} type="password" size="large" autoComplete="password" />,
+                <Input prefix={<LockOutlined style={css} />} type="password" size="large" autoComplete="password" />
               </Form.Item>
               {!kaptchaFree && (
                 <Form.Item label="验证码" name="kaptchaCode" rules={[commonRules.required]}>
@@ -119,7 +124,6 @@ class LoginForm extends Component<LoginFormProps & { form: FormInstance } & Rout
                       onClick={this.refreshKaptchaId.bind(this)}
                     />
                   </div>
-                  ,
                 </Form.Item>
               )}
               <Form.Item name="remember" valuePropName="checked" initialValue={true}>

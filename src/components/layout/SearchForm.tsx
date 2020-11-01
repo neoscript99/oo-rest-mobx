@@ -10,12 +10,16 @@ export type SearchFormProps = Partial<FormProps>;
  * 接收一个form属性
  */
 export abstract class SearchForm<P extends SearchFormProps = SearchFormProps, S = any> extends Component<P, S> {
+  /**
+   * 本身就支持，暂不需要
+   * @param e
+   */
   searchOnEnter(e: KeyboardEvent<any>) {
-    const { form } = this.props;
-    if (form && e.keyCode === 13) {
-      e.stopPropagation();
-      form.submit;
-    }
+    // const { form } = this.props;
+    // if (form && e.keyCode === 13) {
+    //   e.stopPropagation();
+    //   form.submit;
+    // }
   }
 }
 
@@ -27,13 +31,7 @@ export class SimpleSearchForm extends SearchForm {
     const { form } = this.props;
     return (
       <Form layout="inline" {...this.props}>
-        <InputField
-          fieldId="searchKey"
-          style={{ width: this.width }}
-          placeholder={this.placeholder}
-          onKeyDown={this.searchOnEnter.bind(this)}
-          formUtils={form}
-        />
+        <InputField fieldId="searchKey" style={{ width: this.width }} placeholder={this.placeholder} formUtils={form} />
       </Form>
     );
   }

@@ -18,7 +18,7 @@ export abstract class AbstractField<P extends FieldProps = FieldProps, S = any> 
     if (hideFormItem) return field;
     else
       return (
-        <Form.Item {...formItemProps} {...decorator}>
+        <Form.Item name={fieldId} {...formItemProps} {...decorator}>
           {field}
         </Form.Item>
       );
