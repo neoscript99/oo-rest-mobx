@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { MenuOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { MenuEntity, MenuNode } from '../../stores/MenuStore';
+import { Icon } from '../common';
 
 const SubMenu = Menu.SubMenu;
 
@@ -28,7 +28,7 @@ export class MenuTree extends Component<P> {
 function getTree(menuNode: MenuNode, clickHandle: MenuClickHandler) {
   return menuNode.menu.app ? (
     <Menu.Item key={menuNode.menu.id} onClick={clickHandle.bind(null, menuNode.menu)}>
-      <MenuOutlined type={menuNode.menu.icon || 'file'} />
+      <Icon type={menuNode.menu.icon || 'file'} />
       <span>{menuNode.menu.label}</span>
     </Menu.Item>
   ) : (
@@ -36,7 +36,7 @@ function getTree(menuNode: MenuNode, clickHandle: MenuClickHandler) {
       key={menuNode.menu.id}
       title={
         <span>
-          <MenuOutlined type={menuNode.menu.icon || 'folder'} />
+          <Icon type={menuNode.menu.icon || 'folder'} />
           <span>{menuNode.menu.label}</span>
         </span>
       }

@@ -1,12 +1,9 @@
 import React from 'react';
-import ReactExport from 'react-data-export';
 import { EntityColumnProps } from './EntityList';
 import { DownloadOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { ObjectUtil } from '../../utils';
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 export interface EntityExporterProps {
   dataSource?: any[];
   columns: EntityColumnProps[];
@@ -22,7 +19,15 @@ export interface EntityExporterProps {
  */
 export class EntityExporter extends React.Component<EntityExporterProps> {
   static defaultProps = { actionText: '保存', name: '列表' };
+  reactExport;
+  async componentDidMount() {
+    this.reactExport = await import('react-data-export');
+  }
+
   render() {
+    if (!this.reactExport) return null;
+    const ExcelFile = this.reactExport.ExcelFile;
+    const ExcelSheet = this.reactExport.ExcelFile.ExcelSheet;
     const { dataSource, columns, name, actionText, filename } = this.props;
     const element = (
       <Button icon={<DownloadOutlined />} type="primary">
