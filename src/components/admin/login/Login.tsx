@@ -114,27 +114,27 @@ class LoginForm extends Component<LoginFormProps & { form: FormInstance } & Rout
                 <Input prefix={<LockOutlined style={css} />} type="password" size="large" autoComplete="password" />
               </Form.Item>
               {!kaptchaFree && (
-                <Form.Item label="验证码" name="kaptchaCode" rules={[commonRules.required]}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Form.Item label="验证码" name="kaptchaCode" rules={[commonRules.required]}>
                     <Input prefix={<CodeOutlined style={css} />} maxLength={4} size="large" />
-                    <img
-                      src={`${kaptchaRenderURL}/${kaptchaId}`}
-                      height={36}
-                      style={{ marginLeft: 5 }}
-                      onClick={this.refreshKaptchaId.bind(this)}
-                    />
-                  </div>
-                </Form.Item>
-              )}
-              <Form.Item name="remember" valuePropName="checked" initialValue={true}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                  <Checkbox>自动登录</Checkbox>
-                  {demoUsers && <DemoUserDropdown demoUsers={demoUsers} demoUserClick={this.demoUserClick} />}
+                  </Form.Item>
+                  <img
+                    src={`${kaptchaRenderURL}/${kaptchaId}`}
+                    height={36}
+                    style={{ marginLeft: 5 }}
+                    onClick={this.refreshKaptchaId.bind(this)}
+                  />
                 </div>
-                <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 10 }}>
-                  登录
-                </Button>
-              </Form.Item>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <Form.Item name="remember" valuePropName="checked" initialValue={true} style={{ marginBottom: 0 }}>
+                  <Checkbox>自动登录</Checkbox>
+                </Form.Item>
+                {demoUsers && <DemoUserDropdown demoUsers={demoUsers} demoUserClick={this.demoUserClick} />}
+              </div>
+              <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 10 }}>
+                登录
+              </Button>
             </Form>
           </LoginBoxItem>
         </LoginBox>

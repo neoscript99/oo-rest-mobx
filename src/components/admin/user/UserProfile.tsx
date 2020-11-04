@@ -61,7 +61,11 @@ interface ProfileFormProps extends FormComponentProps {
   onSave: (item: Entity) => void;
 }
 
-class ProfileFrom extends Component<ProfileFormProps> {
+interface ProfileFromState {
+  firstPassword?: string;
+}
+
+class ProfileFrom extends Component<ProfileFormProps, ProfileFromState> {
   handleSubmit(saveItem) {
     const { onSave, showPassword, inputItem } = this.props;
     if (showPassword) {
@@ -73,10 +77,9 @@ class ProfileFrom extends Component<ProfileFormProps> {
 
   render() {
     const { form, showPassword, onCheckboxChange, inputItem } = this.props;
-    const firstPassword = form.getFieldValue('password');
     return (
-      <Form  form={form} layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={this.handleSubmit.bind(this)}>
-        <InputField fieldId="dept.name" formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
+      <Form form={form} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} onFinish={this.handleSubmit.bind(this)}>
+        <InputField formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
         <InputField
           fieldId="name"
           formItemProps={{ label: '姓名' }}
@@ -113,6 +116,7 @@ class ProfileFrom extends Component<ProfileFormProps> {
             formItemProps={{ label: '密码' }}
             maxLength={16}
             decorator={{ rules: [required, password] }}
+            onChange={(e) => this.setState({ firstPassword: e.target.value })}
           />
         )}
         {showPassword && (
@@ -123,7 +127,9 @@ class ProfileFrom extends Component<ProfileFormProps> {
             formUtils={form}
             formItemProps={{ label: '密码确认' }}
             maxLength={16}
-            decorator={{ rules: [required, { type: 'enum', enum: [firstPassword], message: '密码不一致' }] }}
+            decorator={{
+              rules: [required, { type: 'enum', enum: [this.state?.firstPassword], message: '密码不一致' }],
+            }}
           />
         )}
         <Form.Item wrapperCol={{ span: 16, offset: 8 }}>

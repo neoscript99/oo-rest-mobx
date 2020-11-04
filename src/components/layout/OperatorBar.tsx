@@ -1,12 +1,6 @@
 import React, { Component, CSSProperties } from 'react';
 
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  EditOutlined,
-  PlusCircleOutlined,
-  ReadOutlined,
-} from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusCircleOutlined, ReadOutlined } from '@ant-design/icons';
 
 import { Button, Popconfirm } from 'antd';
 import { OperatorSwitch } from './EntityList';
@@ -77,7 +71,12 @@ export class OperatorBar extends Component<OperatorBarProps> {
           </Popconfirm>
         )}
         {operatorVisible.exportSelected && (
-          <Button {...btProps} disabled={!operatorEnable.exportSelected} icon={<DownloadOutlined />} onClick={onExportSelected}>
+          <Button
+            {...btProps}
+            disabled={!operatorEnable.exportSelected}
+            icon={<DownloadOutlined />}
+            onClick={onExportSelected}
+          >
             导出选择项
           </Button>
         )}

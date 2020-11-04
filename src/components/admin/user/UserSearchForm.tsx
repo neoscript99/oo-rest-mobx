@@ -9,9 +9,11 @@ export interface UserSearchFormProps extends SearchFormProps {
 }
 export class UserSearchForm extends SearchForm<UserSearchFormProps> {
   render() {
-    const { form, deptList } = this.props;
+    const { deptList, ...formProps } = this.props;
+    const { form } = this.props;
+    const searchOnEnter = this.searchOnEnter.bind(this);
     return (
-      <Form {...this.props} layout="inline" style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+      <Form {...formProps} layout="inline" style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
         {deptList && deptList.length > 0 && (
           <DeptSelectField
             fieldId="deptId"
@@ -23,8 +25,20 @@ export class UserSearchForm extends SearchForm<UserSearchFormProps> {
             allowClear
           />
         )}
-        <InputField fieldId="account" style={{ width: '8em' }} placeholder="帐号(..*)" formUtils={form} />
-        <InputField fieldId="name" style={{ width: '8em' }} placeholder="姓名(*..*)" formUtils={form} />
+        <InputField
+          fieldId="account"
+          style={{ width: '8em' }}
+          placeholder="帐号(..*)"
+          onPressEnter={searchOnEnter}
+          formUtils={form}
+        />
+        <InputField
+          fieldId="name"
+          style={{ width: '8em' }}
+          placeholder="姓名(*..*)"
+          onPressEnter={searchOnEnter}
+          formUtils={form}
+        />
       </Form>
     );
   }

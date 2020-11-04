@@ -6,11 +6,11 @@ import { MobxDomainStore } from '../../../stores';
 import { DomainService, ListOptions } from '../../../services';
 
 const columns: EntityColumnProps[] = [
-  { title: '姓名', dataIndex: 'user.name' },
-  { title: '帐号', dataIndex: 'user.account' },
-  { title: '所属机构', dataIndex: 'user.dept.name' },
-  { title: '角色名', dataIndex: 'role.roleName' },
-  { title: '角色代码(unique)', dataIndex: 'role.roleCode' },
+  { title: '姓名', dataIndex: ['user', 'name'] },
+  { title: '帐号', dataIndex: ['user', 'account'] },
+  { title: '所属机构', dataIndex: ['user', 'dept', 'name'] },
+  { title: '角色名', dataIndex: ['role', 'roleName'] },
+  { title: '角色代码(unique)', dataIndex: ['role', 'roleCode'] },
 ];
 
 export class UserRoleList extends EntityPageList<AdminPageProps> {

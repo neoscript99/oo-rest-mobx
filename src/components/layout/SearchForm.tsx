@@ -11,15 +11,14 @@ export type SearchFormProps = Partial<FormProps>;
  */
 export abstract class SearchForm<P extends SearchFormProps = SearchFormProps, S = any> extends Component<P, S> {
   /**
-   * 本身就支持，暂不需要
+   * 如果只有一个input本身就支持回车提交
+   * 如果有多个，需要绑定本方法
    * @param e
    */
   searchOnEnter(e: KeyboardEvent<any>) {
-    // const { form } = this.props;
-    // if (form && e.keyCode === 13) {
-    //   e.stopPropagation();
-    //   form.submit;
-    // }
+    const { form } = this.props;
+    e.stopPropagation();
+    form.submit();
   }
 }
 
