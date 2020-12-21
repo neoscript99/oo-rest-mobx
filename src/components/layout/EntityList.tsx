@@ -83,7 +83,6 @@ export abstract class EntityList<
   };
   uuid = new Date().toISOString();
   entityFormWrapper?: React.ComponentType<Omit<EntityFormProps, 'form'>>;
-
   render() {
     const { dataList, formProps } = this.state;
     const barCss: React.CSSProperties = {
@@ -92,6 +91,14 @@ export abstract class EntityList<
       flexWrap: 'wrap',
       marginBottom: 5,
     };
+    const cols = this.hasNestColumnName
+      ? this.columns.map((col) => {
+          const dataIndex =
+            typeof col.dataIndex === 'string' &&
+            (col.dataIndex.indexOf('.') > -1 ? col.dataIndex.split('.') : col.dataIndex);
+          return { ...col, dataIndex };
+        })
+      : this.columns;
     return (
       <div>
         {this.getEntityFormPop(formProps)}
@@ -110,7 +117,7 @@ export abstract class EntityList<
           />
           {this.getSearchFormBar()}
         </div>
-        <Table dataSource={dataList} columns={this.columns} {...this.tableProps}></Table>
+        <Table dataSource={dataList} columns={cols} {...this.tableProps}></Table>
       </div>
     );
   }
@@ -118,6 +125,15 @@ export abstract class EntityList<
   abstract get domainService(): DomainService;
 
   abstract get columns(): EntityColumnProps[];
+
+  /**
+   * 如果包含.号分隔的字段名，在antd4中需要转化为数组
+   * 嵌套 dataIndex 支持从 'xxx.yyy' 改成 ['xxx', 'yyy']
+   * @see https://ant.design/docs/react/migration-v4-cn
+   */
+  get hasNestColumnName() {
+    return true;
+  }
   get exportColumns(): EntityColumnProps[] {
     return this.columns;
   }

@@ -9,6 +9,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "pub": "tsc && npm publish",
+    "npm_pack": "tsc && npm pack",
     "test": "jest",
     "lint": "eslint src --ext .ts,.tsx",
     "lintfix": "eslint src --ext .ts,.tsx --fix"
@@ -45,7 +46,7 @@
     "@types/url-template": "^2.0.28",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
-    "antd": "^4.7.3",
+    "antd": "^4.9.4",
     "eslint": "^7.12.1",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",

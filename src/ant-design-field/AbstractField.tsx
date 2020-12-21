@@ -16,12 +16,15 @@ export abstract class AbstractField<P extends FieldProps = FieldProps, S = any> 
      * 导致结果是校验规则相关提示无法显示（如果不需要，直接作为根控件也没关系）
      * */
     if (hideFormItem) return field;
-    else
+    else {
+      //如果包含'.'，按照antd4要求拆分为输入
+      const itemName = fieldId && (fieldId.indexOf('.') > -1 ? fieldId.split('.') : fieldId);
       return (
-        <Form.Item name={fieldId} {...formItemProps} {...decorator}>
+        <Form.Item name={itemName} {...formItemProps} {...decorator}>
           {field}
         </Form.Item>
       );
+    }
   }
 
   abstract getField(): React.ReactNode;
