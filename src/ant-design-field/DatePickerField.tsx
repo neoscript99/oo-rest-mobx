@@ -28,7 +28,7 @@ export class DatePickerField extends AbstractField<DatePickerFieldProps> {
   }
   get defaultDecorator() {
     const { defaultDiffDays, required, format } = this.props;
-    const dateFormat = isString(format) ? format : DatePickerField.DEFAULT_DATE_FORMAT;
+    const dateFormat = typeof format == 'string' ? format : DatePickerField.DEFAULT_DATE_FORMAT;
     return {
       rules: required ? [commonRules.required] : undefined,
       valuePropName: 'originValue',

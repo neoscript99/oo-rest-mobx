@@ -9,3 +9,4 @@ build/
 /lib/
 yarn-error.log
 oo-rest-mobx-*.tgz
+SyncToy_*.dat
