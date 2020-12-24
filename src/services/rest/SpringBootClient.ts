@@ -41,13 +41,13 @@ export class SpringBootClient extends AbstractClient {
    */
   doFetch(uri: string, req?: RequestInit): Promise<Response> {
     return new Promise((resolve, reject) =>
-      super.doFetch(uri, req).then(res => {
+      super.doFetch(uri, req).then((res) => {
         if (res.ok) {
           resolve(res);
           return;
         }
         console.error('SpringBootClient.doFetch: ', res);
-        res.text().then(text => {
+        res.text().then((text) => {
           try {
             const error: SpringError = JSON.parse(text);
             for (const handler of this.errorHandlers) handler(error);

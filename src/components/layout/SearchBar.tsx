@@ -18,8 +18,8 @@ const buttonCss: CSSProperties = {
 
 class SearchFromBar extends Component<SearchFromBarProps> {
   render() {
-    const { formRender, form, style } = this.props;
-    const formNode = formRender({ form, onFinish: this.handleFormFinish.bind(this) });
+    const { formRender, form, style, onSearch } = this.props;
+    const formNode = formRender({ form, onSearch, onFinish: onSearch });
     return (
       formNode && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1, ...style }}>
@@ -29,7 +29,7 @@ class SearchFromBar extends Component<SearchFromBarProps> {
             type="primary"
             style={buttonCss}
             title="查询"
-            onClick={() => form.submit()}
+            onClick={this.handleSearch.bind(this)}
           />
           <Button icon={<DeleteOutlined />} style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
         </div>
@@ -37,9 +37,9 @@ class SearchFromBar extends Component<SearchFromBarProps> {
     );
   }
 
-  handleFormFinish(values) {
-    const { onSearch } = this.props;
-    onSearch(values);
+  handleSearch() {
+    const { form, onSearch } = this.props;
+    form.validateFields().then((searchParam) => onSearch(searchParam));
   }
 
   handleReset() {

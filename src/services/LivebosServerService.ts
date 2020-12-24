@@ -60,7 +60,7 @@ export function transLivebosData(lb: LivebosObject) {
       metaData: { colInfo },
     } = lb;
     if (records && records.length > 0) {
-      lb.dataList = records.map(record =>
+      lb.dataList = records.map((record) =>
         record.reduce((acc, value, idx) => ((acc[colInfo[idx].name] = value), acc), {}),
       );
     }

@@ -16,16 +16,16 @@ export class PortalSider extends React.Component<P> {
   render() {
     const { portalRowRelAllList, portletColRelAllList } = this.props;
 
-    const rowRelList = portalRowRelAllList.filter(value => value.portal.id === this.props.portal.id);
+    const rowRelList = portalRowRelAllList.filter((value) => value.portal.id === this.props.portal.id);
 
     const portletList: Entity[] = [];
-    rowRelList.every(rowRel =>
+    rowRelList.every((rowRel) =>
       rowRel.row.cols
         .slice()
         .sort((a: Entity, b: Entity) => a.colOrder - b.colOrder)
         .every((col: Entity) =>
           portletColRelAllList
-            .filter(colRel => colRel.col.id === col.id)
+            .filter((colRel) => colRel.col.id === col.id)
             .reduce<Entity[]>((list, colRel) => (list.push(colRel.portlet), list), portletList),
         ),
     );

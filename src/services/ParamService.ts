@@ -29,7 +29,7 @@ export class ParamService extends DomainService<MobxDomainStore> {
   }
 
   getByCode(code: string): ParamEntity | undefined {
-    const p = this.store.allList.find(param => param.code === code);
+    const p = this.store.allList.find((param) => param.code === code);
     return p && (p as ParamEntity);
   }
 }

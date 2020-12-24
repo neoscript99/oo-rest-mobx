@@ -22,7 +22,7 @@ export class PortletTable extends Portlet<PortletProps, PortletTableState> {
 
     const { portlet: table, dataList } = this.state;
     const columns: PortletColumnProps[] = table.columns && JSON.parse(table.columns);
-    columns.forEach(col => {
+    columns.forEach((col) => {
       col.render = col.renderFun && commonColumnRenders[col.renderFun];
       col.sorter = col.sortFun && commonSortFunctions[col.sortFun].bind(null, col.dataIndex);
     });

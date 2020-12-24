@@ -42,7 +42,7 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
   findFirst(criteria?: Criteria) {
     const pageInfo = { pageSize: 1, currentPage: 1 };
     return this.list({ criteria, pageInfo }).then(
-      data => data.totalCount > 0 && this.changeCurrentItem(data.results[0]),
+      (data) => data.totalCount > 0 && this.changeCurrentItem(data.results[0]),
     );
   }
 
@@ -52,7 +52,7 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
    * @returns {Promise<{client: *, fields?: *}>}
    */
   listAll(options: ListOptions): Promise<ListResult> {
-    return this.list(options).then(data => {
+    return this.list(options).then((data) => {
       this.store.allList = data.results;
       return data;
     });
@@ -81,7 +81,7 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
         totalCount,
       }));
     } else {
-      return listPromise.then(results => ({ results, totalCount: results.length }));
+      return listPromise.then((results) => ({ results, totalCount: results.length }));
     }
   }
 
@@ -98,7 +98,7 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
     //查询第一页的时候，清空allList
     if (pageInfo) this.store.pageInfo = pageInfo;
     if (this.store.pageInfo.currentPage === 1) this.store.allList = [];
-    return this.list({ pageInfo: this.store.pageInfo, ...rest }).then(data => {
+    return this.list({ pageInfo: this.store.pageInfo, ...rest }).then((data) => {
       const { results, totalCount } = data;
       this.store.pageList = results;
       this.store.pageInfo.totalCount = totalCount;
@@ -139,11 +139,11 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
    * @param newItem
    */
   save(item: Entity): Promise<Entity> {
-    return this.postApi('save', item).then(data => this.changeCurrentItem(data as Entity));
+    return this.postApi('save', item).then((data) => this.changeCurrentItem(data as Entity));
   }
 
   get(id: any): Promise<Entity> {
-    return this.postApi('get', { id }).then(data => this.changeCurrentItem(data as Entity));
+    return this.postApi('get', { id }).then((data) => this.changeCurrentItem(data as Entity));
   }
 
   delete(id: any): Promise<number> {
@@ -168,7 +168,7 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
   }
   readAuthorize(hasList?: string[]): boolean {
     const needOneList = this.readAuthorities;
-    const has = !!hasList?.find(au => needOneList.includes(au));
+    const has = !!hasList?.find((au) => needOneList.includes(au));
     if (!has)
       console.log(
         `${LangUtil.getClassName(this)}.readAuthorize不通过: 当前用户(${hasList})无其中任一权限${needOneList}`,

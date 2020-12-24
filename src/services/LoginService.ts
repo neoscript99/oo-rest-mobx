@@ -55,7 +55,7 @@ export class LoginService extends RestService {
     //cas默认为true，初始化时去获取服务端的配置信息，如果为false，再显示登录界面
     this.getCasConfig();
   }
-  springErrorHandler: SpringErrorHandler = e => {
+  springErrorHandler: SpringErrorHandler = (e) => {
     if (e.errorCode && LOGOUT_ERRORS.includes(e.errorCode)) this.store.loginInfo = { success: false };
   };
   getApiUri(operator: string) {
@@ -74,7 +74,7 @@ export class LoginService extends RestService {
 
   loginHash({ username, passwordHash, kaptchaCode, remember }: LoginEntity): Promise<LoginInfo> {
     this.clearLoginInfoLocal();
-    return this.postApi('login', { username, passwordHash, kaptchaCode }).then(loginInfo => {
+    return this.postApi('login', { username, passwordHash, kaptchaCode }).then((loginInfo) => {
       if (loginInfo.success) {
         //如果密码等于初始密码，强制修改
         if (passwordHash === this.initPasswordHash) {
@@ -113,7 +113,7 @@ export class LoginService extends RestService {
   }
 
   trySessionLogin(): Promise<LoginInfo> {
-    return this.postApi('sessionLogin').then(data => {
+    return this.postApi('sessionLogin').then((data) => {
       this.doAfterLogin(data);
       return data;
     });
@@ -124,7 +124,7 @@ export class LoginService extends RestService {
   }
 
   getCasConfig(): Promise<CasConfig> {
-    return this.postApi('getCasConfig').then(data => {
+    return this.postApi('getCasConfig').then((data) => {
       this.store.casConfig = data;
       return data;
     });

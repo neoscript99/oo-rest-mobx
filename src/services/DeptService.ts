@@ -18,9 +18,9 @@ export class DeptService extends DomainService<DeptStore> {
   }
   afterLogin = (loginInfo: LoginInfo) => {
     if (this.readAuthorize(loginInfo.authorities))
-      return this.list({ orders: ['seq'] }).then(res => {
+      return this.list({ orders: ['seq'] }).then((res) => {
         this.store.completeList = res.results;
-        this.store.enabledList = res.results.filter(dept => dept.enabled);
+        this.store.enabledList = res.results.filter((dept) => dept.enabled);
       });
     return Promise.resolve();
   };

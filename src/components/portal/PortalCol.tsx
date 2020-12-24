@@ -17,8 +17,8 @@ export class PortalCol extends Component<P> {
     return (
       <Col {...JSON.parse(col.exColProps)} style={JSON.parse(col.style)} order={col.colOrder} span={col.span}>
         {portletColRelAllList
-          .filter(rel => rel.col.id === col.id)
-          .map(rel => (
+          .filter((rel) => rel.col.id === col.id)
+          .map((rel) => (
             <PortletSwitch
               key={rel.portlet.id}
               portlet={rel.portlet}

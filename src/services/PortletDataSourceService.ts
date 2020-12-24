@@ -14,7 +14,7 @@ export class PortletDataSourceService extends DomainService<MobxDomainStore> {
   getData(portletDataSource: Entity): Promise<DataResult> {
     return this.restClient
       .post(this.getApiUri('getPortletData'), { dataSourceId: portletDataSource.id })
-      .then(jsonData => {
+      .then((jsonData) => {
         if (portletDataSource.type === 'LivebosQuery') return transLivebosData(jsonData as LivebosObject);
         return { dataList: jsonData };
       });

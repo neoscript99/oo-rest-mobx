@@ -4,7 +4,9 @@ import { Form } from 'antd';
 import { InputField } from '../../ant-design-field';
 import { FormProps } from 'antd/lib/form';
 
-export type SearchFormProps = Partial<FormProps>;
+export interface SearchFormProps extends Partial<FormProps> {
+  onSearch: (searchParam: any) => void;
+}
 
 /**
  * 接收一个form属性
@@ -16,9 +18,11 @@ export abstract class SearchForm<P extends SearchFormProps = SearchFormProps, S 
    * @param e
    */
   searchOnEnter(e: KeyboardEvent<any>) {
-    const { form } = this.props;
+    const { form, onSearch } = this.props;
     e.stopPropagation();
-    form.submit();
+    //submit不会触发onFinish，还需改造
+    //form.submit();
+    form.validateFields().then((searchParam) => onSearch(searchParam));
   }
 }
 
@@ -27,9 +31,9 @@ export class SimpleSearchForm extends SearchForm {
   width = '16em';
 
   render() {
-    const { form } = this.props;
+    const { form, onFinish } = this.props;
     return (
-      <Form layout="inline" {...this.props}>
+      <Form layout="inline" form={form} onFinish={onFinish}>
         <InputField fieldId="searchKey" style={{ width: this.width }} placeholder={this.placeholder} formUtils={form} />
       </Form>
     );

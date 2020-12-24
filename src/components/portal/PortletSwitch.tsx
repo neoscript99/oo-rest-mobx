@@ -38,7 +38,10 @@ const PortletMapping = ({ portlet, portletMap, inTab, services }: PortletSwitchP
 };
 
 const NotExists = ({ portlet }: PortletProps) => (
-  <Card title={portlet.portletName} actions={[<SettingOutlined />, <EditOutlined />, <EllipsisOutlined />]}>
+  <Card
+    title={portlet.portletName}
+    actions={[<SettingOutlined key="1" />, <EditOutlined key="2" />, <EllipsisOutlined key="3" />]}
+  >
     <Card.Meta
       avatar={<CloseOutlined style={{ color: 'red', fontSize: '2rem' }} />}
       title="控件不存在，请联系管理员"

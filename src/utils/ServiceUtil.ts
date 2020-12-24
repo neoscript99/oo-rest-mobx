@@ -34,7 +34,7 @@ export class ServiceUtil {
         order[0] = nestFields[nestFields.length - 1];
 
         let parentParam = criteria;
-        nestFields.slice(0, -1).forEach(field => {
+        nestFields.slice(0, -1).forEach((field) => {
           if (!parentParam[field]) parentParam[field] = {};
           parentParam = parentParam[field] as Criteria;
         });
@@ -49,7 +49,7 @@ export class ServiceUtil {
 
   static clearEntity(entity: any, ...deleteProps: string[]) {
     const { id, lastUpdated, dateCreated, version, errors, ...rest } = entity;
-    deleteProps.every(prop => delete rest[prop]);
+    deleteProps.every((prop) => delete rest[prop]);
     return rest;
   }
 }

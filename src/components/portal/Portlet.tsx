@@ -41,7 +41,8 @@ export abstract class Portlet<
      * state.portlet是实现类包含所有信息，props.portlet只有基类信息
      * @see neo.script.gorm.portal.domain.pt.plet.Portlet
      */
-    if (this.portletService) this.portletService.get(this.props.portlet.id).then(portlet => this.setState({ portlet }));
+    if (this.portletService)
+      this.portletService.get(this.props.portlet.id).then((portlet) => this.setState({ portlet }));
     //保证state中有portlet信息
     else this.setState({ portlet: this.props.portlet });
 
@@ -50,7 +51,7 @@ export abstract class Portlet<
 
   getData() {
     if (this.props.portlet.ds)
-      this.props.services.portletDataSourceService.getData(this.props.portlet.ds).then(result =>
+      this.props.services.portletDataSourceService.getData(this.props.portlet.ds).then((result) =>
         this.setState({
           dataList: result && result.dataList,
         }),

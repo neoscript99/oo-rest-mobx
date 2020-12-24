@@ -17,11 +17,11 @@ interface P {
 export class PortalRows extends React.Component<P> {
   render() {
     const { portal, customerPortletMap, portalRowRelAllList, portletColRelAllList } = this.props;
-    const relList = portalRowRelAllList.filter(value => value.portal.id === portal.id);
+    const relList = portalRowRelAllList.filter((value) => value.portal.id === portal.id);
 
     return (
       <Fragment>
-        {relList.map(rel => (
+        {relList.map((rel) => (
           <Row {...ServiceUtil.clearEntity(rel.row, 'rowName', 'rowOrder', 'cols')} key={rel.id}>
             {rel.row.cols
               .slice()
