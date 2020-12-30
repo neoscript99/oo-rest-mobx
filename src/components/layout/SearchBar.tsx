@@ -1,7 +1,7 @@
 import React, { Component, CSSProperties } from 'react';
 import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { SearchFormProps } from './SearchForm';
+import { SearchFormProps, validateAndSearch } from './SearchForm';
 import { ReactUtil } from '../../utils/ReactUtil';
 import { FormComponentProps } from '../../utils';
 
@@ -29,17 +29,12 @@ class SearchFromBar extends Component<SearchFromBarProps> {
             type="primary"
             style={buttonCss}
             title="查询"
-            onClick={this.handleSearch.bind(this)}
+            onClick={() => validateAndSearch(this.props)}
           />
           <Button icon={<DeleteOutlined />} style={buttonCss} title="重置" onClick={this.handleReset.bind(this)} />
         </div>
       )
     );
-  }
-
-  handleSearch() {
-    const { form, onSearch } = this.props;
-    form.validateFields().then((searchParam) => onSearch(searchParam));
   }
 
   handleReset() {

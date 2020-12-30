@@ -6,7 +6,6 @@ import { observer } from 'mobx-react';
 import { AdminServices } from '../AdminServices';
 import { LoginPage, LoginBox, LoginBoxTitle, LoginBoxItem } from './LoginStyled';
 import { RouteComponentProps } from 'react-router';
-import { ReactUtil } from '../../../utils/ReactUtil';
 import { commonRules, StringUtil } from '../../../utils';
 import { FormInstance } from 'antd/lib/form/hooks/useForm';
 import { MenuInfo } from 'rc-menu/lib/interface';
@@ -28,8 +27,9 @@ interface S {
  * 如果需要，客户端要展示验证码，输入后传给后台
  */
 @observer
-class LoginForm extends Component<LoginFormProps & { form: FormInstance } & RouteComponentProps, S> {
+export class Login extends Component<LoginFormProps & RouteComponentProps, S> {
   state = { kaptchaId: 'none', kaptchaFree: true };
+  formRef = React.createRef<FormInstance>();
   componentDidMount(): void {
     this.checkKaptchaFree();
   }
@@ -67,8 +67,10 @@ class LoginForm extends Component<LoginFormProps & { form: FormInstance } & Rout
    * 检查当前状态是否需要验证码
    */
   async checkKaptchaFree() {
-    const { form, adminServices } = this.props;
-    const res = await adminServices.loginService.kaptchaFree(form.getFieldValue('username'));
+    const { adminServices } = this.props;
+    const form = this.formRef.current;
+    //form一开始为null，还未连接到Form组件
+    const res = await adminServices.loginService.kaptchaFree(form && form.getFieldValue('username'));
     if (!this.store.loginInfo.success) this.setState({ kaptchaFree: res.success });
   }
   get store() {
@@ -100,7 +102,7 @@ class LoginForm extends Component<LoginFormProps & { form: FormInstance } & Rout
               onFinish={this.handleSubmit.bind(this)}
               style={{ maxWidth: '300px' }}
               layout="vertical"
-              form={this.props.form}
+              ref={this.formRef}
             >
               <Form.Item label="用户名" name="username" rules={[{ required: true, message: '用户名不能为空!' }]}>
                 <Input
@@ -143,7 +145,6 @@ class LoginForm extends Component<LoginFormProps & { form: FormInstance } & Rout
   }
 }
 
-export const Login = ReactUtil.formWrapper(LoginForm);
 interface DemoUserDropdownProps {
   demoUsers: any[];
   demoUserClick: (param: MenuInfo) => void;

@@ -25,6 +25,8 @@ export interface OperatorSwitch {
 export interface EntityListProps extends Partial<RouteChildrenProps> {
   name?: string;
   operatorVisible?: OperatorSwitch;
+
+  hasNestColumnName?: boolean;
   // 自适应处理 searchBarOnTop?: boolean;
 }
 
@@ -91,14 +93,6 @@ export abstract class EntityList<
       flexWrap: 'wrap',
       marginBottom: 5,
     };
-    const cols = this.hasNestColumnName
-      ? this.columns.map((col) => {
-          const dataIndex =
-            typeof col.dataIndex === 'string' &&
-            (col.dataIndex.indexOf('.') > -1 ? col.dataIndex.split('.') : col.dataIndex);
-          return { ...col, dataIndex };
-        })
-      : this.columns;
     return (
       <div>
         {this.getEntityFormPop(formProps)}
@@ -117,7 +111,7 @@ export abstract class EntityList<
           />
           {this.getSearchFormBar()}
         </div>
-        <Table dataSource={dataList} columns={cols} {...this.tableProps}></Table>
+        <Table dataSource={dataList} columns={this.getNamePathColumns()} {...this.tableProps}></Table>
       </div>
     );
   }
@@ -131,9 +125,17 @@ export abstract class EntityList<
    * 嵌套 dataIndex 支持从 'xxx.yyy' 改成 ['xxx', 'yyy']
    * @see https://ant.design/docs/react/migration-v4-cn
    */
-  get hasNestColumnName() {
-    return true;
+  getNamePathColumns(): EntityColumnProps[] {
+    return this.props.hasNestColumnName
+      ? this.columns.map((col) => {
+          let { dataIndex } = col;
+          if (typeof col.dataIndex === 'string' && col.dataIndex.indexOf('.') > -1)
+            dataIndex = col.dataIndex.split('.');
+          return { ...col, dataIndex };
+        })
+      : this.columns;
   }
+
   get exportColumns(): EntityColumnProps[] {
     return this.columns;
   }

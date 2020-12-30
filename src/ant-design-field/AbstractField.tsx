@@ -17,8 +17,11 @@ export abstract class AbstractField<P extends FieldProps = FieldProps, S = any> 
      * */
     if (hideFormItem) return field;
     else {
+      //被设置了 name 属性的 Form.Item 包装的控件，表单控件会自动添加 value, 你不能用控件的 value 或 defaultValue 等属性来设置表单域的值，默认值可以用 Form 里的 initialValues 来设置
+      //因此，不需设置name的地方，千万不要设置
+      let itemName = fieldId;
       //如果包含'.'，按照antd4要求拆分为输入
-      const itemName = fieldId && (fieldId.indexOf('.') > -1 ? fieldId.split('.') : fieldId);
+      if (typeof fieldId === 'string' && fieldId.indexOf('.') > -1) itemName = fieldId.split('.');
       return (
         <Form.Item name={itemName} {...formItemProps} {...decorator}>
           {field}

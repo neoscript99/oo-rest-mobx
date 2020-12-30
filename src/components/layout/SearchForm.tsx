@@ -8,6 +8,10 @@ export interface SearchFormProps extends Partial<FormProps> {
   onSearch: (searchParam: any) => void;
 }
 
+export function validateAndSearch(props: Pick<SearchFormProps, 'onSearch' | 'form'>) {
+  const { form, onSearch } = props;
+  form && form.validateFields().then((searchParam) => onSearch(searchParam));
+}
 /**
  * 接收一个form属性
  */
@@ -20,9 +24,9 @@ export abstract class SearchForm<P extends SearchFormProps = SearchFormProps, S 
   searchOnEnter(e: KeyboardEvent<any>) {
     const { form, onSearch } = this.props;
     e.stopPropagation();
-    //submit不会触发onFinish，还需改造
+    //submit不会触发onFinish
     //form.submit();
-    form.validateFields().then((searchParam) => onSearch(searchParam));
+    validateAndSearch(this.props);
   }
 }
 

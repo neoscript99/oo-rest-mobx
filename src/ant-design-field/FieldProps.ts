@@ -1,6 +1,6 @@
 import { FormInstance } from 'antd/lib/form/Form';
 import { FormItemProps } from 'antd/lib/form';
-import { Rule } from 'rc-field-form/lib/interface';
+import { NamePath, Rule } from 'rc-field-form/lib/interface';
 export interface GetFieldDecoratorOptions {
   /** 子节点的值的属性，如 Checkbox 的是 'checked' */
   valuePropName?: string;
@@ -27,7 +27,7 @@ export interface GetFieldDecoratorOptions {
 }
 export interface FieldProps {
   //antd4可改用formItemProps.name
-  fieldId?: string;
+  fieldId?: NamePath;
   //antd4可改用formItemProps
   decorator?: Readonly<GetFieldDecoratorOptions>;
   /**
