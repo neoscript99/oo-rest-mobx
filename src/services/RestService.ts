@@ -1,4 +1,4 @@
-import { AbstractClient } from './rest';
+import { AbstractClient } from '../rest';
 
 export abstract class RestService {
   protected constructor(protected restClient: AbstractClient) {}
