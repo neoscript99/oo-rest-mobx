@@ -1,8 +1,7 @@
 import React from 'react';
-import { AdminPageProps } from '../AdminServices';
+import { AdminPageProps } from '../';
 import { StringUtil, TableUtil } from '../../../utils';
 import { EntityColumnProps, EntityList, SimpleSearchForm } from '../../layout';
-import { MobxDomainStore } from '../../../stores';
 import { DomainService, ListOptions } from '../../../services';
 
 const { booleanLabel, timeFormatter } = TableUtil;
@@ -20,7 +19,7 @@ export class RoleList extends EntityList<AdminPageProps> {
     super(props);
   }
 
-  get domainService(): DomainService<MobxDomainStore> {
+  get domainService(): DomainService {
     return this.props.services.roleService;
   }
 

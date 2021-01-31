@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AdminPageProps } from '../AdminServices';
+import { AdminPageProps } from '../';
 import { Form } from 'antd';
 import { Button, Card, Checkbox, message } from 'antd';
 import { commonRules, FormComponentProps, StringUtil } from '../../../utils';
@@ -21,7 +21,7 @@ export class UserProfile extends Component<AdminPageProps, S> {
     this.setState({ showPassword: e.target.checked });
   }
 
-  handleSave(item: Entity) {
+  handleSave(item: UserEntity) {
     const { services } = this.props;
     if (item.password === services.loginService.initPasswordHash) message.error('新密码不能和初始密码相同');
     else

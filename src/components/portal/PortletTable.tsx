@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Table } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import { DomainService, Entity } from '../../services';
-import { MobxDomainStore } from '../../stores';
+import { DomainStore } from '../../services';
 import { Portlet, PortletProps, PortletState } from './Portlet';
 import { TableUtil } from '../../utils';
 
@@ -39,7 +39,7 @@ export class PortletTable extends Portlet<PortletProps, PortletTableState> {
     );
   }
 
-  get portletService(): DomainService<MobxDomainStore> {
+  get portletService(): DomainService {
     return this.props.services.portletTableService;
   }
 }

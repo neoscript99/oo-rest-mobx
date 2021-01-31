@@ -1,6 +1,6 @@
 //{"id":0,"loginId":"admin","name":"管理员","lastLogin":"2019-06-13 17:46:54","grade":0,"status":1,"orgId":0}
 import { DomainService } from './DomainService';
-import { MobxDomainStore } from '../stores';
+import { DomainStore } from './DomainStore';
 
 export interface LiveUserInfo {
   id: number;
@@ -42,7 +42,7 @@ export interface LivebosObjectMetaData {
   }[];
 }
 
-export class LivebosServerService extends DomainService<MobxDomainStore> {
+export class LivebosServerService extends DomainService {
   getUserInfo(livebosServerId: string, userId: string): Promise<LiveUserInfo> {
     return this.postApi('livebosGetUserInfo', { livebosServerId, userId });
   }

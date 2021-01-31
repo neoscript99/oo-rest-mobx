@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Menu } from 'antd';
-import { MenuEntity, MenuNode } from '../../stores/MenuStore';
+import { MenuEntity, MenuNode } from '../../services/MenuService';
 import { Icon } from '../common';
 
 const SubMenu = Menu.SubMenu;

@@ -1,13 +1,12 @@
 import { DomainService, PortletDataSourceService } from '../../services/';
-import { MobxDomainStore } from '../../stores';
 
 export interface PortalRequiredServices {
-  portletColRelService: DomainService<MobxDomainStore>;
+  portletColRelService: DomainService;
   portletDataSourceService: PortletDataSourceService;
-  portalRowRelService: DomainService<MobxDomainStore>;
-  portletTabRelService: DomainService<MobxDomainStore>;
-  portletCalendarService: DomainService<MobxDomainStore>;
-  portletLinkService: DomainService<MobxDomainStore>;
-  portletListViewService: DomainService<MobxDomainStore>;
-  portletTableService: DomainService<MobxDomainStore>;
+  portalRowRelService: DomainService;
+  portletTabRelService: DomainService;
+  portletCalendarService: DomainService;
+  portletLinkService: DomainService;
+  portletListViewService: DomainService;
+  portletTableService: DomainService;
 }

@@ -1,5 +1,5 @@
 import { AbstractClient } from './rest';
-import { MobxDomainStore } from '../stores';
+import { DomainStore } from './DomainStore';
 import { DomainService } from './DomainService';
 import { Entity } from './index';
 
@@ -11,9 +11,9 @@ export interface ParamEntity extends Entity {
   type: any;
 }
 
-export class ParamService extends DomainService<MobxDomainStore> {
+export class ParamService extends DomainService<ParamEntity> {
   constructor(restClient: AbstractClient) {
-    super({ domain: 'param', storeClass: MobxDomainStore, restClient });
+    super({ domain: 'param', storeClass: DomainStore, restClient });
     //系统参数系统启动后就获取，不需要登录
     this.initStore();
   }

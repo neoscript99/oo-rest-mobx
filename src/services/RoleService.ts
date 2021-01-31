@@ -1,5 +1,5 @@
 import { AbstractClient } from './rest';
-import { MobxDomainStore } from '../stores';
+import { DomainStore } from './DomainStore';
 import { DomainService, Entity, LoginInfo } from './index';
 
 export interface RoleEntity extends Entity {
@@ -11,9 +11,9 @@ export interface RoleEntity extends Entity {
   lastUpdated: Date;
 }
 
-export class RoleService extends DomainService {
+export class RoleService extends DomainService<RoleEntity> {
   constructor(restClient: AbstractClient) {
-    super({ domain: 'role', storeClass: MobxDomainStore, restClient });
+    super({ domain: 'role', storeClass: DomainStore, restClient });
   }
   afterLogin = (loginInfo: LoginInfo) => {
     return this.readAuthorize(loginInfo.authorities)

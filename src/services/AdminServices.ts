@@ -9,11 +9,12 @@ import {
   DomainService,
   LoginService,
   AttachmentService,
+  ApplyService,
+  ApplyLogService,
   LoginInfo,
   SpringBootClient,
-} from '../../services/';
-import { MobxDomainStore } from '../../stores';
-import { EntityListProps } from '../layout';
+} from './';
+import { DomainStore } from './DomainStore';
 
 export class AdminServices {
   userService: UserService;
@@ -26,11 +27,13 @@ export class AdminServices {
   dictService: DictService;
   loginService: LoginService;
   attachmentService: AttachmentService;
+  applyService: ApplyService;
+  applyLogService: ApplyLogService;
 
   constructor(restClient: SpringBootClient, afterLogin: AfterLogin, initServices: Partial<AdminServices> = {}) {
     this.paramService = new ParamService(restClient);
-    this.noteService = new DomainService({ domain: 'note', storeClass: MobxDomainStore, restClient });
-    this.userRoleService = new DomainService({ domain: 'userRole', storeClass: MobxDomainStore, restClient });
+    this.noteService = new DomainService({ domain: 'note', storeClass: DomainStore, restClient });
+    this.userRoleService = new DomainService({ domain: 'userRole', storeClass: DomainStore, restClient });
     this.roleService = new RoleService(restClient);
     this.menuService = new MenuService(restClient);
     //userService支持替换
@@ -41,6 +44,8 @@ export class AdminServices {
     //外部设置的afterLogin必须首先执行，需要设置安全认证header
     this.loginService = new LoginService(restClient, [afterLogin, this.afterLogin.bind(this)]);
     this.attachmentService = new AttachmentService(restClient);
+    this.applyService = new ApplyService(restClient);
+    this.applyLogService = new ApplyLogService(restClient);
   }
 
   afterLogin(loginInfo: LoginInfo) {
@@ -51,8 +56,4 @@ export class AdminServices {
     funs.push(this.menuService.getMenuTree());
     return Promise.all(funs);
   }
-}
-
-export interface AdminPageProps extends EntityListProps {
-  services: AdminServices;
 }

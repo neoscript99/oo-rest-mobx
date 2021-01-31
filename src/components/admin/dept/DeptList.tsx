@@ -1,5 +1,5 @@
 import React from 'react';
-import { AdminPageProps } from '../AdminServices';
+import { AdminPageProps } from '../';
 import { TableUtil, StringUtil } from '../../../utils';
 import { EntityList, EntityColumnProps, SimpleSearchForm } from '../../layout';
 import { ListOptions } from '../../../services';

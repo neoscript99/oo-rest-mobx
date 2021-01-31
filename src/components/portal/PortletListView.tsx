@@ -4,7 +4,7 @@ import { Card, Table } from 'antd';
 import { StringUtil } from '../../utils/StringUtil';
 import { ColumnProps } from 'antd/lib/table';
 import { DomainService, Entity } from '../../services';
-import { MobxDomainStore } from '../../stores';
+import { DomainStore } from '../../services';
 import { Portlet } from './Portlet';
 import stringTemplate from 'string-template';
 import styled from 'styled-components';
@@ -96,7 +96,7 @@ export class PortletListView extends Portlet {
     return columns;
   }
 
-  get portletService(): DomainService<MobxDomainStore> {
+  get portletService(): DomainService {
     return this.props.services.portletListViewService;
   }
 }

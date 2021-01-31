@@ -7,7 +7,7 @@ import 'moment/locale/zh-cn';
 import { Portlet } from './Portlet';
 import zh from 'antd/lib/calendar/locale/zh_CN';
 import { DomainService } from '../../services';
-import { MobxDomainStore } from '../../stores';
+import { DomainStore } from '../../services';
 
 moment.locale('zh-cn');
 
@@ -75,7 +75,7 @@ export class PortletCalendar extends Portlet {
     );
   }
 
-  get portletService(): DomainService<MobxDomainStore> | null {
+  get portletService(): DomainService | null {
     return this.props.services.portletCalendarService;
   }
 

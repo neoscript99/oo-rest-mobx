@@ -1,6 +1,5 @@
 import { LivebosObject, transLivebosData } from './LivebosServerService';
 import { DomainService } from './DomainService';
-import { MobxDomainStore } from '../stores';
 import { Entity } from './index';
 
 export interface DataResult {
@@ -10,7 +9,7 @@ export interface DataResult {
   dataItem?: any;
 }
 
-export class PortletDataSourceService extends DomainService<MobxDomainStore> {
+export class PortletDataSourceService extends DomainService {
   getData(portletDataSource: Entity): Promise<DataResult> {
     return this.restClient
       .post(this.getApiUri('getPortletData'), { dataSourceId: portletDataSource.id })

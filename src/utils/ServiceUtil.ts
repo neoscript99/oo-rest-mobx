@@ -1,5 +1,20 @@
-import { Criteria, CriteriaOrder, PageInfo } from '../services';
+import { Criteria, CriteriaOrder, PageInfo, SomeFetch } from '../services';
 
+declare const Taro: { request: (any) => Promise<any> };
+export const taroFetch: SomeFetch = (url: RequestInfo, { body: data, ...fetchOptions }: any) => {
+  return Taro.request({
+    url,
+    data,
+    header: fetchOptions.headers,
+    dataType: 'txt',
+    responseType: 'text',
+    ...fetchOptions,
+  }).then((res: any) => {
+    res.ok = res.statusCode < 400;
+    res.text = () => Promise.resolve(res.data);
+    return res;
+  });
+};
 export class ServiceUtil {
   /**
    * 转换为gorm的分页模式

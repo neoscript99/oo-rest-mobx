@@ -1,4 +1,4 @@
-import { MobxDomainStore } from '../stores';
+import { DomainStore } from './DomainStore';
 import { AbstractClient, DeptEntity, DomainService, Entity } from './index';
 
 export interface UserEntity extends Entity {
@@ -7,10 +7,10 @@ export interface UserEntity extends Entity {
   dept: DeptEntity;
 }
 
-export class UserService extends DomainService {
+export class UserService extends DomainService<UserEntity> {
   deptUserMap: Record<string, UserEntity[]> = {};
   constructor(restClient: AbstractClient, domain = 'user') {
-    super({ domain, storeClass: MobxDomainStore, restClient });
+    super({ domain, storeClass: DomainStore, restClient });
   }
   async getDeptUsers(dept: DeptEntity) {
     const id = dept.id as string;

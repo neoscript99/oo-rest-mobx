@@ -1,8 +1,7 @@
 import { message } from 'antd';
-import { DeptEntity, ResBean, SpringBootClient, SpringErrorHandler, UserEntity } from './index';
+import { observable } from 'mobx';
+import { DeptEntity, ResBean, SpringBootClient, SpringErrorHandler, StoreService, UserEntity } from './index';
 import { StringUtil } from '../utils';
-import { LoginStore } from '../stores/LoginStore';
-import { RestService } from './RestService';
 
 /**
  * 如果是系统自己认证：user 有 ， account 有
@@ -25,6 +24,18 @@ export interface CasConfig {
   defaultRoles?: string;
 }
 
+export class LoginStore {
+  @observable
+  lastRoutePath = '/';
+  @observable
+  //clientEnabled默认为true，不显示登录框，后台查询如果为false，再显示出来
+  casConfig: CasConfig = { clientEnabled: true };
+  @observable
+  loginInfo: LoginInfo = { success: false };
+  @observable
+  forcePasswordChange = false;
+}
+
 /**
  * 如果返回promise，在登录后将被await顺序执行
  * 如不依赖其它数据，可不将promise返回
@@ -39,11 +50,13 @@ export interface LoginEntity {
   passwordHash?: string;
   kaptchaCode?: string;
   remember?: boolean;
+  isDev?: boolean;
 }
 const USERNAME_KEY = 'loginUsername';
 const PASSWORD_KEY = 'loginPassword';
 const LOGOUT_ERRORS = ['NoUser', 'NoToken'];
-export class LoginService extends RestService {
+
+export class LoginService extends StoreService<LoginStore> {
   store = new LoginStore();
   //用户的初始化密码，可在new LoginService的时候修改
   //如果用户密码登录初始密码，跳转到密码修改页面
@@ -72,9 +85,9 @@ export class LoginService extends RestService {
     return this.loginHash({ ...loginEntity, passwordHash: StringUtil.sha256(loginEntity.password) });
   }
 
-  loginHash({ username, passwordHash, kaptchaCode, remember }: LoginEntity): Promise<LoginInfo> {
+  loginHash({ username, passwordHash, kaptchaCode, remember, isDev }: LoginEntity): Promise<LoginInfo> {
     this.clearLoginInfoLocal();
-    return this.postApi('login', { username, passwordHash, kaptchaCode }).then((loginInfo) => {
+    return this.postApi(isDev ? 'devLogin' : 'login', { username, passwordHash, kaptchaCode }).then((loginInfo) => {
       if (loginInfo.success) {
         //如果密码等于初始密码，强制修改
         if (passwordHash === this.initPasswordHash) {
@@ -94,21 +107,22 @@ export class LoginService extends RestService {
   }
 
   saveLoginInfoLocal(username: string, password: string) {
-    localStorage.setItem(USERNAME_KEY, username);
-    localStorage.setItem(PASSWORD_KEY, password);
+    localStorage && localStorage.setItem(USERNAME_KEY, username);
+    localStorage && localStorage.setItem(PASSWORD_KEY, password);
   }
 
   clearLoginInfoLocal() {
-    localStorage.removeItem(USERNAME_KEY);
-    localStorage.removeItem(PASSWORD_KEY);
+    localStorage && localStorage.removeItem(USERNAME_KEY);
+    localStorage && localStorage.removeItem(PASSWORD_KEY);
     this.store.loginInfo = { success: false };
     this.store.lastRoutePath = '/';
+    this.fireStoreChange();
   }
 
   getLoginInfoLocal() {
     return {
-      username: localStorage.getItem(USERNAME_KEY),
-      password: localStorage.getItem(PASSWORD_KEY),
+      username: localStorage && localStorage.getItem(USERNAME_KEY),
+      password: localStorage && localStorage.getItem(PASSWORD_KEY),
     };
   }
 
@@ -147,6 +161,7 @@ export class LoginService extends RestService {
     //等待上面的初始化操作全部执行后
     //store信息最后更新，触发界面刷新，保证初始化已完成
     this.store.loginInfo = loginInfo;
+    this.fireStoreChange();
     return loginInfo;
   }
 

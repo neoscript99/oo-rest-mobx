@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { DomainService, Entity } from '../../services';
 import { PortalRequiredServices } from './PortalRequiredServices';
-import { MobxDomainStore } from '../../stores';
+import { DomainStore } from '../../services';
 
 export interface PortletStyles {
   portletStyle?: React.CSSProperties;
@@ -34,7 +34,7 @@ export abstract class Portlet<
   P extends PortletProps = PortletProps,
   S extends PortletState = PortletState
 > extends Component<P, S> {
-  abstract get portletService(): DomainService<MobxDomainStore> | null;
+  abstract get portletService(): DomainService | null;
 
   componentDidMount() {
     /**

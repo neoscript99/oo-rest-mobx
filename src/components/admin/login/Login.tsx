@@ -3,7 +3,7 @@ import { CodeOutlined, DownOutlined, LockOutlined, UserOutlined } from '@ant-des
 import { Form } from 'antd';
 import { Input, Button, Checkbox, Spin, Dropdown, Menu } from 'antd';
 import { observer } from 'mobx-react';
-import { AdminServices } from '../AdminServices';
+import { AdminServices } from '../../../services/AdminServices';
 import { LoginPage, LoginBox, LoginBoxTitle, LoginBoxItem } from './LoginStyled';
 import { RouteComponentProps } from 'react-router';
 import { commonRules, StringUtil } from '../../../utils';
@@ -16,6 +16,7 @@ export interface LoginFormProps {
   introRender: ReactNode;
   backgroundImage?: any;
   demoUsers?: any[];
+  isDev?: boolean;
 }
 interface S {
   kaptchaId: string;
@@ -44,8 +45,8 @@ export class Login extends Component<LoginFormProps & RouteComponentProps, S> {
    * 升级antd4之后代码调整，之前再提交前再次调用form.validateFields进行验证
    */
   handleSubmit(values) {
-    const { adminServices } = this.props;
-    adminServices.loginService.login(values).then((loginInfo) => {
+    const { adminServices, isDev } = this.props;
+    adminServices.loginService.login({ ...values, isDev }).then((loginInfo) => {
       if (!loginInfo.success) {
         this.setState({ kaptchaFree: !!loginInfo.kaptchaFree });
         this.refreshKaptchaId();
@@ -54,9 +55,9 @@ export class Login extends Component<LoginFormProps & RouteComponentProps, S> {
   }
 
   demoUserClick = ({ key }: MenuInfo) => {
-    const { adminServices, demoUsers } = this.props;
+    const { adminServices, demoUsers, isDev } = this.props;
     const item = demoUsers!.find((user) => user.username === key);
-    adminServices.loginService.loginHash(item);
+    adminServices.loginService.loginHash({ ...item, isDev });
   };
 
   refreshKaptchaId() {

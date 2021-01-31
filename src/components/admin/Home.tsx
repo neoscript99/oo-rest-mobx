@@ -3,8 +3,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Layout, Popover } from 'antd';
 import { observer } from 'mobx-react';
 import { RouteComponentProps } from 'react-router';
-import { MenuEntity } from '../../stores';
-import { AdminServices } from './AdminServices';
+import { MenuEntity, AdminServices } from '../../services';
 import { MenuTree } from '../layout';
 
 const { Header, Content, Footer, Sider } = Layout;

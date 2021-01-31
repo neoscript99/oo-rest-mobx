@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Tabs } from 'antd';
 import { DomainService, Entity } from '../../services';
-import { MobxDomainStore } from '../../stores';
+import { DomainStore } from '../../services';
 import { Portlet, PortletProps, PortletState } from './Portlet';
 import { PortletSwitch } from './PortletSwitch';
 import { CardTabListType } from 'antd/lib/card';
@@ -53,7 +53,7 @@ export class PortletTab extends Portlet<PortletProps, S> {
     );
   }
 
-  get portletService(): DomainService<MobxDomainStore> | null {
+  get portletService(): DomainService | null {
     return null;
   }
 }

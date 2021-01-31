@@ -1,4 +1,11 @@
 ## 更新记录
+1.1.3：
+- 开发环境登录模式改为不需要密码；
+- domain store支持react hook
+- DomainService泛型结构优化
+- DictService和ui逻辑分离
+- DomainService增加store列表本地更新功能，不用每次去服务端获取；
+- 科研项目不再依赖oo-rest-mobx，未来拆分为matrix-ui-service和matrix-ui-com
 1.1.2：
 - ant design v4改造完成
 - 鄞州教科升级至本版本

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AdminPageProps } from '../AdminServices';
+import { AdminPageProps } from '../';
 import { Consts, StringUtil, TableUtil } from '../../../utils';
 import { EntityPageList, EntityColumnProps, EntityListState, EntityFormProps, SearchFormProps } from '../../layout';
 import { Criteria, ListOptions, UserService } from '../../../services';
@@ -7,6 +7,7 @@ import { UserForm, UserFormProps } from './UserForm';
 import { Entity } from '../../../services';
 import { Button, message, Popconfirm } from 'antd';
 import { UserSearchForm } from './UserSearchForm';
+import { DictView } from '../../common';
 
 const { commonColumns } = TableUtil;
 export class UserList<
@@ -27,7 +28,7 @@ export class UserList<
       { title: '姓名', dataIndex: 'name' },
       { title: '帐号', dataIndex: 'account' },
       { title: '所属机构', dataIndex: ['dept', 'name'] },
-      dictService.dictColumn('性别', 'sexCode', 'pub_sex'),
+      DictView.dictColumn(dictService, '性别', 'sexCode', 'pub_sex'),
       { title: '手机号码', dataIndex: 'cellPhone' },
       ...this.getExtraColumns(),
       commonColumns.lastUpdated,

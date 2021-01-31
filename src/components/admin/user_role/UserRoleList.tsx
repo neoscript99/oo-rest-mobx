@@ -1,8 +1,8 @@
 import React from 'react';
-import { AdminPageProps } from '../AdminServices';
+import { AdminPageProps } from '../';
 import { StringUtil } from '../../../utils';
 import { EntityColumnProps, EntityPageList, SimpleSearchForm } from '../../layout';
-import { MobxDomainStore } from '../../../stores';
+import { DomainStore } from '../../../services';
 import { DomainService, ListOptions } from '../../../services';
 
 const columns: EntityColumnProps[] = [
@@ -18,7 +18,7 @@ export class UserRoleList extends EntityPageList<AdminPageProps> {
     super(props);
   }
 
-  get domainService(): DomainService<MobxDomainStore> {
+  get domainService(): DomainService {
     return this.props.services.userRoleService;
   }
 

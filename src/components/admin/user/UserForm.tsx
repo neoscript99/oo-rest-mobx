@@ -1,11 +1,9 @@
 import React, { ReactNode } from 'react';
 import { EntityForm, EntityFormProps } from '../../layout';
 import { commonRules, genRules, StringUtil, StyleUtil } from '../../../utils';
-import { DeptEntity } from '../../../services/DeptService';
-import { Entity, UserService } from '../../../services';
+import { DeptEntity, AdminServices, Entity, UserService } from '../../../services';
 import { Form } from 'antd';
 import { CheckboxOptionType } from 'antd/lib/checkbox/Group';
-import { AdminServices } from '../AdminServices';
 import { SelectField, InputField, CheckboxField, FieldProps } from '../../../ant-design-field';
 import { CheckboxGroupField } from '../../../ant-design-field/CheckboxGroupField';
 import { DeptSelectField } from '../../common';

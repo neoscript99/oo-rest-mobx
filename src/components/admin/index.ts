@@ -1,4 +1,10 @@
-export * from './AdminServices';
+import { AdminServices } from '../../services/AdminServices';
+import { EntityListProps } from '../layout';
+
+export interface AdminPageProps extends EntityListProps {
+  services: AdminServices;
+}
+
 export * from './Home';
 export * from './Welcome';
 
@@ -9,3 +15,4 @@ export * from './user_role';
 export * from './login';
 export * from './note';
 export * from './param';
+export * from './apply';

@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { LinkOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { DomainService } from '../../services';
-import { MobxDomainStore } from '../../stores';
+import { DomainStore } from '../../services';
 import { Portlet } from './Portlet';
 
 export class PortletLink extends Portlet {
@@ -22,7 +22,7 @@ export class PortletLink extends Portlet {
     );
   }
 
-  get portletService(): DomainService<MobxDomainStore> {
+  get portletService(): DomainService {
     return this.props.services.portletLinkService;
   }
 }

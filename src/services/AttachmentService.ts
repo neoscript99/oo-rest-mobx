@@ -1,5 +1,5 @@
 import { AbstractClient } from './rest';
-import { MobxDomainStore } from '../stores';
+import { DomainStore } from './DomainStore';
 import { DomainService, Entity } from './index';
 
 export interface AttachmentEntity extends Entity {
@@ -15,7 +15,7 @@ export interface AttachmentEntity extends Entity {
 export class AttachmentService extends DomainService {
   maxSizeMB = 20;
   constructor(restClient: AbstractClient) {
-    super({ domain: 'attachment', storeClass: MobxDomainStore, restClient });
+    super({ domain: 'attachment', storeClass: DomainStore, restClient });
     this.getMaxSizeMB().then((mb) => (this.maxSizeMB = mb));
   }
   get uploadUrl() {

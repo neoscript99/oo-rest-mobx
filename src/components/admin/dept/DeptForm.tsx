@@ -12,7 +12,7 @@ export class DeptForm extends EntityForm {
       <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
         <InputNumberField
           fieldId="seq"
-          formItemProps={{ label: '序号', initialValue: 100, rules }}
+          formItemProps={{ label: '序号', initialValue: 100, rules: [commonRules.number] }}
           formUtils={form}
           readonly={readonly}
           max={999999}

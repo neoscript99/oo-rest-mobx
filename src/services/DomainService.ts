@@ -1,10 +1,8 @@
-import { Criteria, CriteriaOrder, Entity, ListOptions, ListResult, LoginInfo, PageInfo, AfterLogin } from './';
-import { MobxDomainStore } from '../stores';
-import { AbstractClient } from './rest/AbstractClient';
+import { Criteria, Entity, ListOptions, ListResult, PageInfo, AfterLogin, StoreService, AbstractClient } from './';
+import { DomainStore } from './DomainStore';
 import { LangUtil, ServiceUtil, StringUtil } from '../utils';
-import { RestService } from './RestService';
 
-export interface DomainServiceOptions<D extends MobxDomainStore = MobxDomainStore> {
+export interface DomainServiceOptions<D extends DomainStore = DomainStore> {
   domain: string;
   initStore?: D;
   storeClass?: new () => D;
@@ -15,7 +13,10 @@ export interface DomainServiceOptions<D extends MobxDomainStore = MobxDomainStor
  * Mobx Store基类
  * 内部的属性会被JSON.stringify序列化，如果是嵌套结构或大对象，可以用Promise包装，规避序列化
  */
-export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends RestService {
+export class DomainService<
+  T extends Entity = Entity,
+  D extends DomainStore<T> = DomainStore<T>
+> extends StoreService<D> {
   public store: D;
   domain: string;
   afterLogin?: AfterLogin;
@@ -51,9 +52,10 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
    * @param criteria
    * @returns {Promise<{client: *, fields?: *}>}
    */
-  listAll(options: ListOptions): Promise<ListResult> {
+  listAll(options: ListOptions): Promise<ListResult<T>> {
     return this.list(options).then((data) => {
       this.store.allList = data.results;
+      this.fireStoreChange();
       return data;
     });
   }
@@ -68,13 +70,13 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
    * @param orders
    * @returns {Promise<{client: *, fields?: *}>}
    */
-  list({ criteria = {}, pageInfo, orders }: ListOptions): Promise<ListResult> {
+  list({ criteria = {}, pageInfo, orders }: ListOptions): Promise<ListResult<T>> {
     const { maxResults, firstResult, order, ...countCriteria } = criteria;
     //先调用count，防止countCriteria被后面的步骤污染
     const countPromise = pageInfo ? (this.postApi('count', countCriteria) as Promise<number>) : Promise.resolve(0);
     if (orders && orders.length > 0) ServiceUtil.processCriteriaOrder(criteria, orders);
     if (pageInfo) ServiceUtil.processCriteriaPage(criteria, pageInfo);
-    const listPromise = this.postApi('list', criteria) as Promise<Entity[]>;
+    const listPromise = this.postApi('list', criteria) as Promise<T[]>;
     if (pageInfo) {
       return Promise.all([listPromise, countPromise]).then(([results, totalCount]) => ({
         results,
@@ -107,6 +109,7 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
         this.store.pageInfo.pageSize * this.store.pageInfo.currentPage >= totalCount;
       if (isAppend === true) this.store.allList = this.store.allList.concat(results);
       else this.store.allList = results;
+      this.fireStoreChange();
       return data;
     });
   }
@@ -127,10 +130,12 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
   clearList() {
     this.store.pageList = [];
     this.store.allList = [];
+    this.fireStoreChange();
   }
 
-  changeCurrentItem(currentItem: Entity): Entity {
+  changeCurrentItem(currentItem: T): T {
     this.store.currentItem = currentItem;
+    this.fireStoreChange();
     return currentItem;
   }
 
@@ -138,20 +143,31 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
    * create or update,根据item.id是否存在判断
    * @param newItem
    */
-  save(item: Entity): Promise<Entity> {
-    return this.postApi('save', item).then((data) => this.changeCurrentItem(data as Entity));
+  save(item: T): Promise<T> {
+    return this.postApi('save', item).then((data) => {
+      const newItem = data as T;
+      if (!item.id) this.newListItem(newItem);
+      else this.updateListItem(newItem);
+      return this.changeCurrentItem(newItem);
+    });
   }
 
   get(id: any): Promise<Entity> {
-    return this.postApi('get', { id }).then((data) => this.changeCurrentItem(data as Entity));
+    return this.postApi('get', { id }).then((data) => this.changeCurrentItem(data as T));
   }
 
   delete(id: any): Promise<number> {
-    return this.postApi('delete', { id });
+    return this.postApi('delete', { id }).then((data) => {
+      this.deleteListItems([id]);
+      return data;
+    });
   }
 
   deleteByIds(ids: any[]): Promise<any> {
-    return this.postApi('deleteByIds', { ids });
+    return this.postApi('deleteByIds', { ids }).then((data) => {
+      this.deleteListItems(ids);
+      return data;
+    });
   }
 
   syncPageInfo(newPageInfo: PageInfo) {
@@ -161,11 +177,13 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
   get packageName() {
     return '';
   }
+
   get readAuthorities() {
     const name = StringUtil.capitalize(this.domain);
     const pName = this.packageName;
     return ['SysAdmin', 'SysRead', `${pName}PackageAll`, `${pName}PackageRead`, `${name}All`, `${name}Read`];
   }
+
   readAuthorize(hasList?: string[]): boolean {
     const needOneList = this.readAuthorities;
     const has = !!hasList?.find((au) => needOneList.includes(au));
@@ -174,5 +192,27 @@ export class DomainService<D extends MobxDomainStore = MobxDomainStore> extends 
         `${LangUtil.getClassName(this)}.readAuthorize不通过: 当前用户(${hasList})无其中任一权限${needOneList}`,
       );
     return has;
+  }
+
+  /**
+   * 更新一个对象后，更新列表中对应项
+   * @param item
+   */
+  updateListItem(item: T) {
+    const { allList, pageList } = this.store;
+    this.store.allList = allList.map((v) => (v.id === item.id ? item : v));
+    this.store.pageList = pageList.map((v) => (v.id === item.id ? item : v));
+  }
+
+  newListItem(item: T) {
+    const { allList, pageList } = this.store;
+    this.store.allList = [...allList, item];
+    this.store.pageList = [...pageList, item];
+  }
+
+  deleteListItems(ids: any[]) {
+    const { allList, pageList } = this.store;
+    this.store.allList = allList.filter((item) => !ids.includes(item.id));
+    this.store.pageList = pageList.filter((item) => !ids.includes(item.id));
   }
 }
