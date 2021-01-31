@@ -1,4 +1,4 @@
-import { AbstractClient } from '../rest';
+import { AbstractClient } from './rest';
 import { MobxDomainStore } from '../stores';
 import { DomainService } from './DomainService';
 import { Entity, LoginInfo } from './index';

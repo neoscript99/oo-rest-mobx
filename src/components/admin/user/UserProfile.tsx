@@ -82,27 +82,22 @@ class ProfileFrom extends Component<ProfileFormProps, ProfileFromState> {
         <InputField formItemProps={{ label: '单位' }} value={inputItem?.dept.name} readonly />
         <InputField
           fieldId="name"
-          formItemProps={{ label: '姓名' }}
-          decorator={{ rules: [required] }}
+          formItemProps={{ label: '姓名', rules: [required] }}
           formUtils={form}
           maxLength={10}
           minLength={2}
         />
         <InputField
           fieldId="cellPhone"
-          formItemProps={{ label: '手机号码' }}
-          decorator={{ rules: [required, cellPhone] }}
+          formItemProps={{ label: '手机号码', rules: [required, cellPhone] }}
           formUtils={form}
           maxLength={11}
         />
         <InputField
           fieldId="email"
-          formItemProps={{ label: '电子邮箱' }}
+          formItemProps={{ label: '电子邮箱', rules: [email] }}
           formUtils={form}
           maxLength={32}
-          decorator={{
-            rules: [email],
-          }}
         />
         <Form.Item label="修改密码">
           <Checkbox checked={showPassword} onChange={onCheckboxChange} />
@@ -113,9 +108,8 @@ class ProfileFrom extends Component<ProfileFormProps, ProfileFromState> {
             allowClear={true}
             type="password"
             formUtils={form}
-            formItemProps={{ label: '密码' }}
+            formItemProps={{ label: '密码', rules: [required, password] }}
             maxLength={16}
-            decorator={{ rules: [required, password] }}
             onChange={(e) => this.setState({ firstPassword: e.target.value })}
           />
         )}
@@ -125,11 +119,11 @@ class ProfileFrom extends Component<ProfileFormProps, ProfileFromState> {
             allowClear={true}
             type="password"
             formUtils={form}
-            formItemProps={{ label: '密码确认' }}
-            maxLength={16}
-            decorator={{
+            formItemProps={{
+              label: '密码确认',
               rules: [required, { type: 'enum', enum: [this.state?.firstPassword], message: '密码不一致' }],
             }}
+            maxLength={16}
           />
         )}
         <Form.Item wrapperCol={{ span: 16, offset: 8 }}>

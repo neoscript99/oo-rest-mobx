@@ -1,6 +1,6 @@
 import { MenuStore } from '../stores';
 import { DomainService } from './DomainService';
-import { AbstractClient } from '../rest';
+import { AbstractClient } from './rest';
 
 export class MenuService extends DomainService<MenuStore> {
   constructor(restClient: AbstractClient) {

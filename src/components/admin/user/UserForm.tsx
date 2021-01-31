@@ -6,10 +6,10 @@ import { Entity, UserService } from '../../../services';
 import { Form } from 'antd';
 import { CheckboxOptionType } from 'antd/lib/checkbox/Group';
 import { AdminServices } from '../AdminServices';
-import { SelectField, InputField, CheckboxField } from '../../../ant-design-field';
+import { SelectField, InputField, CheckboxField, FieldProps } from '../../../ant-design-field';
 import { CheckboxGroupField } from '../../../ant-design-field/CheckboxGroupField';
 import { DeptSelectField } from '../../common';
-const { required, cellPhone } = commonRules;
+import { Rule } from 'antd/lib/form';
 interface S {
   allRoles?: CheckboxOptionType[];
   userRoleIds: string[];
@@ -65,66 +65,57 @@ export class UserForm extends EntityForm<UserFormProps, S> {
     } = this.props;
     const { allRoles, userRoleIds, deptList } = this.state;
     const { hideEnabled, autoGenerateAccount } = this;
-    const [min4, min2, req] = [
-      { rules: [genRules.minString(4)] },
-      { rules: [genRules.minString(2, false)] },
-      { rules: [required] },
-    ];
-    const make = (fieldId: string, label: string) => ({
+    const [min4, min2, req] = [[genRules.minString(4)], [genRules.minString(2, false)], [commonRules.required]];
+    const make = (fieldId: string, label: string, rules: Rule[] = []): FieldProps => ({
       fieldId,
-      formItemProps: { label, style: oneSpanFormItemCss },
+      formItemProps: { label, style: oneSpanFormItemCss, rules },
       formUtils: form,
     });
     return (
       <Form form={form} layout="vertical" style={flexFormCss}>
         {!autoGenerateAccount && (
           <InputField
-            {...make('account', '帐号')}
+            {...make('account', '帐号', min4)}
             style={{ imeMode: 'disabled' }}
             maxLength={16}
-            decorator={min4}
             readonly={readonly}
           />
         )}
-        <InputField {...make('name', '姓名')} maxLength={16} decorator={min2} readonly={readonly} />
+        <InputField {...make('name', '姓名', min2)} maxLength={16} readonly={readonly} />
         <DeptSelectField
-          formItemProps={{ name: ['dept', 'id'], label: '机构', style: oneSpanFormItemCss }}
+          formItemProps={{ name: ['dept', 'id'], label: '机构', style: oneSpanFormItemCss, rules: req }}
           formUtils={form}
           dataSource={deptList}
-          decorator={req}
           defaultSelectFirst={this.justSameDept}
           readonly={readonly}
         />
         {!hideEnabled && (
-          <CheckboxField {...make('enabled', '启用')} decorator={{ initialValue: true }} readonly={readonly} />
+          <CheckboxField
+            formItemProps={{ name: 'enabled', label: '启用', style: oneSpanFormItemCss, initialValue: true }}
+            formUtils={form}
+            readonly={readonly}
+          />
         )}{' '}
         <InputField
-          {...make('cellPhone', '手机号码')}
-          decorator={{
-            rules: [...(this.justSameDept ? [required] : []), cellPhone],
-          }}
+          {...make('cellPhone', '手机号码', [...(this.justSameDept ? req : []), commonRules.cellPhone])}
           minLength={11}
           maxLength={11}
           readonly={readonly}
         />
-        <InputField
-          {...make('email', '电子邮箱')}
-          maxLength={32}
-          decorator={{
-            rules: [{ type: 'email' }],
-          }}
-          readonly={readonly}
-        />
+        <InputField {...make('email', '电子邮箱', [{ type: 'email' }])} maxLength={32} readonly={readonly} />
         {(!this.autoGenerateSex || readonly) && (
           <SelectField
-            {...make('sexCode', '性别')}
+            formItemProps={{
+              name: 'sexCode',
+              label: '性别',
+              style: oneSpanFormItemCss,
+              initialValue: 'male',
+              rules: req,
+            }}
+            formUtils={form}
             dataSource={dictService.getDict('pub_sex')}
             valueProp="code"
             labelProp="name"
-            decorator={{
-              rules: [required],
-              initialValue: 'male',
-            }}
             readonly={readonly}
           />
         )}
@@ -133,9 +124,8 @@ export class UserForm extends EntityForm<UserFormProps, S> {
           <CheckboxGroupField
             fieldId="roleIds"
             options={allRoles}
-            formItemProps={{ label: '角色', style: twoSpanFormItemCss }}
+            formItemProps={{ label: '角色', style: twoSpanFormItemCss, initialValue: userRoleIds }}
             formUtils={form}
-            decorator={{ initialValue: userRoleIds }}
             readonly={readonly}
           />
         )}

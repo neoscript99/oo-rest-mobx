@@ -1,6 +1,7 @@
 import React from 'react';
-import { FieldProps, GetFieldDecoratorOptions } from './FieldProps';
+import { FieldProps } from './FieldProps';
 import { Form } from 'antd';
+import { FormItemProps } from 'antd/lib/form';
 
 /**
  * FormItem目前必须耦合在一起，否则FormItem.getControls拿不到下级组件，
@@ -8,7 +9,7 @@ import { Form } from 'antd';
  */
 export abstract class AbstractField<P extends FieldProps = FieldProps, S = any> extends React.Component<P, S> {
   render() {
-    const { formUtils, fieldId, decorator, formItemProps, hideFormItem } = this.getFieldProps();
+    const { formUtils, fieldId, formItemProps, hideFormItem } = this.getFieldProps();
     const field = this.getField();
     /**
      * 如果fieldDecorator直接作为根控件返回
@@ -23,7 +24,7 @@ export abstract class AbstractField<P extends FieldProps = FieldProps, S = any> 
       //如果包含'.'，按照antd4要求拆分为输入
       if (typeof fieldId === 'string' && fieldId.indexOf('.') > -1) itemName = fieldId.split('.');
       return (
-        <Form.Item name={itemName} {...formItemProps} {...decorator}>
+        <Form.Item name={itemName} {...formItemProps}>
           {field}
         </Form.Item>
       );
@@ -32,15 +33,15 @@ export abstract class AbstractField<P extends FieldProps = FieldProps, S = any> 
 
   abstract getField(): React.ReactNode;
   getInputProps() {
-    const { formUtils, fieldId, decorator, formItemProps, hideFormItem, readonly, ...pureProps } = this.props;
+    const { formUtils, fieldId, formItemProps, hideFormItem, readonly, ...pureProps } = this.props;
     return { ...pureProps, disabled: readonly };
   }
   getFieldProps(): FieldProps {
-    const { formUtils, fieldId, decorator, formItemProps, hideFormItem } = this.props;
-    return { formUtils, fieldId, formItemProps, hideFormItem, decorator: { ...this.defaultDecorator, ...decorator } };
+    const { formUtils, fieldId, formItemProps, hideFormItem } = this.props;
+    return { formUtils, fieldId, hideFormItem, formItemProps: { ...this.defaultFormItemProps, ...formItemProps } };
   }
 
-  get defaultDecorator(): GetFieldDecoratorOptions | null {
+  get defaultFormItemProps(): FormItemProps {
     return null;
   }
 }

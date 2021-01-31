@@ -1,18 +1,20 @@
 import React from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import { Upload, Button, message } from 'antd';
-import { FieldProps, GetFieldDecoratorOptions } from './FieldProps';
+import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { RcFile, UploadChangeParam, UploadProps } from 'antd/lib/upload';
 import { ShowUploadListInterface, UploadFile } from 'antd/lib/upload/interface';
 import { AttachmentEntity, AttachmentService } from '../services';
 import isObject from 'lodash/isObject';
+import { FormItemProps } from 'antd/lib/form';
 
 export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
+  static defaultProps = { valueType: 'array', maxSizeMB: 20, maxNumber: 10 };
   getField() {
     return <UploadWrap {...this.getInputProps()} />;
   }
-  get defaultDecorator(): GetFieldDecoratorOptions {
+  get defaultFormItemProps(): FormItemProps {
     const { maxNumber, required, valueType } = this.props;
     const single = maxNumber === 1;
     return {
@@ -29,6 +31,7 @@ export class UploadField extends AbstractField<UploadWrapProps & FieldProps> {
         else return single ? (all.length > 0 ? all[0] : undefined) : all;
       },
       trigger: 'onValueChange',
+      validateTrigger: 'onValueChange',
     };
   }
 }
@@ -39,26 +42,27 @@ export interface UploadWrapProps extends UploadProps {
    * string 逗号分隔的id字符串，通过查询获得附件详情
    * json 加入name信息
    */
-  valueType?: 'array' | 'string' | 'json';
+  valueType: 'array' | 'string' | 'json';
   /**
    * 当为1时，返回值传入值都是UploadResponse
    */
-  maxNumber?: number;
+  maxNumber: number;
   required?: boolean;
   attachmentService: AttachmentService;
   onValueChange?: (info: UploadChangeParam) => void;
-  maxSizeMB?: number;
+  maxSizeMB: number;
 }
 interface UploadWrapState {
   fileList?: Array<UploadFile>;
 }
 export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState> {
   static defaultProps = { valueType: 'array', maxSizeMB: 20, maxNumber: 10 };
-  async componentDidMount() {
+
+  async componentDidUpdate(prevProps: Readonly<UploadWrapProps>) {
     const { value, valueType, maxNumber, attachmentService } = this.props;
     //在初始化的时候，后台AttachmentInfo转为fileList
     //fileList如果出现在props中，就算是undefined，defaultFileList将不起作用
-    if (value) {
+    if (value && value !== prevProps.value) {
       let attList;
       if (valueType === 'string' && typeof value === 'string') {
         const param = { criteria: { inList: [['id', value.split(',')]] }, order: ['dateCreated'] };
@@ -122,7 +126,7 @@ export class UploadWrap extends React.Component<UploadWrapProps, UploadWrapState
   render() {
     const { disabled, maxNumber, attachmentService, showUploadList, ...uploadProps } = this.props;
 
-    const underLimit = (this.state?.fileList?.length || 0) < (maxNumber || UploadWrap.defaultProps.maxNumber);
+    const underLimit = (this.state?.fileList?.length || 0) < maxNumber;
     let listSwitch: boolean | ShowUploadListInterface = { showRemoveIcon: !disabled };
     if (isObject(showUploadList)) listSwitch = { ...(showUploadList as ShowUploadListInterface), ...listSwitch };
     else if (showUploadList === false) listSwitch = false;

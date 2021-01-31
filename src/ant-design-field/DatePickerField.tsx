@@ -4,11 +4,10 @@ import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { commonRules } from '../utils';
 import moment from 'moment';
-import isString from 'lodash/isString';
 import { DatePickerProps } from 'antd/lib/date-picker';
 interface P extends FieldProps {
-  //DatePicker的required可能根据返回值不同而变化
-  required?: boolean;
+  //DatePicker的required Rule可能根据返回值是string还是date变化，参考Uploader，有需要加回去
+  //required?: boolean;
   defaultDiffDays?: number;
   originValue?: moment.MomentInput;
 }
@@ -21,16 +20,15 @@ export type DatePickerFieldProps = DatePickerProps & P;
 export class DatePickerField extends AbstractField<DatePickerFieldProps> {
   static DEFAULT_DATE_FORMAT = 'YYYY-MM-DD';
   getField() {
-    const { required, defaultDiffDays, originValue, ...pureProps } = this.getInputProps();
+    const { defaultDiffDays, originValue, ...pureProps } = this.getInputProps();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return <DatePickerWrap {...pureProps} />;
   }
-  get defaultDecorator() {
-    const { defaultDiffDays, required, format } = this.props;
+  get defaultFormItemProps() {
+    const { defaultDiffDays, format } = this.props;
     const dateFormat = typeof format == 'string' ? format : DatePickerField.DEFAULT_DATE_FORMAT;
     return {
-      rules: required ? [commonRules.required] : undefined,
       valuePropName: 'originValue',
       getValueFromEvent: (date, dateString) => dateString,
       initialValue: defaultDiffDays !== undefined ? moment().add(defaultDiffDays, 'day').format(dateFormat) : undefined,

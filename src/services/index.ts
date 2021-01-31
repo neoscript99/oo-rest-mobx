@@ -9,7 +9,7 @@ export * from './DeptService';
 export * from './RoleService';
 export * from './DictService';
 export * from './AttachmentService';
-export * from '../rest';
+export * from './rest';
 
 //排序支持传字段名列表，或者字段名+顺序类型
 export type CriteriaOrder = string | [string, 'asc' | 'desc'];

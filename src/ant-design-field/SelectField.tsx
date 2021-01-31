@@ -1,16 +1,17 @@
 import React from 'react';
 import { Select } from 'antd';
 import { SelectProps } from 'antd/lib/select';
-import { FieldProps, GetFieldDecoratorOptions } from './FieldProps';
+import { FieldProps } from './FieldProps';
 import { AbstractField } from './AbstractField';
 import { ObjectUtil, StringUtil } from '../utils';
+import { FormItemProps } from 'antd/lib/form';
 
 export interface SelectFieldProps extends SelectWrapProps, FieldProps {}
 
 export class SelectField extends AbstractField<SelectFieldProps> {
-  get defaultDecorator() {
+  get defaultFormItemProps(): FormItemProps {
     const { mode, multiValueType } = this.props;
-    const newDecorator: GetFieldDecoratorOptions = {};
+    const newDecorator: FormItemProps = {};
     newDecorator.initialValue = getFirstValue(this.props);
     //如果是多值方式，将选择项的value转为为逗号分隔的字符串
     if (isMultipleMode(mode)) {
