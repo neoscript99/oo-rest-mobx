@@ -5,7 +5,7 @@ node_modules/
 .idea
 .rn_temp/
 build/
-/lib/
+lib/
 yarn-error.log
 oo-rest-mobx-*.tgz
 SyncToy_*.dat
